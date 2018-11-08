@@ -10,6 +10,9 @@
 #include <opencv2/features2d.hpp>
 
 
+static const int DOMINO_PIECE_AREA_MIN = 1000;
+static const int DOMINO_PIECE_AREA_MAX = 10000;
+
 unsigned long countPips(cv::Mat dice) {
 
 	// resize
@@ -125,16 +128,10 @@ int main(int argc, char** argv) {
 			std::cout << "area: " << diceContourArea << std::endl;
 
 			// filter contours based on our dice size
-			if (diceContourArea > 1000 && diceContourArea < 10000) {
+			if (diceContourArea > DOMINO_PIECE_AREA_MIN && diceContourArea < DOMINO_PIECE_AREA_MAX) {
 
 				// get bounding rect
 				cv::Rect diceBoundsRect = cv::boundingRect(cv::Mat(diceContour));
-
-				//const double addSize = 0;
-				//diceBoundsRect.height += addSize;
-				//diceBoundsRect.width += addSize;
-				//diceBoundsRect.x -= addSize/2;
-				//diceBoundsRect.y -= addSize/2;
 
 				// set dice roi
 				cv::Mat diceROI = unprocessFrame(diceBoundsRect);
@@ -155,7 +152,7 @@ int main(int argc, char** argv) {
 					// draw value
 					cv::putText(unprocessFrame, diceText.str(),
 						cv::Point(diceBoundsRect.x, diceBoundsRect.y + diceBoundsRect.height + 20),
-						cv::FONT_HERSHEY_COMPLEX_SMALL, 0.8, cv::Scalar::all(255), 1, 8
+						cv::FONT_HERSHEY_COMPLEX_SMALL, 0.8, cv::Scalar::all(150), 1, 8
 					);
 
 					// draw bounding rect
