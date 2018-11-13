@@ -71,10 +71,10 @@ int main(int argc, char** argv) {
 	// open window frame
 	cv::namedWindow("frame", true);
 
-    cv::Mat img = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/Domino_black.jpg");
+    cv::Mat img = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/domino_full.jpg");
 
-	cv::Mat backgroundFrame = cv::Mat(cv::Size(img.cols, img.rows), CV_8UC3, cv::Scalar(255, 255, 255));
-	cvtColor(backgroundFrame, backgroundFrame, CV_BGR2GRAY);
+	cv::Mat imgPrvious = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/domino_ohne_verdreht.jpg");
+	cvtColor(imgPrvious, imgPrvious, CV_BGR2GRAY);
 
 	// will hold our frame
 	cv::Mat frame;
@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
 		cvtColor(frame, frame, CV_BGR2GRAY);
 
 		// remove background
-		cv::absdiff(frame, backgroundFrame, frame);
+		cv::absdiff(frame, imgPrvious, frame);
 
 		// threshold
 		cv::threshold(frame, frame, 150, 255, cv::THRESH_BINARY | CV_THRESH_OTSU);
