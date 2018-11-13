@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
 
     cv::Mat img = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/domino_full.jpg");
 
-	cv::Mat imgPrvious = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/domino_ohne_verdreht.jpg");
+	cv::Mat imgPrvious = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/domino_ohne.jpg");
 	cvtColor(imgPrvious, imgPrvious, CV_BGR2GRAY);
 
 	// will hold our frame
@@ -149,15 +149,17 @@ int main(int argc, char** argv) {
 
                     std::cout << diceText.str() << std::endl;
 
+                    // color for drawing into img
+                    cv::Scalar brightColor = cv::Scalar(255, 0, 242);
+
 					// draw value
 					cv::putText(unprocessFrame, diceText.str(),
 						cv::Point(diceBoundsRect.x, diceBoundsRect.y + diceBoundsRect.height + 20),
-						cv::FONT_HERSHEY_COMPLEX_SMALL, 0.8, cv::Scalar::all(150), 1, 8
+						cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8
 					);
 
 					// draw bounding rect
-					cv::Scalar color = cv::Scalar(0, 153, 255);
-					cv::rectangle(unprocessFrame, diceBoundsRect.tl(), diceBoundsRect.br(), color, 2, 8, 0);
+					cv::rectangle(unprocessFrame, diceBoundsRect.tl(), diceBoundsRect.br(), brightColor, 2, 8, 0);
 
 					// show
 					cv::imshow("frame", unprocessFrame); cv::waitKey(0);
