@@ -1,6 +1,7 @@
 // std lib
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 // OpenCV
 #include <opencv2/core.hpp>
@@ -11,7 +12,38 @@
 
 
 static const int DOMINO_PIECE_AREA_MIN = 18000;
-static const int DOMINO_PIECE_AREA_MAX = 30353;
+static const int DOMINO_PIECE_AREA_MAX = 100353;
+
+// https://stackoverflow.com/questions/43342199/draw-rotated-rectangle-in-opencv-c
+void DrawRotatedRectangle(cv::Mat& image, cv::RotatedRect rotatedRect)
+{
+    cv::Point centerPoint = rotatedRect.center;
+    cv::Size rectangleSize = rotatedRect.size;
+    double rotationDegrees = rotatedRect.angle;
+
+    cv::Scalar color = cv::Scalar(255.0, 255.0, 255.0); // white
+
+    // Create the rotated rectangle
+    cv::RotatedRect rotatedRectangle(centerPoint, rectangleSize, rotationDegrees);
+
+    // We take the edges that OpenCV calculated for us
+    cv::Point2f vertices2f[4];
+    rotatedRectangle.points(vertices2f);
+
+    // Convert them so we can use them in a fillConvexPoly
+    cv::Point vertices[4];
+    for(int i = 0; i < 4; ++i){
+        vertices[i] = vertices2f[i];
+
+    }
+
+    // Now we can fill the rotated rectangle with our specified color
+    cv::fillConvexPoly(image,
+                       vertices,
+                       4,
+                       color);
+
+}
 
 unsigned long countPips(cv::Mat dice) {
 
@@ -31,8 +63,7 @@ unsigned long countPips(cv::Mat dice) {
 	cv::floodFill(dice, cv::Point(149, 149), cv::Scalar(255));
     cv::imwrite("domino_pips_flood.jpg", dice);
 	// show
-	cv::namedWindow("processed", true);
-	cv::imshow("processed", dice); cv::waitKey(0);
+	cv::imwrite("processed.jpg", dice);
 
 	// search for blobs
 	cv::SimpleBlobDetector::Params params;
@@ -43,8 +74,7 @@ unsigned long countPips(cv::Mat dice) {
 	dice = diceTemp;
     cv::imwrite("domino_pips_gauss.jpg", dice);
     // show
-    cv::namedWindow("blur", true);
-    cv::imshow("blur", dice); cv::waitKey(0);
+    cv::imwrite("blur.jpg", dice);
 
 	// filter by interia defines how elongated a shape is.
 	//params.filterByInertia = true;
@@ -72,115 +102,130 @@ int main(int argc, char** argv) {
 	// open window frame
 	cv::namedWindow("frame", true);
 
-    cv::Mat img = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/tisch_6_v2.jpg");
+    cv::Mat img = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/tisch_6_rot.jpg");
 
-	cv::Mat imgPrvious = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/tisch_5_v2.jpg");
-	cvtColor(imgPrvious, imgPrvious, CV_BGR2GRAY);
+    cv::Mat imgPervious = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/tisch_5_rot.jpg");
+	cvtColor(imgPervious, imgPervious, CV_BGR2GRAY);
 
 	// will hold our frame
 	cv::Mat frame;
 	cv::Mat unprocessedFrame;
 	cv::Mat diffframe;
 
-	//for (;;)
-	//{
-		frame = img;
+    // color for drawing into img
+    cv::Scalar brightColor = cv::Scalar(255, 0, 242);
 
-		// hold unprocessed framed
-		unprocessedFrame = frame.clone();
+    frame = img;
 
-		// convert to grayscale
-		cvtColor(frame, frame, CV_BGR2GRAY);
+    // hold unprocessed framed
+    unprocessedFrame = frame.clone();
 
-		// remove background
-		cv::absdiff(frame, imgPrvious, frame);
-        cv::imwrite("domino_diff.jpg", frame);
-        diffframe = frame.clone();
+    // convert to grayscale
+    cvtColor(frame, frame, CV_BGR2GRAY);
 
-		// threshold
-		cv::threshold(frame, frame, 150, 255, cv::THRESH_BINARY | CV_THRESH_OTSU);
-        cv::imwrite("domino_bin.jpg", frame);
+    // remove background
+    cv::absdiff(frame, imgPervious, frame);
+    cv::imwrite("domino_diff.jpg", frame);
+    diffframe = frame.clone();
 
-		// applying canny edge filter
-		cv::Canny(frame, frame, 2, 2 * 2, 3, false);
+    // threshold
+    cv::threshold(frame, frame, 150, 255, cv::THRESH_BINARY | CV_THRESH_OTSU);
+    cv::imwrite("domino_bin.jpg", frame);
 
-		cv::imshow("frame", frame); cv::waitKey(1);
+    cv::Mat tmp = frame.clone();
+    cv::blur( tmp, frame, cv::Size(3,3) );
+    cv::imwrite("domino_bin_blur.jpg", frame);
 
-		// detect dice shapes
-		std::vector<std::vector<cv::Point> > diceContours;
-		std::vector<cv::Vec4i> diceHierarchy;
-		cv::findContours(frame.clone(), diceContours, diceHierarchy, CV_RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    // applying canny edge filter
+    cv::Canny(frame, frame, 2, 2 * 2, 3, false);
+    cv::imwrite("domino_canny.jpg", frame);
 
-        cv::Mat drawing = cv::Mat::zeros(img.size(), CV_8UC3);
-        for(int i=0; i < diceContours.size(); i++) {
-            cv::Scalar color = cv::Scalar(150, 0, 32);
-            drawContours(drawing, diceContours, i, color, 2, 8, diceHierarchy, 0, cv::Point());
+    cv::imwrite("frame.jpg", frame);
 
+    // detect dice shapes
+    std::vector<std::vector<cv::Point> > diceContours;
+    std::vector<cv::Vec4i> diceHierarchy;
+    cv::findContours(frame.clone(), diceContours, diceHierarchy, CV_RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+    cv::Mat drawing = cv::Mat::zeros(img.size(), CV_8UC3);
+    for(int i=0; i < diceContours.size(); i++) {
+        cv::Scalar color = cv::Scalar(150, 0, 32);
+        drawContours(drawing, diceContours, i, color, 2, 8, diceHierarchy, 0, cv::Point());
+
+        cv::Mat singleContour = cv::Mat::zeros(img.size(), CV_8UC3);
+        drawContours(singleContour, diceContours, i, color, 2, 8, diceHierarchy, 0, cv::Point());
+        std::ostringstream contourName;
+        contourName << "domino_contour" <<  i << ".jpg";
+        cv::imwrite( contourName.str(), singleContour);
+    }
+    cv::imwrite("domino_contours.jpg", drawing);
+
+    // iterate over dice contours
+    for(int i=0; i < diceContours.size(); i++){
+        auto diceContour = diceContours.at(i);
+
+        cv::RotatedRect minAreaRotatedRect = cv::minAreaRect(diceContour);
+        cv::Mat rotated = unprocessedFrame.clone();
+        DrawRotatedRectangle(rotated, minAreaRotatedRect);
+
+        cv::imwrite("domino_rotated_rect.jpg", rotated);
+
+        cv::Rect diceBoundsRect = minAreaRotatedRect.boundingRect();
+
+        // get contour area
+        double diceContourArea = diceBoundsRect.area();
+
+        std::cout << "area: " << diceContourArea << std::endl;
+
+        // filter contours based on our dice size
+        if (diceContourArea > DOMINO_PIECE_AREA_MIN && diceContourArea < DOMINO_PIECE_AREA_MAX) {
+
+            // set dice roi
+            cv::Mat diceROI = diffframe(diceBoundsRect);
+
+            cv::imwrite("rect.jpg", diceROI);
+
+            // rotate img to zero degree
+            cv::Point2f center = cvPoint(diceBoundsRect.height / 2, diceBoundsRect.width / 2);
+
+            // to be replaces by submodule: get rotated image
+            cv::Mat M = cv::getRotationMatrix2D(center, minAreaRotatedRect.angle, 1);
+            cv::Mat rotated;
+            cv::warpAffine(diceROI, rotated, M, diceBoundsRect.size());
+
+            cv::line(rotated, cv::Point(0, rotated.cols/2), cv::Point(rotated.rows, rotated.cols/2), brightColor, 1);
+            cv::imwrite("rotated.jpg", rotated);
+
+            // count number of pips
+            long numberOfPips = countPips(diceROI);
+
+            if (numberOfPips > 0) {
+
+                // output debug info
+                std::ostringstream diceText;
+                diceText << "val: " << numberOfPips;
+
+                std::cout << diceText.str() << std::endl;
+
+                // draw value
+                cv::putText(unprocessedFrame, diceText.str(),
+                    cv::Point(diceBoundsRect.x, diceBoundsRect.y + diceBoundsRect.height + 20),
+                    cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8
+                );
+
+                // draw bounding rect
+                //cv::rectangle(unprocessedFrame, diceBoundsRect.tl(), diceBoundsRect.br(), brightColor, 2, 8, 0);
+                cv::drawContours(unprocessedFrame, diceContours, 0, brightColor, 2, 8, diceHierarchy);
+
+                // show
+                cv::imshow("frame", unprocessedFrame); cv::waitKey(0);
+                cv::imwrite("domino_result.jpg", unprocessedFrame);
+            }
+            else {
+                std::cout << "No pips found!" << std::endl;
+            }
         }
-        cv::imwrite("domino_contours.jpg", drawing);
-        cv::imshow("drawing", drawing);
-        cv::waitKey(0);
-
-		// iterate over dice contours
-        for(int i=0; i < diceContours.size(); i++){
-            auto diceContour = diceContours.at(i);
-
-            cv::RotatedRect minAreaRotatedRect = cv::minAreaRect(diceContour);
-            cv::Rect minAreaRect = minAreaRotatedRect.boundingRect();
-
-            // get contour area
-            double diceContourArea = minAreaRect.width * minAreaRect.height;
-
-			std::cout << "area: " << diceContourArea << std::endl;
-
-			// filter contours based on our dice size
-			if (diceContourArea > DOMINO_PIECE_AREA_MIN && diceContourArea < DOMINO_PIECE_AREA_MAX) {
-
-				// get bounding rect
-				cv::Rect diceBoundsRect = cv::boundingRect(cv::Mat(diceContour));
-
-				// set dice roi
-				cv::Mat diceROI = diffframe(diceBoundsRect);
-
-				cv::imshow("rect", diceROI); cv::waitKey(0);
-
-				// count number of pips
-				long numberOfPips = countPips(diceROI);
-
-				if (numberOfPips > 0) {
-
-					// output debug info
-					std::ostringstream diceText;
-					diceText << "val: " << numberOfPips;
-
-                    std::cout << diceText.str() << std::endl;
-
-                    // color for drawing into img
-                    cv::Scalar brightColor = cv::Scalar(255, 0, 242);
-
-					// draw value
-					cv::putText(unprocessedFrame, diceText.str(),
-						cv::Point(diceBoundsRect.x, diceBoundsRect.y + diceBoundsRect.height + 20),
-						cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8
-					);
-
-					// draw bounding rect
-					cv::rectangle(unprocessedFrame, diceBoundsRect.tl(), diceBoundsRect.br(), brightColor, 2, 8, 0);
-
-					// show
-					cv::imshow("frame", unprocessedFrame); cv::waitKey(0);
-                    cv::imwrite("domino_result.jpg", unprocessedFrame);
-				}
-				else {
-					std::cout << "No pips found!" << std::endl;
-				}
-
-			}
-
-		}
-		// on key press exit
-		//if (cv::waitKey(30) >= 0) break;
-	//}
+    }
 
 	std::cout << "Press any key to exit.";
 	std::cin.ignore();
