@@ -12,7 +12,7 @@
 
 
 static const int DOMINO_PIECE_AREA_MIN = 18000;
-static const int DOMINO_PIECE_AREA_MAX = 40353;
+static const int DOMINO_PIECE_AREA_MAX = 100353;
 
 // https://stackoverflow.com/questions/43342199/draw-rotated-rectangle-in-opencv-c
 void DrawRotatedRectangle(cv::Mat& image, cv::RotatedRect rotatedRect)
@@ -132,6 +132,10 @@ int main(int argc, char** argv) {
 		// threshold
 		cv::threshold(frame, frame, 150, 255, cv::THRESH_BINARY | CV_THRESH_OTSU);
         cv::imwrite("domino_bin.jpg", frame);
+
+        cv::Mat tmp = frame.clone();
+        cv::blur( tmp, frame, cv::Size(3,3) );
+        cv::imwrite("domino_bin_blur.jpg", frame);
 
 		// applying canny edge filter
 		cv::Canny(frame, frame, 2, 2 * 2, 3, false);
