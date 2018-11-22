@@ -63,8 +63,7 @@ unsigned long countPips(cv::Mat dice) {
 	cv::floodFill(dice, cv::Point(149, 149), cv::Scalar(255));
     cv::imwrite("domino_pips_flood.jpg", dice);
 	// show
-	cv::namedWindow("processed", true);
-	cv::imshow("processed", dice); cv::waitKey(0);
+	cv::imwrite("processed.jpg", dice);
 
 	// search for blobs
 	cv::SimpleBlobDetector::Params params;
@@ -75,8 +74,7 @@ unsigned long countPips(cv::Mat dice) {
 	dice = diceTemp;
     cv::imwrite("domino_pips_gauss.jpg", dice);
     // show
-    cv::namedWindow("blur", true);
-    cv::imshow("blur", dice); cv::waitKey(0);
+    cv::imwrite("blur.jpg", dice);
 
 	// filter by interia defines how elongated a shape is.
 	//params.filterByInertia = true;
@@ -141,7 +139,7 @@ int main(int argc, char** argv) {
 		cv::Canny(frame, frame, 2, 2 * 2, 3, false);
         cv::imwrite("domino_canny.jpg", frame);
 
-		cv::imshow("frame", frame); cv::waitKey(1);
+        cv::imwrite("frame.jpg", frame);
 
 		// detect dice shapes
 		std::vector<std::vector<cv::Point> > diceContours;
@@ -160,8 +158,6 @@ int main(int argc, char** argv) {
             cv::imwrite( contourName.str(), singleContour);
         }
         cv::imwrite("domino_contours.jpg", drawing);
-        cv::imshow("drawing", drawing);
-        cv::waitKey(0);
 
 		// iterate over dice contours
         for(int i=0; i < diceContours.size(); i++){
@@ -172,8 +168,6 @@ int main(int argc, char** argv) {
             DrawRotatedRectangle(rotated, minAreaRotatedRect);
 
             cv::imwrite("domino_rotated_rect.jpg", rotated);
-            cv::imshow("domino_rotated_rect", rotated);
-
 
             cv::Rect diceBoundsRect = minAreaRotatedRect.boundingRect();
 
@@ -191,8 +185,7 @@ int main(int argc, char** argv) {
                 //if( minAreaRotatedRect.size.height > minAreaRotatedRect.size.width ) {
 
                 //}
-
-				cv::imshow("rect", diceROI); cv::waitKey(0);
+                cv::imwrite("rect.jpg", diceROI);
 
 				// count number of pips
 				long numberOfPips = countPips(diceROI);
@@ -215,7 +208,8 @@ int main(int argc, char** argv) {
 					);
 
 					// draw bounding rect
-					cv::rectangle(unprocessedFrame, diceBoundsRect.tl(), diceBoundsRect.br(), brightColor, 2, 8, 0);
+					//cv::rectangle(unprocessedFrame, diceBoundsRect.tl(), diceBoundsRect.br(), brightColor, 2, 8, 0);
+					cv::drawContours(unprocessedFrame, diceContours, 0, brightColor, 2, 8, diceHierarchy);
 
 					// show
 					cv::imshow("frame", unprocessedFrame); cv::waitKey(0);
