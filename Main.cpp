@@ -1,6 +1,7 @@
 // std lib
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 // OpenCV
 #include <opencv2/core.hpp>
@@ -11,7 +12,38 @@
 
 
 static const int DOMINO_PIECE_AREA_MIN = 18000;
-static const int DOMINO_PIECE_AREA_MAX = 30353;
+static const int DOMINO_PIECE_AREA_MAX = 40353;
+
+// https://stackoverflow.com/questions/43342199/draw-rotated-rectangle-in-opencv-c
+void DrawRotatedRectangle(cv::Mat& image, cv::RotatedRect rotatedRect)
+{
+    cv::Point centerPoint = rotatedRect.center;
+    cv::Size rectangleSize = rotatedRect.size;
+    double rotationDegrees = rotatedRect.angle;
+
+    cv::Scalar color = cv::Scalar(255.0, 255.0, 255.0); // white
+
+    // Create the rotated rectangle
+    cv::RotatedRect rotatedRectangle(centerPoint, rectangleSize, rotationDegrees);
+
+    // We take the edges that OpenCV calculated for us
+    cv::Point2f vertices2f[4];
+    rotatedRectangle.points(vertices2f);
+
+    // Convert them so we can use them in a fillConvexPoly
+    cv::Point vertices[4];
+    for(int i = 0; i < 4; ++i){
+        vertices[i] = vertices2f[i];
+
+    }
+
+    // Now we can fill the rotated rectangle with our specified color
+    cv::fillConvexPoly(image,
+                       vertices,
+                       4,
+                       color);
+
+}
 
 unsigned long countPips(cv::Mat dice) {
 
@@ -72,9 +104,9 @@ int main(int argc, char** argv) {
 	// open window frame
 	cv::namedWindow("frame", true);
 
-    cv::Mat img = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/tisch_6_v2.jpg");
+    cv::Mat img = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/tisch_6_rot.jpg");
 
-	cv::Mat imgPrvious = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/tisch_5_v2.jpg");
+	cv::Mat imgPrvious = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/tisch_5_rot.jpg");
 	cvtColor(imgPrvious, imgPrvious, CV_BGR2GRAY);
 
 	// will hold our frame
@@ -103,6 +135,7 @@ int main(int argc, char** argv) {
 
 		// applying canny edge filter
 		cv::Canny(frame, frame, 2, 2 * 2, 3, false);
+        cv::imwrite("domino_canny.jpg", frame);
 
 		cv::imshow("frame", frame); cv::waitKey(1);
 
@@ -116,6 +149,11 @@ int main(int argc, char** argv) {
             cv::Scalar color = cv::Scalar(150, 0, 32);
             drawContours(drawing, diceContours, i, color, 2, 8, diceHierarchy, 0, cv::Point());
 
+            cv::Mat singleContour = cv::Mat::zeros(img.size(), CV_8UC3);
+            drawContours(singleContour, diceContours, i, color, 2, 8, diceHierarchy, 0, cv::Point());
+            std::ostringstream contourName;
+            contourName << "domino_contour" <<  i << ".jpg";
+            cv::imwrite( contourName.str(), singleContour);
         }
         cv::imwrite("domino_contours.jpg", drawing);
         cv::imshow("drawing", drawing);
@@ -126,21 +164,29 @@ int main(int argc, char** argv) {
             auto diceContour = diceContours.at(i);
 
             cv::RotatedRect minAreaRotatedRect = cv::minAreaRect(diceContour);
-            cv::Rect minAreaRect = minAreaRotatedRect.boundingRect();
+            cv::Mat rotated = unprocessedFrame.clone();
+            DrawRotatedRectangle(rotated, minAreaRotatedRect);
+
+            cv::imwrite("domino_rotated_rect.jpg", rotated);
+            cv::imshow("domino_rotated_rect", rotated);
+
+
+            cv::Rect diceBoundsRect = minAreaRotatedRect.boundingRect();
 
             // get contour area
-            double diceContourArea = minAreaRect.width * minAreaRect.height;
+            double diceContourArea = diceBoundsRect.area();
 
 			std::cout << "area: " << diceContourArea << std::endl;
 
 			// filter contours based on our dice size
 			if (diceContourArea > DOMINO_PIECE_AREA_MIN && diceContourArea < DOMINO_PIECE_AREA_MAX) {
 
-				// get bounding rect
-				cv::Rect diceBoundsRect = cv::boundingRect(cv::Mat(diceContour));
-
 				// set dice roi
 				cv::Mat diceROI = diffframe(diceBoundsRect);
+
+                //if( minAreaRotatedRect.size.height > minAreaRotatedRect.size.width ) {
+
+                //}
 
 				cv::imshow("rect", diceROI); cv::waitKey(0);
 
