@@ -116,9 +116,9 @@ int main(int argc, char** argv) {
 	// open window frame
 	cv::namedWindow("frame", true);
 
-    cv::Mat img = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/tisch_6_v2.jpg");
+    cv::Mat img = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/tisch_6_rot.jpg");
 
-    cv::Mat imgPervious = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/tisch_5_v2.jpg");
+    cv::Mat imgPervious = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/tisch_5_rot.jpg");
 	cvtColor(imgPervious, imgPervious, CV_BGR2GRAY);
 
 	// will hold our frame
@@ -202,38 +202,26 @@ int main(int argc, char** argv) {
             // rotate img to zero degree
             cv::Point2f center = cvPoint(diceBoundsRect.height / 2, diceBoundsRect.width / 2);
 
-            cv::Mat rotated;
-
+            cv::Mat upright;
 
             /*#### Correct rotation angle - Set Upright (+90deg) - Set Horizontal (90deg - angle)### */
             float corrected_angle_deg = minAreaRotatedRect.angle;
             if (minAreaRotatedRect.size.width > minAreaRotatedRect.size.height) {
                 corrected_angle_deg = 90 + corrected_angle_deg;
             }
-            rotate2D(diceROI,rotated,  corrected_angle_deg);
-            // to be replaces by submodule: get rotated image
-           /* cv::Mat M = cv::getRotationMatrix2D(center, minAreaRotatedRect.angle, 1);
-            cv::Rect copyRect = cv::Rect(diceBoundsRect);*/
+            rotate2D(diceROI, upright, corrected_angle_deg);
 
+            //cv::line(upright, cv::Point(0, upright.rows/2), cv::Point(upright.cols, upright.rows/2), brightColor, 1);
+            cv::imwrite("domino_upright.jpg", upright);
 
-            //diceBoundsRect.width = 400;
-
-          //  warpAffine(image, rotated_img, rot_matrix, rotated_img.size());
-        //    cv::warpAffine(diceROI, rotated, M, diceBoundsRect.size().);
-            //cv::warpAffine(diceROI, rotated, M, copyRect.size());
-
-          // cv::line(rotated, cv::Point(0, rotated.cols/2), cv::Point(rotated.rows, rotated.cols/2), brightColor, 1);
-            //cv::line(rotated, cv::Point(0, rotated.rows/2), cv::Point(rotated.cols, rotated.rows/2), brightColor, 1);
-            cv::imwrite("rotated.jpg", rotated);
-
-            cv::Rect aHalfRect = cv::Rect( cv::Point(0,0), cv::Point(rotated.cols, rotated.rows/2));
+            cv::Rect aHalfRect = cv::Rect( cv::Point(0,0), cv::Point(upright.cols, upright.rows/2));
             //cv::rectangle(aHalf, aHalfRect, brightColor, CV_FILLED, 8, 0);
-            cv::Mat aHalfImg = rotated(aHalfRect);
+            cv::Mat aHalfImg = upright(aHalfRect);
             cv::imwrite("aHalfImg.jpg", aHalfImg);
 
-            cv::Rect bHalfRect = cv::Rect( cv::Point(0,rotated.rows/2), cv::Point(rotated.cols, rotated.rows));
+            cv::Rect bHalfRect = cv::Rect( cv::Point(0,upright.rows/2), cv::Point(upright.cols, upright.rows));
             //cv::rectangle(aHalf, aHalfRect, brightColor, CV_FILLED, 8, 0);
-            cv::Mat bHalfImg = rotated(bHalfRect);
+            cv::Mat bHalfImg = upright(bHalfRect);
             cv::imwrite("bHalfImg.jpg", bHalfImg);
 
             std::ostringstream pipsResults;
