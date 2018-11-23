@@ -1,7 +1,9 @@
 // std lib
 #include <iostream>
 #include <sstream>
-#include <algorithm>
+
+#include "ImgDebugPrinter/ImgDebugPrinter.h"
+#include "PipsDetector/PipsDetector.h"
 
 // OpenCV
 #include <opencv2/core.hpp>
@@ -10,9 +12,6 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/features2d.hpp>
 
-
-static const int DOMINO_PIECE_AREA_MIN = 18000;
-static const int DOMINO_PIECE_AREA_MAX = 100353;
 
 // https://stackoverflow.com/questions/43342199/draw-rotated-rectangle-in-opencv-c
 void DrawRotatedRectangle(cv::Mat& image, cv::RotatedRect rotatedRect)
@@ -45,8 +44,6 @@ void DrawRotatedRectangle(cv::Mat& image, cv::RotatedRect rotatedRect)
 
 }
 
-
-
 void rotate2D(const cv::Mat & src, cv::Mat & dst, const double degrees)
 {
     cv::Point2f center(src.cols/2.0, src.rows/2.0);
@@ -59,72 +56,33 @@ void rotate2D(const cv::Mat & src, cv::Mat & dst, const double degrees)
     cv::warpAffine(src, dst, rot, bbox.size());
 }
 
-unsigned long countPips(cv::Mat dice) {
+int main(int argc, char **argv) {
 
-	// resize
-	cv::resize(dice, dice, cv::Size(150, 150));
+    cout << "Running main" << std::endl;
 
-	// convert to grayscale
-	//cvtColor(dice, dice, CV_BGR2GRAY);
+    PipsDetector *pipsdetector = PipsDetectorFactory().createDefaultPipsDetector();
+    AbstractImgDebugPrinter* printer = IImgDebugPrinterFactory().getPrinter();
 
-	// threshold
-	cv::threshold(dice, dice, 150, 255, cv::THRESH_BINARY | CV_THRESH_OTSU);
-    cv::imwrite("domino_pips_bin.jpg", dice);
-	// floodfill
-	cv::floodFill(dice, cv::Point(0, 0), cv::Scalar(255));
-	cv::floodFill(dice, cv::Point(0, 149), cv::Scalar(255));
-	cv::floodFill(dice, cv::Point(149, 0), cv::Scalar(255));
-	cv::floodFill(dice, cv::Point(149, 149), cv::Scalar(255));
-    cv::imwrite("domino_pips_flood.jpg", dice);
-	// show
-	cv::imwrite("processed.jpg", dice);
+    cv::Mat img = cv::imread("../../img/tisch_5_rot.jpg");
 
-	// search for blobs
-	cv::SimpleBlobDetector::Params params;
+    if (!img.data) {
+        cout << "Could not open or find the new image" << std::endl;
+        return -1;
+    }
 
-	cv::Mat diceTemp;
-    dice.copyTo(diceTemp);
-	cv::GaussianBlur(dice, diceTemp, cv::Size(9,9), 3.3);
-	dice = diceTemp;
-    cv::imwrite("domino_pips_gauss.jpg", dice);
-    // show
-    cv::imwrite("blur.jpg", dice);
+    cv::Mat imgPrevious = cv::imread("../../img/tisch_4_rot.jpg");
 
-	// filter by interia defines how elongated a shape is.
-	//params.filterByInertia = true;
-	//params.minInertiaRatio = 0.5;
+    if (!imgPrevious.data) {
+        cout << "Could not open or find the previous image" << std::endl;
+        return -1;
+    }
 
-    params.filterByColor = true;
-    params.blobColor = 0;
-    params.minArea = 200;
+    cvtColor(imgPrevious, imgPrevious, CV_BGR2GRAY);
 
-	// will hold our keyponts
-	std::vector<cv::KeyPoint> keypoints;
-
-	// create new blob detector with our parameters
-	cv::Ptr<cv::SimpleBlobDetector> blobDetector = cv::SimpleBlobDetector::create(params);
-
-	// detect blobs
-	blobDetector->detect(dice, keypoints);
-
-	// return number of pips
-	return keypoints.size();
-}
-
-int main(int argc, char** argv) {
-
-	// open window frame
-	cv::namedWindow("frame", true);
-
-    cv::Mat img = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/tisch_6_rot.jpg");
-
-    cv::Mat imgPervious = cv::imread("/home/osboxes/CLionProjects/wuerfel/img/tisch_5_rot.jpg");
-	cvtColor(imgPervious, imgPervious, CV_BGR2GRAY);
-
-	// will hold our frame
-	cv::Mat frame;
-	cv::Mat unprocessedFrame;
-	cv::Mat diffframe;
+    // will hold our frame
+    cv::Mat frame;
+    cv::Mat unprocessedFrame;
+    cv::Mat diffframe;
 
     // color for drawing into img
     cv::Scalar brightColor = cv::Scalar(255, 0, 242);
@@ -138,7 +96,7 @@ int main(int argc, char** argv) {
     cvtColor(frame, frame, CV_BGR2GRAY);
 
     // remove background
-    cv::absdiff(frame, imgPervious, frame);
+    cv::absdiff(frame, imgPrevious, frame);
     cv::imwrite("domino_diff.jpg", frame);
     diffframe = frame.clone();
 
@@ -226,8 +184,8 @@ int main(int argc, char** argv) {
 
             std::ostringstream pipsResults;
             pipsResults << "Number of pips a,b: ";
-            long numberOfPipsA = countPips(aHalfImg);
-            long numberOfPipsB = countPips(bHalfImg);
+            long numberOfPipsA = pipsdetector->detect(aHalfImg);
+            long numberOfPipsB = pipsdetector->detect(bHalfImg);
             pipsResults << numberOfPipsA << "," << numberOfPipsB;
             std::cout << pipsResults.str() << std::endl;
 
@@ -242,8 +200,8 @@ int main(int argc, char** argv) {
 
                 // draw value
                 cv::putText(unprocessedFrame, diceText.str(),
-                    cv::Point(diceBoundsRect.x, diceBoundsRect.y + diceBoundsRect.height + 20),
-                    cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8
+                            cv::Point(diceBoundsRect.x, diceBoundsRect.y + diceBoundsRect.height + 20),
+                            cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8
                 );
 
                 // draw bounding rect
@@ -251,7 +209,7 @@ int main(int argc, char** argv) {
                 cv::drawContours(unprocessedFrame, diceContours, 0, brightColor, 2, 8, diceHierarchy);
 
                 // show
-                cv::imshow("frame", unprocessedFrame); cv::waitKey(0);
+                printer->printImage("frame", unprocessedFrame);
                 cv::imwrite("domino_result.jpg", unprocessedFrame);
             }
             else {
@@ -260,8 +218,7 @@ int main(int argc, char** argv) {
         }
     }
 
-	std::cout << "Press any key to exit.";
-	std::cin.ignore();
-	std::cin.get();
-
+    std::cout << "Press any key to exit.";
+    std::cin.ignore();
+    std::cin.get();
 }

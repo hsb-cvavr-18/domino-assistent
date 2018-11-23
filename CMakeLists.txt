@@ -1,10 +1,30 @@
-cmake_minimum_required(VERSION 3.5)
-project(wuerfel)
+cmake_minimum_required(VERSION 3.2)
 
-find_package(OpenCV REQUIRED)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(SOURCE_FILES Main.cpp)
-add_executable(opencv ${SOURCE_FILES})
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3")
 
-include_directories(${OpenCV_INCLUDE_DIRS})
-target_link_libraries(opencv ${OpenCV_LIBS})
+set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
+
+set(DOMINOASSISTANT_INSTALL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
+set(DOMINOASSISTANT_INSTALL_BIN_DIR ${PROJECT_SOURCE_DIR}/bin)
+set(DOMINOASSISTANT_INSTALL_LIB_DIR ${PROJECT_SOURCE_DIR}/lib)
+
+set(DIVISION_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/division)
+set(IMGDEBUGPRINTER_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/ImgDebugPrinter)
+set(PIPSDETECTOR_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/PipsDetector)
+
+include_directories(${DOMINOASSISTANT_INSTALL_INCLUDE_DIR})
+#include_directories(${DIVISION_HEADERS_DIR})
+#include_directories(${ImgDebugPrinter_HEADERS_DIR})
+
+add_subdirectory(src)
+
+include(cmake/googletest.cmake)
+fetch_googletest(
+        ${PROJECT_SOURCE_DIR}/cmake
+        ${PROJECT_BINARY_DIR}/googletest
+)
+enable_testing()
+add_subdirectory(test)
+
+
