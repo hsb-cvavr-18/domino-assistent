@@ -223,16 +223,32 @@ int main(int argc, char** argv) {
             //cv::warpAffine(diceROI, rotated, M, copyRect.size());
 
           // cv::line(rotated, cv::Point(0, rotated.cols/2), cv::Point(rotated.rows, rotated.cols/2), brightColor, 1);
+            //cv::line(rotated, cv::Point(0, rotated.rows/2), cv::Point(rotated.cols, rotated.rows/2), brightColor, 1);
             cv::imwrite("rotated.jpg", rotated);
 
-            // count number of pips
-            long numberOfPips = countPips(diceROI);
+            cv::Rect aHalfRect = cv::Rect( cv::Point(0,0), cv::Point(rotated.cols, rotated.rows/2));
+            //cv::rectangle(aHalf, aHalfRect, brightColor, CV_FILLED, 8, 0);
+            cv::Mat aHalfImg = rotated(aHalfRect);
+            cv::imwrite("aHalfImg.jpg", aHalfImg);
 
-            if (numberOfPips > 0) {
+            cv::Rect bHalfRect = cv::Rect( cv::Point(0,rotated.rows/2), cv::Point(rotated.cols, rotated.rows));
+            //cv::rectangle(aHalf, aHalfRect, brightColor, CV_FILLED, 8, 0);
+            cv::Mat bHalfImg = rotated(bHalfRect);
+            cv::imwrite("bHalfImg.jpg", bHalfImg);
+
+            std::ostringstream pipsResults;
+            pipsResults << "Number of pips a,b: ";
+            long numberOfPipsA = countPips(aHalfImg);
+            long numberOfPipsB = countPips(bHalfImg);
+            pipsResults << numberOfPipsA << "," << numberOfPipsB;
+            std::cout << pipsResults.str() << std::endl;
+
+            long numberOfAllPips = numberOfPipsA + numberOfPipsB;
+            if (numberOfAllPips > 0) {
 
                 // output debug info
                 std::ostringstream diceText;
-                diceText << "val: " << numberOfPips;
+                diceText << "val: " << numberOfPipsA << " + " << numberOfPipsB << " = " <<numberOfAllPips;
 
                 std::cout << diceText.str() << std::endl;
 
