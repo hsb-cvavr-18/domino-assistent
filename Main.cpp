@@ -45,6 +45,20 @@ void DrawRotatedRectangle(cv::Mat& image, cv::RotatedRect rotatedRect)
 
 }
 
+
+
+void rotate2D(const cv::Mat & src, cv::Mat & dst, const double degrees)
+{
+    cv::Point2f center(src.cols/2.0, src.rows/2.0);
+    cv::Mat rot = cv::getRotationMatrix2D(center, degrees, 1.0);
+    cv::Rect bbox = cv::RotatedRect(center,src.size(), degrees).boundingRect();
+
+    rot.at<double>(0,2) += bbox.width/2.0 - center.x;
+    rot.at<double>(1,2) += bbox.height/2.0 - center.y;
+
+    cv::warpAffine(src, dst, rot, bbox.size());
+}
+
 unsigned long countPips(cv::Mat dice) {
 
 	// resize
@@ -188,11 +202,19 @@ int main(int argc, char** argv) {
             // rotate img to zero degree
             cv::Point2f center = cvPoint(diceBoundsRect.height / 2, diceBoundsRect.width / 2);
 
-            // to be replaces by submodule: get rotated image
-            cv::Mat M = cv::getRotationMatrix2D(center, minAreaRotatedRect.angle, 1);
             cv::Mat rotated;
-            cv::warpAffine(diceROI, rotated, M, diceBoundsRect.size());
+            rotate2D(diceROI,rotated,minAreaRotatedRect.angle);
+            // to be replaces by submodule: get rotated image
+           /* cv::Mat M = cv::getRotationMatrix2D(center, minAreaRotatedRect.angle, 1);
+            cv::Rect copyRect = cv::Rect(diceBoundsRect);*/
 
+
+            //diceBoundsRect.width = 400;
+
+          //  warpAffine(image, rotated_img, rot_matrix, rotated_img.size());
+        //    cv::warpAffine(diceROI, rotated, M, diceBoundsRect.size().);
+            //cv::warpAffine(diceROI, rotated, M, copyRect.size());
+            cv::circle(rotated,center,4, brightColor);
             cv::line(rotated, cv::Point(0, rotated.cols/2), cv::Point(rotated.rows, rotated.cols/2), brightColor, 1);
             cv::imwrite("rotated.jpg", rotated);
 
