@@ -13,6 +13,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/features2d.hpp>
 
+// color for drawing into img
+cv::Scalar brightColor = cv::Scalar(255, 0, 242);
 
 int main(int argc, char **argv) {
 
@@ -37,18 +39,12 @@ int main(int argc, char **argv) {
 
     cvtColor(imgPrevious, imgPrevious, CV_BGR2GRAY);
 
-    // will hold our frame
-    cv::Mat frame;
-    cv::Mat unprocessedFrame;
+    // will hold the frame of the origin image for output with additional information
+    cv::Mat unprocessedFrame = img.clone();
+    // will hold our frame to do image processing on
+    cv::Mat frame = img;
+    // will hold the difference of the current and the previous frame
     cv::Mat diffframe;
-
-    // color for drawing into img
-    cv::Scalar brightColor = cv::Scalar(255, 0, 242);
-
-    frame = img;
-
-    // hold unprocessed framed
-    unprocessedFrame = frame.clone();
 
     // convert to grayscale
     cvtColor(frame, frame, CV_BGR2GRAY);
@@ -62,8 +58,8 @@ int main(int argc, char **argv) {
     cv::threshold(frame, frame, 150, 255, cv::THRESH_BINARY | CV_THRESH_OTSU);
     cv::imwrite("domino_bin.jpg", frame);
 
-    cv::Mat tmp = frame.clone();
-    cv::blur( tmp, frame, cv::Size(3,3) );
+    // applying blur filter
+    cv::blur( frame.clone(), frame, cv::Size(3,3) );
     cv::imwrite("domino_bin_blur.jpg", frame);
 
     // applying canny edge filter
@@ -72,27 +68,28 @@ int main(int argc, char **argv) {
 
     cv::imwrite("frame.jpg", frame);
 
-    // detect dice shapes
-    std::vector<std::vector<cv::Point> > diceContours;
+    // detect domino piece shape
+    std::vector<std::vector<cv::Point> > pieceContours;
     std::vector<cv::Vec4i> diceHierarchy;
-    cv::findContours(frame.clone(), diceContours, diceHierarchy, CV_RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    cv::findContours(frame.clone(), pieceContours, diceHierarchy, CV_RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
     cv::Mat drawing = cv::Mat::zeros(img.size(), CV_8UC3);
-    for(int i=0; i < diceContours.size(); i++) {
+    for(unsigned int i=0; i < pieceContours.size(); i++) {
         cv::Scalar color = cv::Scalar(150, 0, 32);
-        drawContours(drawing, diceContours, i, color, 2, 8, diceHierarchy, 0, cv::Point());
+        drawContours(drawing, pieceContours, i, brightColor, 2, 8);
 
         cv::Mat singleContour = cv::Mat::zeros(img.size(), CV_8UC3);
-        drawContours(singleContour, diceContours, i, color, 2, 8, diceHierarchy, 0, cv::Point());
+        drawContours(singleContour, pieceContours, i, brightColor, 2, 8);
         std::ostringstream contourName;
         contourName << "domino_contour" <<  i << ".jpg";
         cv::imwrite( contourName.str(), singleContour);
     }
+
     cv::imwrite("domino_contours.jpg", drawing);
 
     // iterate over dice contours
-    for(int i=0; i < diceContours.size(); i++){
-        auto diceContour = diceContours.at(i);
+    for(int i=0; i < pieceContours.size(); i++){
+        auto diceContour = pieceContours.at(i);
 
         cv::RotatedRect minAreaRotatedRect = cv::minAreaRect(diceContour);
         cv::Mat rotated = unprocessedFrame.clone();
@@ -164,7 +161,7 @@ int main(int argc, char **argv) {
 
                 // draw bounding rect
                 //cv::rectangle(unprocessedFrame, diceBoundsRect.tl(), diceBoundsRect.br(), brightColor, 2, 8, 0);
-                cv::drawContours(unprocessedFrame, diceContours, 0, brightColor, 2, 8, diceHierarchy);
+                cv::drawContours(unprocessedFrame, pieceContours, 0, brightColor, 2, 8, diceHierarchy);
 
                 // show
                 printer->printImage("frame", unprocessedFrame);
