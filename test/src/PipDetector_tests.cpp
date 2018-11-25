@@ -40,7 +40,11 @@ protected:
     }
 };
 
-TEST_F(PipsDetectorTest, test1) {
+TEST_F(PipsDetectorTest, testAHalfWith4Pips) {
     verify(0);
+}
+
+TEST_F(PipsDetectorTest, testAHalfWithNoPips) {
+    verify(1);
 }
 
