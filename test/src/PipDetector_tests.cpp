@@ -14,7 +14,7 @@ using namespace std;
 class PipsDetectorTest : public ::testing::Test {
 
 protected:
-    VS files = {"../../img/aHalfImg.jpg", "../../img/bHalfImg.jpg"};
+    VS files = {"../aHalfImg.jpg", "../bHalfImg.jpg"};
     VI expectedPips = {4, 0};
 
     virtual void SetUp() {
