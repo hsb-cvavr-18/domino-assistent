@@ -84,12 +84,13 @@ install:
   - sudo apt-get install -y python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
 
   # Download .zip file and extract.
-  - curl -sL https://github.com/Itseez/opencv/archive/3.4.zip > opencv.zip
+  - wget --quiet -nc https://github.com/Itseez/opencv/archive/3.4.zip -O opencv.zip
   - unzip -n opencv.zip > log1
 
   # Download EXTRA MODULES and extract.
   # Currently not required for builds: -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-3.4/modules
   #- curl -sL https://github.com/Itseez/opencv_contrib/archive/3.4.zip > opencv_contrib.zip
+  #- wget --quiet -nc https://github.com/Itseez/opencv_contrib/archive/3.4.zip -O opencv_contrib.zip
   #- unzip -n opencv_contrib.zip > log2
 
   # Create a new 'build' folder.
