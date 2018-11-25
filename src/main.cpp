@@ -4,6 +4,7 @@
 
 #include "ImgDebugPrinter/ImgDebugPrinter.h"
 #include "PipsDetector/PipsDetector.h"
+#include "DominoLib/DominoLib.h"
 
 // OpenCV
 #include <opencv2/core.hpp>
@@ -12,49 +13,6 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/features2d.hpp>
 
-
-// https://stackoverflow.com/questions/43342199/draw-rotated-rectangle-in-opencv-c
-void DrawRotatedRectangle(cv::Mat& image, cv::RotatedRect rotatedRect)
-{
-    cv::Point centerPoint = rotatedRect.center;
-    cv::Size rectangleSize = rotatedRect.size;
-    double rotationDegrees = rotatedRect.angle;
-
-    cv::Scalar color = cv::Scalar(255.0, 255.0, 255.0); // white
-
-    // Create the rotated rectangle
-    cv::RotatedRect rotatedRectangle(centerPoint, rectangleSize, rotationDegrees);
-
-    // We take the edges that OpenCV calculated for us
-    cv::Point2f vertices2f[4];
-    rotatedRectangle.points(vertices2f);
-
-    // Convert them so we can use them in a fillConvexPoly
-    cv::Point vertices[4];
-    for(int i = 0; i < 4; ++i){
-        vertices[i] = vertices2f[i];
-
-    }
-
-    // Now we can fill the rotated rectangle with our specified color
-    cv::fillConvexPoly(image,
-                       vertices,
-                       4,
-                       color);
-
-}
-
-void rotate2D(const cv::Mat & src, cv::Mat & dst, const double degrees)
-{
-    cv::Point2f center(src.cols/2.0, src.rows/2.0);
-    cv::Mat rot = cv::getRotationMatrix2D(center, degrees, 1.0);
-    cv::Rect bbox = cv::RotatedRect(center,src.size(), degrees).boundingRect();
-
-    rot.at<double>(0,2) += bbox.width/2.0 - center.x;
-    rot.at<double>(1,2) += bbox.height/2.0 - center.y;
-
-    cv::warpAffine(src, dst, rot, bbox.size());
-}
 
 int main(int argc, char **argv) {
 
@@ -138,7 +96,7 @@ int main(int argc, char **argv) {
 
         cv::RotatedRect minAreaRotatedRect = cv::minAreaRect(diceContour);
         cv::Mat rotated = unprocessedFrame.clone();
-        DrawRotatedRectangle(rotated, minAreaRotatedRect);
+        drawRotatedRect(rotated, minAreaRotatedRect);
 
         cv::imwrite("domino_rotated_rect.jpg", rotated);
 
