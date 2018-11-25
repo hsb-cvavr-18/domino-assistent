@@ -122,6 +122,6 @@ script:
   - cmake -H. -Bbuild
   - cd build
   - cmake --build .
-  - make install
-  - cd ../bin
+  - cd build
+  - cd test
   - ./unit_tests
