@@ -1,5 +1,5 @@
 //
-// Created by Konstantin Gredeskoul on 5/14/17.
+// Created by osboxes on 11/12/18.
 //
 
 #ifndef CMAKE_PIPSDETECTOR_H
@@ -21,8 +21,6 @@ public:
 protected:
     unsigned long countPips(cv::Mat piece);
     AbstractImgDebugPrinter* _printer;
-public:
-    PipsDetector();
 };
 
 class PipsDetectorFactory {
