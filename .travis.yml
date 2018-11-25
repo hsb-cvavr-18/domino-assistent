@@ -123,6 +123,5 @@ script:
   - cmake -H. -Bbuild
   - cd build
   - cmake --build .
-  - cd build
   - cd test
   - ./unit_tests
