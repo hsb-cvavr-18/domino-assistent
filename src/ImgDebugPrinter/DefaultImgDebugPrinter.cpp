@@ -9,5 +9,5 @@ void DefaultImgDebugPrinter::preShowImage(std::string windowName) {
 }
 
 void DefaultImgDebugPrinter::showImage(std::string windowName, int index, cv::Mat mat) {
-    cv::imshow(windowName, mat); cv::waitKey(0);
+    cv::imshow(windowName, mat); cv::waitKey();
 }
