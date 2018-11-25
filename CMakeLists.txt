@@ -27,4 +27,5 @@ fetch_googletest(
 enable_testing()
 add_subdirectory(test)
 
-
+file(GLOB_RECURSE IMG_FILES "${CMAKE_SOURCE_DIR}/img/*.jpg")
+file(COPY ${IMG_FILES} DESTINATION ${CMAKE_BINARY_DIR})
