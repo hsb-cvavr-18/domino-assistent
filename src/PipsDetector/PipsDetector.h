@@ -17,8 +17,13 @@ static const int DOMINO_PIECE_AREA_MAX = 100353;
 class PipsDetector {
 public:
     PipsDetector(AbstractImgDebugPrinter* printer);
-    int detect(cv::Mat mat);
+    unsigned long detect(cv::Mat piece);
 protected:
+    /**
+     * Count pips of image of a piece.
+     * @param piece The piece must be black and the pips must be white. The image must be gray-colored.
+     * @return The number of found pips.
+     */
     unsigned long countPips(cv::Mat piece);
     AbstractImgDebugPrinter* _printer;
 };
@@ -27,8 +32,8 @@ class PipsDetectorFactory {
 public:
     PipsDetector* createDefaultPipsDetector() {
         AbstractImgDebugPrinter* printer = IImgDebugPrinterFactory().getPrinter();
-        PipsDetector* pipsdetector = new PipsDetector(printer);
-        return pipsdetector;
+        PipsDetector* pipsDetector = new PipsDetector(printer);
+        return pipsDetector;
     }
 };
 

@@ -17,34 +17,34 @@
 
 PipsDetector::PipsDetector(AbstractImgDebugPrinter* printer) : _printer(printer) {}
 
-unsigned long PipsDetector::countPips(cv::Mat half) {
+unsigned long PipsDetector::countPips(cv::Mat piece) {
 
     // resize
-    cv::resize(half, half, cv::Size(150, 150));
+    cv::resize(piece, piece, cv::Size(150, 150));
 
     // convert to grayscale
-    //cvtColor(half, half, CV_BGR2GRAY);
+    //cvtColor(piece, piece, CV_BGR2GRAY);
 
     // threshold
-    cv::threshold(half, half, 150, 255, cv::THRESH_BINARY | CV_THRESH_OTSU);
-    cv::imwrite("domino_pips_bin.jpg", half);
+    cv::threshold(piece, piece, 150, 255, cv::THRESH_BINARY | CV_THRESH_OTSU);
+    cv::imwrite("domino_pips_bin.jpg", piece);
     // floodfill
-    cv::floodFill(half, cv::Point(0, 0), cv::Scalar(255));
-    cv::floodFill(half, cv::Point(0, 149), cv::Scalar(255));
-    cv::floodFill(half, cv::Point(149, 0), cv::Scalar(255));
-    cv::floodFill(half, cv::Point(149, 149), cv::Scalar(255));
-    cv::imwrite("domino_pips_flood.jpg", half);
+    cv::floodFill(piece, cv::Point(0, 0), cv::Scalar(255));
+    cv::floodFill(piece, cv::Point(0, 149), cv::Scalar(255));
+    cv::floodFill(piece, cv::Point(149, 0), cv::Scalar(255));
+    cv::floodFill(piece, cv::Point(149, 149), cv::Scalar(255));
+    cv::imwrite("domino_pips_flood.jpg", piece);
     // show
-    cv::imwrite("processed.jpg", half);
+    cv::imwrite("processed.jpg", piece);
 
     // search for blobs
     cv::SimpleBlobDetector::Params params;
 
     cv::Mat halfTemp;
-    half.copyTo(halfTemp);
-    cv::GaussianBlur(half, halfTemp, cv::Size(9,9), 3.3);
-    half = halfTemp;
-    cv::imwrite("domino_pips_gauss.jpg", half);
+    piece.copyTo(halfTemp);
+    cv::GaussianBlur(piece, halfTemp, cv::Size(9,9), 3.3);
+    piece = halfTemp;
+    cv::imwrite("domino_pips_gauss.jpg", piece);
 
     // filter by interia defines how elongated a shape is.
     //params.filterByInertia = true;
@@ -61,12 +61,12 @@ unsigned long PipsDetector::countPips(cv::Mat half) {
     cv::Ptr<cv::SimpleBlobDetector> blobDetector = cv::SimpleBlobDetector::create(params);
 
     // detect blobs
-    blobDetector->detect(half, keypoints);
+    blobDetector->detect(piece, keypoints);
 
     // return number of pips
     return keypoints.size();
 }
 
-int PipsDetector::detect(cv::Mat img) {
-    return static_cast<int>(countPips(img));
+unsigned long PipsDetector::detect(cv::Mat piece) {
+    return countPips(piece);
 }
