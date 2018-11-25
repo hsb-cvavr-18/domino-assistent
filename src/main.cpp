@@ -175,8 +175,4 @@ int main(int argc, char **argv) {
             }
         }
     }
-
-    std::cout << "Press any key to exit.";
-    std::cin.ignore();
-    std::cin.get();
 }
