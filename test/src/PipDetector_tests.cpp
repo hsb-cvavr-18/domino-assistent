@@ -24,14 +24,14 @@ protected:
     };
 
     virtual void verify(int index) {
-        PipsDetector* pipsdetector = PipsDetectorFactory().createDefaultPipsDetector();
+        PipsDetector *pipsdetector = PipsDetectorFactory().createDefaultPipsDetector();
         basic_string<char> &filename = files.at(index);
         cv::Mat img = cv::imread(filename, CV_8UC1);
 
-        if(! img.data ) {
-            FAIL() << "Could not open or find the image '" << filename  << "'";
+        if (!img.data) {
+            FAIL() << "Could not open or find the image '" << filename << "'";
         }
-        
+
         long pipsExpected = expectedPips.at(index);
 
         long pipsActual = pipsdetector->detect(img);
