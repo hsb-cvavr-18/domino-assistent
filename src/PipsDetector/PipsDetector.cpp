@@ -17,7 +17,7 @@
 
 PipsDetector::PipsDetector(AbstractImgDebugPrinter* printer) : _printer(printer) {}
 
-unsigned long PipsDetector::countPips(cv::Mat piece) {
+unsigned int PipsDetector::countPips(cv::Mat piece) {
 
     // resize
     cv::resize(piece, piece, cv::Size(150, 150));
@@ -67,6 +67,6 @@ unsigned long PipsDetector::countPips(cv::Mat piece) {
     return keypoints.size();
 }
 
-unsigned long PipsDetector::detect(cv::Mat piece) {
+unsigned int PipsDetector::detect(cv::Mat piece) {
     return countPips(piece);
 }

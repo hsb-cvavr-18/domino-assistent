@@ -17,14 +17,14 @@ static const int DOMINO_PIECE_AREA_MAX = 100353;
 class PipsDetector {
 public:
     PipsDetector(AbstractImgDebugPrinter* printer);
-    unsigned long detect(cv::Mat piece);
+    unsigned int detect(cv::Mat piece);
 protected:
     /**
      * Count pips of image of a piece.
      * @param piece The piece must be black and the pips must be white. The image must be gray-colored.
      * @return The number of found pips.
      */
-    unsigned long countPips(cv::Mat piece);
+    unsigned int countPips(cv::Mat piece);
     AbstractImgDebugPrinter* _printer;
 };
 
