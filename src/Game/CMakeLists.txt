@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.2)
+project(Game C CXX)
+
+file(GLOB GAME_SOURCE_FILES "*.cpp")
+file(GLOB GAME_HEADER_FILES "*.hpp")
+
+set(SOURCE_FILES ${GAME_SOURCE_FILES})
+set(APPEND SOURCE_FILES ${GAME_HEADER_FILES})
+
+add_library(Game SHARED STATIC ${SOURCE_FILES})
