@@ -6,13 +6,6 @@
 #include <iostream>
 #include <sstream>
 
-// OpenCV
-#include <opencv2/core.hpp>
-#include "opencv2/objdetect.hpp"
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/features2d.hpp>
-
 #include "DominoLib.h"
 
 
@@ -52,4 +45,20 @@ void rotate2D(const cv::Mat &src, cv::Mat &dst, const double degrees) {
     rot.at<double>(1, 2) += bbox.height / 2.0 - center.y;
 
     cv::warpAffine(src, dst, rot, bbox.size());
+}
+
+cv::Point2f RotatePoint(const cv::Point2f &p, float rad) {
+    const float x = std::cos(rad) * p.x - std::sin(rad) * p.y;
+    const float y = std::sin(rad) * p.x + std::cos(rad) * p.y;
+
+    const cv::Point2f rot_p(x, y);
+    return rot_p;
+}
+
+cv::Point2f RotatePoint(const cv::Point2f &cen_pt, const cv::Point2f &p, float rad) {
+    const cv::Point2f trans_pt = p - cen_pt;
+    const cv::Point2f rot_pt = RotatePoint(trans_pt, rad);
+    const cv::Point2f fin_pt = rot_pt + cen_pt;
+
+    return fin_pt;
 }
