@@ -7,7 +7,7 @@ add_subdirectory(division)
 add_subdirectory(ImgDebugPrinter)
 add_subdirectory(PipsDetector)
 add_subdirectory(DominoLib)
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES main.cpp Stone.cpp Stone.h HalfStone.cpp HalfStone.h PlayGround.cpp PlayGround.h DominoTreeStructureElement.cpp DominoTreeStructureElement.h)
 
 add_executable(dominoassistant ${SOURCE_FILES})
 target_link_libraries("${PROJECT_NAME}" division)
