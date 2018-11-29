@@ -16,6 +16,16 @@
 // color for drawing into img
 cv::Scalar brightColor = cv::Scalar(255, 0, 242);
 
+struct dominoHalf {
+    cv::RotatedRect rect;
+    unsigned int pips;
+};
+
+struct dominoPiece {
+    dominoHalf a;
+    dominoHalf b;
+};
+
 int main(int argc, char **argv) {
 
     cout << "Running main" << std::endl;
@@ -23,14 +33,14 @@ int main(int argc, char **argv) {
     PipsDetector *pipsdetector = PipsDetectorFactory().createDefaultPipsDetector();
     AbstractImgDebugPrinter* printer = IImgDebugPrinterFactory().getPrinter();
 
-    cv::Mat img = cv::imread("../../img/tisch_5_rot.jpg");
+    cv::Mat img = cv::imread("../../img/tisch_6_v2.jpg");
 
     if (!img.data) {
         cout << "Could not open or find the new image" << std::endl;
         return -1;
     }
 
-    cv::Mat imgPrevious = cv::imread("../../img/tisch_4_rot.jpg");
+    cv::Mat imgPrevious = cv::imread("../../img/tisch_5_v2.jpg");
 
     if (!imgPrevious.data) {
         cout << "Could not open or find the previous image" << std::endl;
@@ -139,12 +149,12 @@ int main(int argc, char **argv) {
 
             std::ostringstream pipsResults;
             pipsResults << "Number of pips a,b: ";
-            long numberOfPipsA = pipsdetector->detect(aHalfImg);
-            long numberOfPipsB = pipsdetector->detect(bHalfImg);
+            unsigned int numberOfPipsA = pipsdetector->detect(aHalfImg);
+            unsigned int numberOfPipsB = pipsdetector->detect(bHalfImg);
             pipsResults << numberOfPipsA << "," << numberOfPipsB;
             std::cout << pipsResults.str() << std::endl;
 
-            long numberOfAllPips = numberOfPipsA + numberOfPipsB;
+            unsigned int numberOfAllPips = numberOfPipsA + numberOfPipsB;
             if (numberOfAllPips > 0) {
 
                 // output debug info
@@ -166,10 +176,56 @@ int main(int argc, char **argv) {
                 // show
                 printer->printImage("frame", unprocessedFrame);
                 cv::imwrite("domino_result.jpg", unprocessedFrame);
-            }
-            else {
+            } else {
                 std::cout << "No pips found!" << std::endl;
             }
+
+            dominoHalf halfA;
+            dominoHalf halfB;
+            cv::Point2f cornerPoints[4];
+            minAreaRotatedRect.points(cornerPoints);
+            cv::circle(unprocessedFrame, cornerPoints[0], 2, brightColor);
+            cv::circle(unprocessedFrame, cornerPoints[1], 2, brightColor);
+            cv::circle(unprocessedFrame, cornerPoints[2], 2, brightColor);
+            cv::circle(unprocessedFrame, cornerPoints[3], 2, brightColor);
+            cv::imwrite("domino_cornerPoints.jpg", unprocessedFrame);
+
+            cv::Point2f point1HalfA = cornerPoints[0];
+            cv::Point2f point2HalfA;
+            cv::Point2f point3HalfA;
+            cv::Point2f point1HalfB;
+            cv::Point2f point2HalfB;
+
+            std::vector<cv::Point2f> cornerPointsVector;
+            cornerPointsVector.insert( cornerPointsVector.begin(), cornerPoints, cornerPoints + 4);
+            std::sort(cornerPointsVector.begin(), cornerPointsVector.end(), [point1HalfA](cv::Point2f const& a, cv::Point2f const& b) {
+                return cv::norm(a-point1HalfA) < cv::norm(b-point1HalfA);
+            });
+            assert(point1HalfA == cornerPointsVector.at(0));
+            point2HalfA = cornerPointsVector.at(1);
+            point3HalfA = (cornerPointsVector.at(2) - point1HalfA) / 2 + point1HalfA;
+            point1HalfB = cornerPointsVector.at(2);
+            point2HalfB = cornerPointsVector.at(3);
+
+            cv::putText(unprocessedFrame, "A", point1HalfA, cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8);
+            cv::putText(unprocessedFrame, "B", point2HalfA, cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8);
+            cv::putText(unprocessedFrame, "C", point3HalfA, cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8);
+
+            halfA.rect = cv::RotatedRect(point2HalfA, point1HalfA, point3HalfA);
+            halfA.pips = numberOfPipsA;
+            halfB.rect = cv::RotatedRect(point2HalfB, point1HalfB, point3HalfA);
+            halfB.pips = numberOfPipsB;
+
+            //drawRotatedRect(unprocessedFrame, halfA.rect);
+
+            std::cout << halfA.pips << std::endl;
+            drawRotatedRect(unprocessedFrame, halfA.rect);
+            std::cout << halfB.pips << std::endl;
+
+            assert(halfA.rect.angle == halfB.rect.angle);
+
+            cv::imwrite("domino_halfARect.jpg", unprocessedFrame);
+            //a.rect = cv::RotatedRect(minAreaRotatedRect.)
         }
     }
 }
