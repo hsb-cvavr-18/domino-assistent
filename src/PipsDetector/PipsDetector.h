@@ -11,7 +11,7 @@
 
 using namespace std;
 
-static const int DOMINO_PIECE_AREA_MIN = 18000;
+static const int DOMINO_PIECE_AREA_MIN = 5000;
 static const int DOMINO_PIECE_AREA_MAX = 100353;
 
 class PipsDetector {

@@ -18,5 +18,6 @@ void drawRotatedRect(cv::Mat &image, cv::RotatedRect rotatedRect);
 void rotate2D(const cv::Mat &src, cv::Mat &dst, const double degrees);
 cv::Point2f RotatePoint(const cv::Point2f &p, float rad);
 cv::Point2f RotatePoint(const cv::Point2f &cen_pt, const cv::Point2f &p, float rad);
+float getCorectedAngle(cv::RotatedRect rotRect);
 
 #endif //CMAKE_DOMINOLIB_H

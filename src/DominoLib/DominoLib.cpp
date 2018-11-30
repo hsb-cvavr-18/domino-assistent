@@ -62,3 +62,12 @@ cv::Point2f RotatePoint(const cv::Point2f &cen_pt, const cv::Point2f &p, float r
 
     return fin_pt;
 }
+
+float getCorectedAngle(cv::RotatedRect rotRect){
+    /*#### Correct rotation angle - Set Upright (+90deg) - Set Horizontal (90deg - angle)### */
+    float corrected_angle_deg = rotRect.angle;
+    if (rotRect.size.width > rotRect.size.height) {
+        corrected_angle_deg = 90 + corrected_angle_deg;
+    }
+    return corrected_angle_deg;
+}

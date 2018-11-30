@@ -13,6 +13,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/features2d.hpp>
 
+#define PI 3.14159265358979323846
 // color for drawing into img
 cv::Scalar brightColor = cv::Scalar(255, 0, 242);
 
@@ -33,14 +34,18 @@ int main(int argc, char **argv) {
     PipsDetector *pipsdetector = PipsDetectorFactory().createDefaultPipsDetector();
     AbstractImgDebugPrinter* printer = IImgDebugPrinterFactory().getPrinter();
 
-    cv::Mat img = cv::imread("../../img/tisch_6_rot.jpg");
+    //cv::Mat img = cv::imread("../../img/tisch_5_rot.jpg");
+    cv::Mat img = cv::imread("../../img/tisch_5_v2.jpg");
+    //cv::Mat img = cv::imread("../../img/gestell_7.jpg");
 
     if (!img.data) {
         cout << "Could not open or find the new image" << std::endl;
         return -1;
     }
 
-    cv::Mat imgPrevious = cv::imread("../../img/tisch_5_rot.jpg");
+    //cv::Mat imgPrevious = cv::imread("../../img/tisch_4_rot.jpg");
+    cv::Mat imgPrevious = cv::imread("../../img/tisch_4_v2.jpg");
+    //cv::Mat imgPrevious = cv::imread("../../img/gestell_6.jpg");
 
     if (!imgPrevious.data) {
         cout << "Could not open or find the previous image" << std::endl;
@@ -152,7 +157,6 @@ int main(int argc, char **argv) {
             cv::putText(unprocessedFrame, "A", point1HalfA, cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8);
             cv::putText(unprocessedFrame, "B", point2HalfA, cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8);
             cv::putText(unprocessedFrame, "C", point3HalfA, cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8);
-
             halfA.rect = cv::RotatedRect(point2HalfA, point1HalfA, point3HalfA);
             halfB.rect = cv::RotatedRect(point2HalfB, point1HalfB, point3HalfA);
 
@@ -160,42 +164,20 @@ int main(int argc, char **argv) {
             cv::Mat halfARotatedROI = diffframe(halfARect);
             cv::Mat halfAUpright;
             rotate2D(halfARotatedROI, halfAUpright, halfA.rect.angle);
-            float orgCols = static_cast<float>(halfARotatedROI.cols);
-            float targetCols = static_cast<float>(halfAUpright.cols);
-            float scaleX = static_cast<float>(halfAUpright.rows) / halfARotatedROI.rows ;
-            float scaleY = static_cast<float>(halfAUpright.cols) / halfARotatedROI.cols ;
 
-            std::cout << "scale y: " << scaleY << std::endl ;
 
             cv::Point2f offsetOfOrigin = cv::Point2f(halfARect.x, halfARect.y);
-            cv::Point2f rotatedC = RotatePoint(halfA.rect.center, point3HalfA,  3.141592653 + (halfA.rect.angle * 3.141592653)) - offsetOfOrigin;
-            //rotatedC = cv::Point2f(rotatedC.x * scaleX, rotatedC.y * scaleY);
-            cv::Point2f rotatedA = RotatePoint(halfA.rect.center, point1HalfA, 3.141592653 +(halfA.rect.angle * 3.141592653)) - offsetOfOrigin;
-            //rotatedA = cv::Point2f(rotatedA.x * scaleX, rotatedA.y * scaleY);
-            cv::Point2f rotatedB = RotatePoint(halfA.rect.center, point2HalfA, 3.141592653 + (halfA.rect.angle * 3.141592653)) - offsetOfOrigin;
-            //rotatedB = cv::Point2f(rotatedB.x * scaleX, rotatedB.y * scaleY);
+
+            cv::Point2f rotatedC = (RotatePoint(halfA.rect.center, point3HalfA, PI + ((halfA.rect.angle + 0) * PI/180)) - offsetOfOrigin);
+            cv::Point2f rotatedA =  (RotatePoint(halfA.rect.center, point1HalfA, PI +  ((halfA.rect.angle +0)* PI/180)) - offsetOfOrigin);
+            cv::Point2f rotatedB =  (RotatePoint(halfA.rect.center, point2HalfA, PI +  ((halfA.rect.angle + 0)* PI/180)) - offsetOfOrigin);
 
             /********************************************
              * calc D
              */
-            //first: get Center of rectangle
-            // difference vector CB (diagonal) - half it ->Vector AM
-             /*
-            cv::Point2f CB = cv::Point2f((rotatedB  - rotatedC));
-            std::cout << "rotatedC | x: " << rotatedC.x << " y: " << rotatedC.y << std::endl;
-            std::cout << "rotatedB | x: " << rotatedB.x << " y: " << rotatedB.y << std::endl;
-            std::cout << "CB | x: " << CB.x << " y: " << CB.y << std::endl;
-            cv::Point2f M = cv::Point2f(CB/2 + rotatedC);
-            std::cout << "rotatedC | x: " << rotatedC.x << " y: " << rotatedC.y << std::endl;
-            std::cout << "M | x: " << M.x << " y: " << M.y << std::endl;
-            cv::Point2f AM = cv::Point(rotatedA-M);
-            cv::Point2f AM2 = cv::Point2f(AM*2);
-            cv::Point2f rotatedD = cv::Point2f(rotatedA + AM2);*/
-
-             cv::Point2f rotatedD = rotatedC + (rotatedB-rotatedA);
+            //D = Ortsvektor C + richtungsvektor A->B
+            cv::Point2f rotatedD = rotatedC + (rotatedB-rotatedA);
             cv::Point2f M =(rotatedA + rotatedB  + rotatedC+rotatedD)/4;
-            //cv::Point2f rotatedD = RotatePoint(halfA.rect.center, cv::Point2f(point3HalfA.x, point2HalfA.y),3.141592653 + (halfA.rect.angle * 3.141592653)) - offsetOfOrigin;
-            //rotatedD = cv::Point2f(rotatedD.x * scaleX, rotatedD.y * scaleY);
             cv::Point2f zero = cv::Point2f(0,0);
             std::vector<cv::Point2f> cornerVector{rotatedC,rotatedA, rotatedB, rotatedD};
             std::sort(cornerVector.begin(), cornerVector.end(), [zero](cv::Point2f const& a, cv::Point2f const& b) {
@@ -209,7 +191,7 @@ int main(int argc, char **argv) {
 
             cv::Point2f newCenter = cv::Point2f(halfAUpright.cols/2, halfAUpright.rows/2);
             cv::Point2f correctionOfCenter = newCenter - M;
-            rotatedA = rotatedA + correctionOfCenter;
+           rotatedA = rotatedA + correctionOfCenter;
             rotatedB = rotatedB + correctionOfCenter;
             rotatedC = rotatedC + correctionOfCenter;
             rotatedD = rotatedD + correctionOfCenter;
@@ -266,10 +248,11 @@ int main(int argc, char **argv) {
             cv::Mat upright;
 
             /*#### Correct rotation angle - Set Upright (+90deg) - Set Horizontal (90deg - angle)### */
-            float corrected_angle_deg = minAreaRotatedRect.angle;
+           /* float corrected_angle_deg = minAreaRotatedRect.angle;
             if (minAreaRotatedRect.size.width > minAreaRotatedRect.size.height) {
                 corrected_angle_deg = 90 + corrected_angle_deg;
-            }
+            }*/
+            float corrected_angle_deg = getCorectedAngle(minAreaRotatedRect);
             rotate2D(diceROI, upright, corrected_angle_deg);
 
             //cv::line(upright, cv::Point(0, upright.rows/2), cv::Point(upright.cols, upright.rows/2), brightColor, 1);
