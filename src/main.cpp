@@ -165,7 +165,7 @@ int main(int argc, char **argv) {
             float scaleX = static_cast<float>(halfAUpright.rows) / halfARotatedROI.rows ;
             float scaleY = static_cast<float>(halfAUpright.cols) / halfARotatedROI.cols ;
 
-            std::cout << "scale y: " << scaleY ;
+            std::cout << "scale y: " << scaleY << std::endl ;
 
             cv::Point2f offsetOfOrigin = cv::Point2f(halfARect.x, halfARect.y);
             cv::Point2f rotatedC = RotatePoint(halfA.rect.center, point3HalfA,  3.141592653 + (halfA.rect.angle * 3.141592653)) - offsetOfOrigin;
@@ -174,8 +174,28 @@ int main(int argc, char **argv) {
             //rotatedA = cv::Point2f(rotatedA.x * scaleX, rotatedA.y * scaleY);
             cv::Point2f rotatedB = RotatePoint(halfA.rect.center, point2HalfA, 3.141592653 + (halfA.rect.angle * 3.141592653)) - offsetOfOrigin;
             //rotatedB = cv::Point2f(rotatedB.x * scaleX, rotatedB.y * scaleY);
-            cv::Point2f rotatedD = RotatePoint(halfA.rect.center, cv::Point2f(point3HalfA.x, point2HalfA.y),3.141592653 + (halfA.rect.angle * 3.141592653)) - offsetOfOrigin;
-            rotatedD = cv::Point2f(rotatedD.x * scaleX, rotatedD.y * scaleY);
+
+            /********************************************
+             * calc D
+             */
+            //first: get Center of rectangle
+            // difference vector CB (diagonal) - half it ->Vector AM
+             /*
+            cv::Point2f CB = cv::Point2f((rotatedB  - rotatedC));
+            std::cout << "rotatedC | x: " << rotatedC.x << " y: " << rotatedC.y << std::endl;
+            std::cout << "rotatedB | x: " << rotatedB.x << " y: " << rotatedB.y << std::endl;
+            std::cout << "CB | x: " << CB.x << " y: " << CB.y << std::endl;
+            cv::Point2f M = cv::Point2f(CB/2 + rotatedC);
+            std::cout << "rotatedC | x: " << rotatedC.x << " y: " << rotatedC.y << std::endl;
+            std::cout << "M | x: " << M.x << " y: " << M.y << std::endl;
+            cv::Point2f AM = cv::Point(rotatedA-M);
+            cv::Point2f AM2 = cv::Point2f(AM*2);
+            cv::Point2f rotatedD = cv::Point2f(rotatedA + AM2);*/
+
+             cv::Point2f rotatedD = rotatedC + (rotatedB-rotatedA);
+            cv::Point2f M =(rotatedA + rotatedB  + rotatedC+rotatedD)/4;
+            //cv::Point2f rotatedD = RotatePoint(halfA.rect.center, cv::Point2f(point3HalfA.x, point2HalfA.y),3.141592653 + (halfA.rect.angle * 3.141592653)) - offsetOfOrigin;
+            //rotatedD = cv::Point2f(rotatedD.x * scaleX, rotatedD.y * scaleY);
             cv::Point2f zero = cv::Point2f(0,0);
             std::vector<cv::Point2f> cornerVector{rotatedC,rotatedA, rotatedB, rotatedD};
             std::sort(cornerVector.begin(), cornerVector.end(), [zero](cv::Point2f const& a, cv::Point2f const& b) {
@@ -187,10 +207,21 @@ int main(int argc, char **argv) {
             std::cout<< "topLeft: " << topLeft.x << " , " << topLeft.y << std::endl;
             const cv::Rect halfAUprightROI = cv::Rect(topLeft, bottomRight);
 
+            cv::Point2f newCenter = cv::Point2f(halfAUpright.cols/2, halfAUpright.rows/2);
+            cv::Point2f correctionOfCenter = newCenter - M;
+            rotatedA = rotatedA + correctionOfCenter;
+            rotatedB = rotatedB + correctionOfCenter;
+            rotatedC = rotatedC + correctionOfCenter;
+            rotatedD = rotatedD + correctionOfCenter;
+            M = M + correctionOfCenter;
+
+
+
             cv::putText(halfAUpright, "A", rotatedA, cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8);
             cv::putText(halfAUpright, "B", rotatedB, cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8);
             cv::putText(halfAUpright, "C", rotatedC, cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8);
             cv::putText(halfAUpright, "D", rotatedD, cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8);
+            cv::putText(halfAUpright, "M", M, cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8);
             cv::line(halfAUpright,rotatedB, rotatedA, brightColor, 1);
             cv::line(halfAUpright,rotatedB, rotatedC, brightColor, 1);
             cv::line(halfAUpright,rotatedB, rotatedD, brightColor, 1);
@@ -198,7 +229,8 @@ int main(int argc, char **argv) {
             cv::line(halfAUpright,rotatedC, rotatedD, brightColor, 1);
             cv::line(halfAUpright,rotatedA, rotatedD, brightColor, 1);
            // cv::rectangle(halfAUpright, halfAUprightROI, brightColor, CV_FILLED, 8, 0);
-            cv::Point2f newCenter = cv::Point2f(halfAUpright.cols/2, halfAUpright.rows/2);
+
+
             cv::Point2f topLeftCorner = cv::Point2f(0, 0);
             cv::Point2f topRightCorner = cv::Point2f( halfAUpright.cols,0);
             cv::Point2f bottomLeftCorner = cv::Point2f(0, halfAUpright.rows);
