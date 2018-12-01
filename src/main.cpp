@@ -17,7 +17,6 @@
 // color for drawing into img
 cv::Scalar brightColor = cv::Scalar(255, 0, 242);
 
-
 int main(int argc, char **argv) {
 
     cout << "Running main" << std::endl;
@@ -29,14 +28,14 @@ int main(int argc, char **argv) {
      * load the Picture with new Domino and the predecessor picture
      */
     //new Domino
-    cv::Mat img = cv::imread("../../img/tisch_6_rot.jpg");
+    cv::Mat img = cv::imread("../../img/tisch_5_v2.jpg");
     if (!img.data) {
         cout << "Could not open or find the new image" << std::endl;
         return -1;
     }
 
     //predeccessors
-    cv::Mat imgPrevious = cv::imread("../../img/tisch_5_rot.jpg");
+    cv::Mat imgPrevious = cv::imread("../../img/tisch_4_v2.jpg");
     if (!imgPrevious.data) {
         cout << "Could not open or find the previous image" << std::endl;
         return -1;
@@ -91,7 +90,7 @@ int main(int argc, char **argv) {
 
     //need the angle to be corrected ?
     bool correctAngle = getCorectedAngle(minAreaRotatedRect) -  minAreaRotatedRect.angle ;
-
+    std::cout << "correctAngle: " <<  correctAngle <<std::endl;
 
     //get bounding box of rotated rect
     cv::Rect dominoBoundsRect = minAreaRotatedRect.boundingRect();
@@ -176,9 +175,7 @@ int main(int argc, char **argv) {
     cv::circle(unprocessedFrame, half2CornerD, 2, brightColor);
     cv::imwrite("domino_cornerPoints.jpg", unprocessedFrame);
 
-    /***************************************************************************
-     * Get Pips of each half of the domino block
-     */
+
     //get rectangles framing each of the two halfs
     half1.rect = cv::RotatedRect(half1CornerA, half1CornerB, half1CornerC); //anticlockwise
     half2.rect = cv::RotatedRect(half2CornerA, half2CornerB, half2CornerC); //anticlockwise
@@ -190,28 +187,19 @@ int main(int argc, char **argv) {
     cv::imwrite("domino_half2ROI.jpg", half2ROI);
     cv::imwrite("domino_half1ROI.jpg", half1ROI);
 
+    /***************************************************************************
+    *  Get Pips of each half of the domino block
+    */
     half1.pips = pipsdetector->detect(half1ROI);
     half2.pips = pipsdetector->detect(half2ROI);
 
     std::cout << "numberOfPips1 " << half1.pips << std::endl;
     std::cout << "numberOfPips2 " << half2.pips << std::endl;
 
-    // draw values
-    std::ostringstream diceText1;
-    std::ostringstream diceText2;
 
-    diceText1 << half1.pips;
-    cv::putText(unprocessedFrame, diceText1.str(),
-                cv::Point(half1.rect.center.x, half1.rect.center.y),
-                cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8
-    );
 
-    diceText2 << half2.pips;
-    cv::putText(unprocessedFrame, diceText2.str(),
-                cv::Point(half2.rect.center.x, half2.rect.center.y),
-                cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8
-    );
-
+    unprocessedFrame = drawPipCount(half1, unprocessedFrame);
+    unprocessedFrame =drawPipCount(half2, unprocessedFrame);
 
     unprocessedFrame = colorizeHalf(half1, unprocessedFrame);
     unprocessedFrame = colorizeHalf(half2, unprocessedFrame);

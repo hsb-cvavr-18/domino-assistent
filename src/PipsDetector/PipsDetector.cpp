@@ -52,7 +52,7 @@ unsigned int PipsDetector::countPips(cv::Mat piece) {
 
     params.filterByColor = true;
     params.blobColor = 0;
-    params.minArea = 200;
+    params.minArea = 400;
 
     // will hold our keyponts
     std::vector<cv::KeyPoint> keypoints;

@@ -17,6 +17,11 @@ cv::Scalar overlayColors[8] = {cv::Scalar(244, 66, 66),  //color 0
                                cv::Scalar(244, 122, 66), //color 6
                                cv::Scalar(255, 0, 0)};//ERROR COLOR
 
+// color for drawing into img
+cv::Scalar drawingColor = cv::Scalar(255, 0, 242);
+
+
+
 // https://stackoverflow.com/questions/43342199/draw-rotated-rectangle-in-opencv-c
 void drawRotatedRect(cv::Mat &image, cv::RotatedRect rotatedRect) {
     cv::Point centerPoint = rotatedRect.center;
@@ -169,5 +174,15 @@ cv::Mat colorizeHalf(dominoHalf half, cv::Mat  img){
     double alpha = 0.3;
     cv::fillConvexPoly(overlay, vertices,4,halfColor);
     cv::addWeighted(overlay,alpha, img, 1- alpha, 0, img );
+    return img;
+}
+
+cv::Mat drawPipCount(dominoHalf half1, cv::Mat  img){
+    std::ostringstream pipCountText;
+    pipCountText << half1.pips;
+    cv::putText(img, pipCountText.str(),
+                cv::Point(half1.rect.center.x, half1.rect.center.y),
+                cv::FONT_HERSHEY_COMPLEX, 0.8, drawingColor, 1, 8
+    );
     return img;
 }

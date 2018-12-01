@@ -25,6 +25,9 @@ struct dominoPiece {
     dominoHalf b;
 };
 
+
+
+
 void drawRotatedRect(cv::Mat &image, cv::RotatedRect rotatedRect);
 void rotate2D(const cv::Mat &src, cv::Mat &dst, const double degrees);
 cv::Point2f RotatePoint(const cv::Point2f &p, float rad);
@@ -33,4 +36,6 @@ float getCorectedAngle(cv::RotatedRect rotRect);
 cv::RotatedRect getRotatedRectOflargestContour(std::vector<std::vector<cv::Point> > pieceContours);
 cv::Mat getROIOfHalf(cv::Mat diffframe, cv::Point2f cornerA, cv::Point2f cornerB, cv::Point2f cornerC, cv::Point2f cornerD, bool correctAngle);
 cv::Mat colorizeHalf(dominoHalf half, cv::Mat  img);
+cv::Mat drawPipCount(dominoHalf half1, cv::Mat  img);
+
 #endif //CMAKE_DOMINOLIB_H
