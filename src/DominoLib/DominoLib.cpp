@@ -8,7 +8,14 @@
 
 #include "DominoLib.h"
 
-
+cv::Scalar overlayColors[8] = {cv::Scalar(244, 66, 66),  //color 0
+                               cv::Scalar(244, 66, 244), //color 1
+                               cv::Scalar(89, 66, 244),  //color 2
+                               cv::Scalar(66, 244, 244), //color 3
+                               cv::Scalar(66, 244, 122), //color 4
+                               cv::Scalar(122, 244, 66), //color 5
+                               cv::Scalar(244, 122, 66), //color 6
+                               cv::Scalar(255, 0, 0)};//ERROR COLOR
 
 // https://stackoverflow.com/questions/43342199/draw-rotated-rectangle-in-opencv-c
 void drawRotatedRect(cv::Mat &image, cv::RotatedRect rotatedRect) {
@@ -92,7 +99,9 @@ cv::RotatedRect getRotatedRectOflargestContour(std::vector<std::vector<cv::Point
     return largestRotatedRect;
 }
 
-cv::Mat getROIOfHalf(cv::Mat diffframe, cv::Point2f cornerA, cv::Point2f cornerB, cv::Point2f cornerC, cv::Point2f cornerD){
+cv::Mat getROIOfHalf(cv::Mat diffframe, cv::Point2f cornerA, cv::Point2f cornerB, cv::Point2f cornerC, cv::Point2f cornerD, bool correctAngle){
+
+
     cv::RotatedRect half = cv::RotatedRect(cornerA, cornerB, cornerC); //anticlockwise
 
     cv::Rect halfBoundingRect = half.boundingRect();
@@ -100,15 +109,34 @@ cv::Mat getROIOfHalf(cv::Mat diffframe, cv::Point2f cornerA, cv::Point2f cornerB
     cv::Mat halfCorrectedRot;
     rotate2D(halfRotatedROI, halfCorrectedRot, half.angle);
 
+    float scaleX = 1; // (float)halfCorrectedRot.cols / halfBoundingRect.width;
+    float scaleY = 1; // (float)halfCorrectedRot.rows / halfBoundingRect.height;
 
+    cornerA = cv::Point2f (cornerA.x * scaleX, cornerA.y * scaleY);
+    cornerB = cv::Point2f (cornerB.x * scaleX, cornerB.y * scaleY);
+    cornerC = cv::Point2f (cornerC.x * scaleX, cornerC.y * scaleY);
+    cornerD = cv::Point2f (cornerD.x * scaleX, cornerD.y * scaleY);
     //new rotated frame has new dimensions and a new origin => offset for correction
-    cv::Point2f halfOffset= cv::Point2f(halfBoundingRect.x, halfBoundingRect.y);
+    cv::Point2f halfOffset= cv::Point2f(halfBoundingRect.x * scaleX, halfBoundingRect.y * scaleY);
+
+    cv::Point2f rotatedA;
+    cv::Point2f rotatedB;
+    cv::Point2f rotatedC;
+    cv::Point2f rotatedD;
 
     // correction of corners in new frame
-    cv::Point2f rotatedA = (RotatePoint(half.center, cornerA, PI + ((half.angle + 0) * PI/180)) - halfOffset);
-    cv::Point2f rotatedB = (RotatePoint(half.center, cornerB, PI + ((half.angle + 0) * PI/180)) - halfOffset);
-    cv::Point2f rotatedC = (RotatePoint(half.center, cornerC, PI + ((half.angle + 0) * PI/180)) - halfOffset);
-    cv::Point2f rotatedD = (RotatePoint(half.center, cornerD, PI + ((half.angle + 0) * PI/180)) - halfOffset);
+    if(correctAngle) {
+        rotatedA = (RotatePoint(half.center, cornerA, PI - ((half.angle + 0) * PI / 180)) - halfOffset);
+        rotatedB = (RotatePoint(half.center, cornerB, PI - ((half.angle + 0) * PI / 180)) - halfOffset);
+        rotatedC = (RotatePoint(half.center, cornerC, PI - ((half.angle + 0) * PI / 180)) - halfOffset);
+        rotatedD = (RotatePoint(half.center, cornerD, PI - ((half.angle + 0) * PI / 180)) - halfOffset);
+    } else {
+        rotatedA = (RotatePoint(half.center, cornerA, PI + ((half.angle + 0) * PI / 180)) - halfOffset);
+        rotatedB = (RotatePoint(half.center, cornerB, PI + ((half.angle + 0) * PI / 180)) - halfOffset);
+        rotatedC = (RotatePoint(half.center, cornerC, PI + ((half.angle + 0) * PI / 180)) - halfOffset);
+        rotatedD = (RotatePoint(half.center, cornerD, PI + ((half.angle + 0) * PI / 180)) - halfOffset);
+    }
+
 
     //Move it to hte correct center.
     cv::Point2f halfM = ((rotatedA + rotatedB  + rotatedC + rotatedD) / 4) ; //Middle of half1CorrectedRot
@@ -121,6 +149,25 @@ cv::Mat getROIOfHalf(cv::Mat diffframe, cv::Point2f cornerA, cv::Point2f cornerB
     rotatedD = rotatedD + correctionOfCenter;
 
     cv::Rect halfRect = cv::Rect(rotatedA, rotatedC);
-    //cv::Mat half1ROI=
+
     return halfCorrectedRot(halfRect);
+}
+
+
+
+cv::Mat colorizeHalf(dominoHalf half, cv::Mat  img){
+    cv::Point2f vertices2f[4];
+    half.rect.points(vertices2f);
+    cv::Scalar halfColor;
+    halfColor = (half.pips >= 0 && half.pips < 7) ? (overlayColors[half.pips]) : (overlayColors[sizeof(overlayColors)/sizeof(overlayColors[0])-1]);
+
+    cv::Point vertices[4];
+    for(int i = 0; i < 4; i++){
+        vertices[i]=vertices2f[i];
+    }
+    cv::Mat overlay = img.clone();
+    double alpha = 0.3;
+    cv::fillConvexPoly(overlay, vertices,4,halfColor);
+    cv::addWeighted(overlay,alpha, img, 1- alpha, 0, img );
+    return img;
 }

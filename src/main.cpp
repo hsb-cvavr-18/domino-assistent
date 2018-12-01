@@ -17,35 +17,26 @@
 // color for drawing into img
 cv::Scalar brightColor = cv::Scalar(255, 0, 242);
 
-struct dominoHalf {
-    cv::RotatedRect rect;
-    unsigned int pips;
-};
-
-struct dominoPiece {
-    dominoHalf a;
-    dominoHalf b;
-};
 
 int main(int argc, char **argv) {
 
     cout << "Running main" << std::endl;
 
     PipsDetector *pipsdetector = PipsDetectorFactory().createDefaultPipsDetector();
-    AbstractImgDebugPrinter* printer = IImgDebugPrinterFactory().getPrinter();
+    AbstractImgDebugPrinter *printer = IImgDebugPrinterFactory().getPrinter();
 
     /***************************************************************************
      * load the Picture with new Domino and the predecessor picture
      */
-     //new Domino
-    cv::Mat img = cv::imread("../../img/tisch_6_v2.jpg");
+    //new Domino
+    cv::Mat img = cv::imread("../../img/tisch_6_rot.jpg");
     if (!img.data) {
         cout << "Could not open or find the new image" << std::endl;
         return -1;
     }
 
     //predeccessors
-    cv::Mat imgPrevious = cv::imread("../../img/tisch_5_v2.jpg");
+    cv::Mat imgPrevious = cv::imread("../../img/tisch_5_rot.jpg");
     if (!imgPrevious.data) {
         cout << "Could not open or find the previous image" << std::endl;
         return -1;
@@ -67,7 +58,8 @@ int main(int argc, char **argv) {
     cvtColor(imgPrevious, imgPrevious, CV_BGR2GRAY);
 
     // remove background (previous image -image)
-    cv::absdiff(frame, imgPrevious, frame); //TODO: why not "cv::absdiff(frame, imgPrevious, diffframe);" ? Would save one op
+    cv::absdiff(frame, imgPrevious,
+                frame); //TODO: why not "cv::absdiff(frame, imgPrevious, diffframe);" ? Would save one op
     diffframe = frame.clone();
     cv::imwrite("domino_diff.jpg", frame);
 
@@ -76,7 +68,7 @@ int main(int argc, char **argv) {
     cv::imwrite("domino_bin.jpg", frame);
 
     // applying blur filter - makes edges smoother an closes gaps for continuous edges
-    cv::blur( frame.clone(), frame, cv::Size(3,3) );
+    cv::blur(frame.clone(), frame, cv::Size(3, 3));
     cv::imwrite("domino_bin_blur.jpg", frame);
 
     // applying canny edge filter
@@ -96,6 +88,11 @@ int main(int argc, char **argv) {
 
     //Find the largest contour and create a rotated rect around it
     cv::RotatedRect minAreaRotatedRect = getRotatedRectOflargestContour(pieceContours);
+
+    //need the angle to be corrected ?
+    bool correctAngle = getCorectedAngle(minAreaRotatedRect) -  minAreaRotatedRect.angle ;
+
+
     //get bounding box of rotated rect
     cv::Rect dominoBoundsRect = minAreaRotatedRect.boundingRect();
 
@@ -140,10 +137,11 @@ int main(int argc, char **argv) {
 
     //find corner point next known to half1CornerA (short side of domino block)
     std::vector<cv::Point2f> dominoCornersVector;
-    dominoCornersVector.insert( dominoCornersVector.begin(), cornerPoints, cornerPoints + 4);
-    std::sort(dominoCornersVector.begin(), dominoCornersVector.end(), [half1CornerA](cv::Point2f const& a, cv::Point2f const& b) {
-        return cv::norm(a-half1CornerA) < cv::norm(b-half1CornerA);
-    });
+    dominoCornersVector.insert(dominoCornersVector.begin(), cornerPoints, cornerPoints + 4);
+    std::sort(dominoCornersVector.begin(), dominoCornersVector.end(),
+              [half1CornerA](cv::Point2f const &a, cv::Point2f const &b) {
+                  return cv::norm(a - half1CornerA) < cv::norm(b - half1CornerA);
+              });
 
     //outer corners
     //half 1
@@ -154,8 +152,8 @@ int main(int argc, char **argv) {
     half2CornerD = dominoCornersVector.at(2);
 
     //bisecting corners
-    half1CornerB = half1CornerA + ((half2CornerD - half1CornerA) /2);
-    half1CornerC = half1CornerD + ((half2CornerA - half1CornerD) /2);
+    half1CornerB = half1CornerA + ((half2CornerD - half1CornerA) / 2);
+    half1CornerC = half1CornerD + ((half2CornerA - half1CornerD) / 2);
 
     half2CornerB = half1CornerC;
     half2CornerC = half1CornerB;
@@ -181,36 +179,46 @@ int main(int argc, char **argv) {
     /***************************************************************************
      * Get Pips of each half of the domino block
      */
-    //get rectangles frameing each of the two halfs
+    //get rectangles framing each of the two halfs
     half1.rect = cv::RotatedRect(half1CornerA, half1CornerB, half1CornerC); //anticlockwise
     half2.rect = cv::RotatedRect(half2CornerA, half2CornerB, half2CornerC); //anticlockwise
-    cv::Mat half1ROI = getROIOfHalf(diffframe, half1CornerA, half1CornerB, half1CornerC, half1CornerD);
-    cv::Mat half2ROI = getROIOfHalf(diffframe, half2CornerA, half2CornerB, half2CornerC, half2CornerD);
+
+
+    cv::Mat half1ROI = getROIOfHalf(diffframe, half1CornerA, half1CornerB, half1CornerC, half1CornerD, correctAngle);
+    cv::Mat half2ROI = getROIOfHalf(diffframe, half2CornerA, half2CornerB, half2CornerC, half2CornerD, correctAngle);
+
+    cv::imwrite("domino_half2ROI.jpg", half2ROI);
+    cv::imwrite("domino_half1ROI.jpg", half1ROI);
 
     half1.pips = pipsdetector->detect(half1ROI);
     half2.pips = pipsdetector->detect(half2ROI);
 
-    std::cout << "numberOfPips1 " << half1.pips <<std::endl;
-    std::cout << "numberOfPips2 " << half2.pips <<std::endl;
+    std::cout << "numberOfPips1 " << half1.pips << std::endl;
+    std::cout << "numberOfPips2 " << half2.pips << std::endl;
 
     // draw values
     std::ostringstream diceText1;
     std::ostringstream diceText2;
 
-    diceText1 <<  half1.pips ;
+    diceText1 << half1.pips;
     cv::putText(unprocessedFrame, diceText1.str(),
-                cv::Point(half1.rect.center.x , half1.rect.center.y),
+                cv::Point(half1.rect.center.x, half1.rect.center.y),
                 cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8
     );
 
-    diceText2 << half2.pips ;
+    diceText2 << half2.pips;
     cv::putText(unprocessedFrame, diceText2.str(),
-                cv::Point(half2.rect.center.x , half2.rect.center.y),
+                cv::Point(half2.rect.center.x, half2.rect.center.y),
                 cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8
     );
+
+
+    unprocessedFrame = colorizeHalf(half1, unprocessedFrame);
+    unprocessedFrame = colorizeHalf(half2, unprocessedFrame);
+
+
     printer->printImage("frame", unprocessedFrame);
     cv::imwrite("domino_result.jpg", unprocessedFrame);
-
 
 
 }
