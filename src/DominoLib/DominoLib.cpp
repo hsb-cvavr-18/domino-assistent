@@ -9,6 +9,7 @@
 #include "DominoLib.h"
 
 
+
 // https://stackoverflow.com/questions/43342199/draw-rotated-rectangle-in-opencv-c
 void drawRotatedRect(cv::Mat &image, cv::RotatedRect rotatedRect) {
     cv::Point centerPoint = rotatedRect.center;
@@ -70,4 +71,56 @@ float getCorectedAngle(cv::RotatedRect rotRect){
         corrected_angle_deg = 90 + corrected_angle_deg;
     }
     return corrected_angle_deg;
+}
+
+cv::RotatedRect getRotatedRectOflargestContour(std::vector<std::vector<cv::Point> > pieceContours){
+    float area = 0;
+    cv::RotatedRect largestRotatedRect;
+    for(unsigned int i=0; i < pieceContours.size(); i++) {
+        auto diceContour = pieceContours.at(i);
+        //get rotatedRect framing contour
+        cv::RotatedRect minAreaRotatedRect = cv::minAreaRect(diceContour);
+        // get rotatedRect framed contour area
+        float diceContourArea = minAreaRotatedRect.size.area();
+
+        std::cout << "area: " << diceContourArea << std::endl;
+        //find largest rotated rect
+        if(diceContourArea > area){
+            largestRotatedRect  = minAreaRotatedRect;
+        }
+    }
+    return largestRotatedRect;
+}
+
+cv::Mat getROIOfHalf(cv::Mat diffframe, cv::Point2f cornerA, cv::Point2f cornerB, cv::Point2f cornerC, cv::Point2f cornerD){
+    cv::RotatedRect half = cv::RotatedRect(cornerA, cornerB, cornerC); //anticlockwise
+
+    cv::Rect halfBoundingRect = half.boundingRect();
+    cv::Mat halfRotatedROI = diffframe(halfBoundingRect);
+    cv::Mat halfCorrectedRot;
+    rotate2D(halfRotatedROI, halfCorrectedRot, half.angle);
+
+
+    //new rotated frame has new dimensions and a new origin => offset for correction
+    cv::Point2f halfOffset= cv::Point2f(halfBoundingRect.x, halfBoundingRect.y);
+
+    // correction of corners in new frame
+    cv::Point2f rotatedA = (RotatePoint(half.center, cornerA, PI + ((half.angle + 0) * PI/180)) - halfOffset);
+    cv::Point2f rotatedB = (RotatePoint(half.center, cornerB, PI + ((half.angle + 0) * PI/180)) - halfOffset);
+    cv::Point2f rotatedC = (RotatePoint(half.center, cornerC, PI + ((half.angle + 0) * PI/180)) - halfOffset);
+    cv::Point2f rotatedD = (RotatePoint(half.center, cornerD, PI + ((half.angle + 0) * PI/180)) - halfOffset);
+
+    //Move it to hte correct center.
+    cv::Point2f halfM = ((rotatedA + rotatedB  + rotatedC + rotatedD) / 4) ; //Middle of half1CorrectedRot
+    cv::Point2f halfCenter = cv::Point2f(halfCorrectedRot.cols/2, halfCorrectedRot.rows/2); //Center of half1
+    cv::Point2f correctionOfCenter = halfCenter - halfM;
+    halfM = halfM + correctionOfCenter; //corrected center
+    rotatedA = rotatedA + correctionOfCenter;
+    rotatedB = rotatedB + correctionOfCenter;
+    rotatedC = rotatedC + correctionOfCenter;
+    rotatedD = rotatedD + correctionOfCenter;
+
+    cv::Rect halfRect = cv::Rect(rotatedA, rotatedC);
+    //cv::Mat half1ROI=
+    return halfCorrectedRot(halfRect);
 }
