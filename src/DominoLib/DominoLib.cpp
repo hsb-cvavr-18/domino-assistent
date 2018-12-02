@@ -78,7 +78,7 @@ cv::Point2f RotatePoint(const cv::Point2f &cen_pt, const cv::Point2f &p, float r
     return fin_pt;
 }
 
-float getCorectedAngle(cv::RotatedRect rotRect){
+float getCorrectedAngle(cv::RotatedRect rotRect){
     /*#### Correct rotation angle - Set Upright (+90deg) - Set Horizontal (90deg - angle)### */
     float corrected_angle_deg = rotRect.angle;
     if (rotRect.size.width > rotRect.size.height) {
@@ -190,25 +190,40 @@ cv::Mat drawPipCount(dominoHalf half1, cv::Mat  img){
 }
 
 
-void getDominoHalf(cv::Mat diffframe,  dominoHalf *half,PipsDetector *pipsdetector, cv::Point2f cornerA, cv::Point2f cornerB, cv::Point2f cornerC, cv::Point2f cornerD, bool correctAngle){
+void getHalfCorners(cv::Point2f *cornersOfDominoBlock, cv::Point2f startCorner, cv::Point2f *targetCorners){
+    //declare Corners of Half 1
+    cv::Point2f corners[4];
 
+    //find corner point next known to half1CornerA (short side of domino block)
+    std::vector<cv::Point2f> dominoCornersVector;
+    dominoCornersVector.insert(dominoCornersVector.begin(), cornersOfDominoBlock, cornersOfDominoBlock + 4);
+    std::sort(dominoCornersVector.begin(), dominoCornersVector.end(),
+              [startCorner](cv::Point2f const &a, cv::Point2f const &b) {
+                  return cv::norm(a -  startCorner) < cv::norm(b -  startCorner);
+              });
+
+    //outer corners
+    targetCorners[0] = dominoCornersVector.at(0);    //1A
+    targetCorners[3] = dominoCornersVector.at(1);    //1D
+
+    //bisecting corners
+    targetCorners[1] =  targetCorners[0] + ((dominoCornersVector.at(2) - targetCorners[0])/2);    //1A + ((2D-1A)/2)
+    targetCorners[2] =  targetCorners[3] + ((dominoCornersVector.at(3) - targetCorners[3])/2);    //1D + ((2A-1D)/2)
+}
+
+
+void getDominoHalf(dominoHalf *half, cv::Mat diffframe, cv::Point2f *cornersOfDominoBlock, cv::Point2f startCorner,  bool correctAngle){
+    cv::Point2f halfCorners[4];
+    PipsDetector *pipsdetector = PipsDetectorFactory().createDefaultPipsDetector();
+
+      getHalfCorners(cornersOfDominoBlock, startCorner, halfCorners);
 
     //dominoHalf half;
     //get rectangles framing each of the two halfs
-    half->rect = cv::RotatedRect(cornerA, cornerB, cornerC); //anticlockwise
+    half->rect = cv::RotatedRect(halfCorners[0], halfCorners[1], halfCorners[2]); //anticlockwise
     //get region Of Interest of Half
-    cv::Mat halfROI = getROIOfHalf(diffframe, cornerA, cornerB, cornerC, cornerD, correctAngle);
+    cv::Mat halfROI = getROIOfHalf(diffframe, halfCorners[0], halfCorners[1], halfCorners[2], halfCorners[3], correctAngle);
     //Get Pips of  half of the domino block
     half->pips = pipsdetector->detect(halfROI);
-
-    std::cout << "numberOfPips " << half->pips << std::endl;
 }
 
-void threadTest(cv::Mat diffframe, dominoHalf *half, PipsDetector *pipsdetector){
-    std::cout <<  half->pips  << std::endl;
-    half->pips++;
-    for(int i = 0; i < 100; i++){
-        std::cout << "boom "  << std::endl;
-    }
-
-}

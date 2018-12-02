@@ -7,3 +7,6 @@ set(SOURCE_FILES
 )
 
 add_library(DominoLib SHARED STATIC ${SOURCE_FILES})
+
+target_link_libraries("${PROJECT_NAME}" ImgDebugPrinter)
+target_link_libraries("${PROJECT_NAME}" PipsDetector)

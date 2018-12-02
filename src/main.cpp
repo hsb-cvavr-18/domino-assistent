@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <thread>
+#include <chrono>
 
 #include "DominoLib/DominoLib.h"
 #include "ImgDebugPrinter/ImgDebugPrinter.h"
@@ -24,6 +25,7 @@ cv::Mat image;
 int main(int argc, char **argv) {
 
     cout << "Running main" << std::endl;
+
 /*
     const std::string videoStreamAddress = "http://192.168.178.79:8080/video";
 
@@ -51,7 +53,7 @@ int main(int argc, char **argv) {
         cv::imshow("Image output", image); cv::waitKey(5); // here's your car ;)
     }*/
     AbstractImgDebugPrinter *printer = IImgDebugPrinterFactory().getPrinter();
-    PipsDetector *pipsdetector = PipsDetectorFactory().createDefaultPipsDetector();
+   // PipsDetector *pipsdetector = PipsDetectorFactory().createDefaultPipsDetector();
 
 
     /***************************************************************************
@@ -87,8 +89,7 @@ int main(int argc, char **argv) {
     cvtColor(imgPrevious, imgPrevious, CV_BGR2GRAY);
 
     // remove background (previous image -image)
-    cv::absdiff(frame, imgPrevious,
-                frame); //TODO: why not "cv::absdiff(frame, imgPrevious, diffframe);" ? Would save one op
+    cv::absdiff(frame, imgPrevious,frame); 
     diffframe = frame.clone();
     cv::imwrite("domino_diff.jpg", frame);
 
@@ -119,8 +120,9 @@ int main(int argc, char **argv) {
     cv::RotatedRect minAreaRotatedRect = getRotatedRectOflargestContour(pieceContours);
 
     //need the angle to be corrected ?
-    bool correctAngle = getCorrectedAngle(minAreaRotatedRect) -  minAreaRotatedRect.angle ;
-    std::cout << "correctAngle: " <<  correctAngle <<std::endl;
+    const float EPS = 0.001;
+    bool isCorrectionOfAngleNeeded = ((getCorrectedAngle(minAreaRotatedRect) -  minAreaRotatedRect.angle) > EPS) ? (true): (false);
+    std::cout << "isCorrectionOfAngleNeeded: " <<  isCorrectionOfAngleNeeded <<std::endl;
 
     //get bounding box of rotated rect
     cv::Rect dominoBoundsRect = minAreaRotatedRect.boundingRect();
@@ -148,95 +150,33 @@ int main(int argc, char **argv) {
     cv::Point2f cornerPoints[4];
     minAreaRotatedRect.points(cornerPoints);
 
-    //find corners of both halfs
-    //declare Corners of Half 2
-    cv::Point2f half1CornerA, half1CornerB,half1CornerC,half1CornerD ;
+    //set random corner as startCorner
+    cv::Point2f startCornerHalf1 = cornerPoints[0];
+    cv::Point2f startCornerHalf2 = cornerPoints[3];
 
-    //declare Corners of Half 2
-    cv::Point2f half2CornerA, half2CornerB, half2CornerC, half2CornerD;
-
-    //set random corner as corner A
-    half1CornerA = cornerPoints[0];
-
-    //find corner point next known to half1CornerA (short side of domino block)
-    std::vector<cv::Point2f> dominoCornersVector;
-    dominoCornersVector.insert(dominoCornersVector.begin(), cornerPoints, cornerPoints + 4);
-    std::sort(dominoCornersVector.begin(), dominoCornersVector.end(),
-              [half1CornerA](cv::Point2f const &a, cv::Point2f const &b) {
-                  return cv::norm(a - half1CornerA) < cv::norm(b - half1CornerA);
-              });
-
-    //outer corners
-    //half 1
-    half1CornerA = dominoCornersVector.at(0);
-    half1CornerD = dominoCornersVector.at(1);
-    //half 2
-    half2CornerA = dominoCornersVector.at(3);
-    half2CornerD = dominoCornersVector.at(2);
-
-    //bisecting corners
-    half1CornerB = half1CornerA + ((half2CornerD - half1CornerA) / 2);
-    half1CornerC = half1CornerD + ((half2CornerA - half1CornerD) / 2);
-
-    half2CornerB = half1CornerC;
-    half2CornerC = half1CornerB;
-
-    //Just for the show  (debugging)
-    cv::putText(unprocessedFrame, "1A", half1CornerA, cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8);
-    cv::putText(unprocessedFrame, "1B", half1CornerB, cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8);
-    cv::putText(unprocessedFrame, "1C", half1CornerC, cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8);
-    cv::putText(unprocessedFrame, "1D", half1CornerD, cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8);
-    cv::putText(unprocessedFrame, "2A", half2CornerA, cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8);
-    cv::putText(unprocessedFrame, "2D", half2CornerD, cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8);
-
-    cv::circle(unprocessedFrame, half1CornerA, 2, brightColor);
-    cv::circle(unprocessedFrame, half1CornerB, 2, brightColor);
-    cv::circle(unprocessedFrame, half1CornerC, 2, brightColor);
-    cv::circle(unprocessedFrame, half1CornerD, 2, brightColor);
-    cv::circle(unprocessedFrame, half2CornerA, 2, brightColor);
-    cv::circle(unprocessedFrame, half2CornerB, 2, brightColor);
-    cv::circle(unprocessedFrame, half2CornerC, 2, brightColor);
-    cv::circle(unprocessedFrame, half2CornerD, 2, brightColor);
-    cv::imwrite("domino_cornerPoints.jpg", unprocessedFrame);
-
-    //Launch a thread
-
-    std::thread t1(getDominoHalf,diffframe.clone(), &half1, half1CornerA, half1CornerB, half1CornerC, half1CornerD, correctAngle);
-    std::thread t2(getDominoHalf,diffframe.clone(), &half2, half2CornerA, half2CornerB, half2CornerC, half2CornerD, correctAngle);
+    std::thread t1(getDominoHalf, &half1, diffframe.clone(), cornerPoints, startCornerHalf1, isCorrectionOfAngleNeeded);
+    std::thread t2(getDominoHalf, &half2, diffframe.clone(), cornerPoints, startCornerHalf2, isCorrectionOfAngleNeeded);
     t1.join();
     t2.join();
 
-    std::cout <<  half1.pips  << std::endl;
-    std::cout <<  half2.pips  << std::endl;
+    std::cout << "pipcount half 1: " << half1.pips << std::endl;
+    std::cout << "pipcount half 2: " << half2.pips << std::endl;
 
-    //getDominoHalf(diffframe.clone(), half1, pipsdetector, half1CornerA, half1CornerB, half1CornerC, half1CornerD, correctAngle);
-    //getDominoHalf(diffframe.clone(), half2, pipsdetector, half2CornerA, half2CornerB, half2CornerC, half2CornerD, correctAngle);
-    /*
-    //get rectangles framing each of the two halfs
-    half1.rect = cv::RotatedRect(half1CornerA, half1CornerB, half1CornerC); //anticlockwise
-    half2.rect = cv::RotatedRect(half2CornerA, half2CornerB, half2CornerC); //anticlockwise
-
-
-    cv::Mat half1ROI = getROIOfHalf(diffframe, half1CornerA, half1CornerB, half1CornerC, half1CornerD, correctAngle);
-    cv::Mat half2ROI = getROIOfHalf(diffframe, half2CornerA, half2CornerB, half2CornerC, half2CornerD, correctAngle);
-
-    cv::imwrite("domino_half2ROI.jpg", half2ROI);
-    cv::imwrite("domino_half1ROI.jpg", half1ROI);
-    */
-    /***************************************************************************
-    *  Get Pips of each half of the domino block
-    */
-    /*
-    half1.pips = pipsdetector->detect(half1ROI);
-    half2.pips = pipsdetector->detect(half2ROI);
-
-    std::cout << "numberOfPips1 " << half1.pips << std::endl;
-    std::cout << "numberOfPips2 " << half2.pips << std::endl;
-    */
+    cv::Point2f half1CornerPoints[4];
+    cv::Point2f half2CornerPoints[4];
+    half1.rect.points(half1CornerPoints);
+    half2.rect.points(half2CornerPoints);
+    std::string numberCharactermapping[4] = {"A","B","C","D"};
+    for(int i = 0; i < 4 ; i++){
+        cv::circle(unprocessedFrame, half1CornerPoints[i], 3, brightColor, 1, 8, 0);
+        cv::circle(unprocessedFrame, half2CornerPoints[i], 3, brightColor, 1, 8, 0);
+        putText(unprocessedFrame, "1"+numberCharactermapping[i],  half1CornerPoints[i],  0, 1, brightColor,1, 8,false );
+        putText(unprocessedFrame, "2"+numberCharactermapping[i],  half2CornerPoints[i],  0, 1, brightColor, 1, 8, false );
+    }
 
 
     unprocessedFrame = drawPipCount(half1, unprocessedFrame);
-    unprocessedFrame =drawPipCount(half2, unprocessedFrame);
+    unprocessedFrame = drawPipCount(half2, unprocessedFrame);
 
     unprocessedFrame = colorizeHalf(half1, unprocessedFrame);
     unprocessedFrame = colorizeHalf(half2, unprocessedFrame);
