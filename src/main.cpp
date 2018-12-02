@@ -119,7 +119,7 @@ int main(int argc, char **argv) {
     cv::RotatedRect minAreaRotatedRect = getRotatedRectOflargestContour(pieceContours);
 
     //need the angle to be corrected ?
-    bool correctAngle = getCorectedAngle(minAreaRotatedRect) -  minAreaRotatedRect.angle ;
+    bool correctAngle = getCorrectedAngle(minAreaRotatedRect) -  minAreaRotatedRect.angle ;
     std::cout << "correctAngle: " <<  correctAngle <<std::endl;
 
     //get bounding box of rotated rect
@@ -201,8 +201,8 @@ int main(int argc, char **argv) {
 
     //Launch a thread
 
-    std::thread t1(getDominoHalf,diffframe.clone(), &half1, pipsdetector, half1CornerA, half1CornerB, half1CornerC, half1CornerD, correctAngle);
-    std::thread t2(getDominoHalf,diffframe.clone(), &half2, pipsdetector, half2CornerA, half2CornerB, half2CornerC, half2CornerD, correctAngle);
+    std::thread t1(getDominoHalf,diffframe.clone(), &half1, half1CornerA, half1CornerB, half1CornerC, half1CornerD, correctAngle);
+    std::thread t2(getDominoHalf,diffframe.clone(), &half2, half2CornerA, half2CornerB, half2CornerC, half2CornerD, correctAngle);
     t1.join();
     t2.join();
 
