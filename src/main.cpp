@@ -152,7 +152,7 @@ int main(int argc, char **argv) {
 
     //set random corner as startCorner
     cv::Point2f startCornerHalf1 = cornerPoints[0];
-    cv::Point2f startCornerHalf2 = cornerPoints[3];
+    cv::Point2f startCornerHalf2 = cornerPoints[2];
 
     std::thread t1(getDominoHalf, &half1, diffframe.clone(), cornerPoints, startCornerHalf1, isCorrectionOfAngleNeeded);
     std::thread t2(getDominoHalf, &half2, diffframe.clone(), cornerPoints, startCornerHalf2, isCorrectionOfAngleNeeded);

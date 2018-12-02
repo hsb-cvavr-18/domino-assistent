@@ -216,8 +216,8 @@ void getDominoHalf(dominoHalf *half, cv::Mat diffframe, cv::Point2f *cornersOfDo
     cv::Point2f halfCorners[4];
     PipsDetector *pipsdetector = PipsDetectorFactory().createDefaultPipsDetector();
 
-      getHalfCorners(cornersOfDominoBlock, startCorner, halfCorners);
-
+    getHalfCorners(cornersOfDominoBlock, startCorner, halfCorners);
+    std::cout << halfCorners[0].x << " "<< halfCorners[1].x << " "<< halfCorners[2].x << " "<< halfCorners[3].x << std::endl;
     //dominoHalf half;
     //get rectangles framing each of the two halfs
     half->rect = cv::RotatedRect(halfCorners[0], halfCorners[1], halfCorners[2]); //anticlockwise
