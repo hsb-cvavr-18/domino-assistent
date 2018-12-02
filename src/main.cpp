@@ -60,14 +60,14 @@ int main(int argc, char **argv) {
      * load the Picture with new Domino and the predecessor picture
      */
     //new Domino
-    cv::Mat img = cv::imread("../../img/tisch_5_rot.jpg");
+    cv::Mat img = cv::imread("../../img/gestell_1.jpg");
     if (!img.data) {
         cout << "Could not open or find the new image" << std::endl;
         return -1;
     }
 
     //predeccessors
-    cv::Mat imgPrevious = cv::imread("../../img/tisch_4_rot.jpg");
+    cv::Mat imgPrevious = cv::imread("../../img/gestell_0.jpg");
     if (!imgPrevious.data) {
         cout << "Could not open or find the previous image" << std::endl;
         return -1;
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
     cv::imwrite("domino_diff.jpg", frame);
 
     // threshold - converting to binary image
-    cv::threshold(frame, frame, 150, 255, cv::THRESH_BINARY | CV_THRESH_OTSU);
+    cv::threshold(frame, frame,120, 255, cv::THRESH_BINARY );
     cv::imwrite("domino_bin.jpg", frame);
 
     // applying blur filter - makes edges smoother an closes gaps for continuous edges
