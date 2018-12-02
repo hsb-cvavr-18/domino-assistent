@@ -30,7 +30,7 @@ unsigned int PipsDetector::countPips(cv::Mat piece) {
     //cvtColor(piece, piece, CV_BGR2GRAY);
     cv::imwrite("domino_countPips_in"+s+".jpg", piece);
     // threshold
-    cv::threshold(piece, piece, 100, 255, cv::THRESH_BINARY | CV_THRESH_OTSU );
+    cv::threshold(piece, piece, 100, 255, cv::THRESH_BINARY );
     cv::imwrite("domino_pips_bin"+s+".jpg", piece);
     // floodfill
     cv::floodFill(piece, cv::Point(0, 0), cv::Scalar(255));

@@ -14,8 +14,8 @@ using namespace std;
 class PipsDetectorTest : public ::testing::Test {
 
 protected:
-    VS files = {"../aHalf1Img.jpg", "../aHalf2Img.jpg", "../aHalf2Img_2.jpg"};
-    VI expectedPips = {1, 2, 2};
+    VS files = {"../aHalf0Img.jpg", "../aHalf1Img.jpg", "../aHalf2Img.jpg", "../aHalf2Img_2.jpg", "../aHalf4Img.jpg"};
+    VI expectedPips = {0, 1, 2, 2, 4};
 
     virtual void SetUp() {
     };
@@ -40,15 +40,23 @@ protected:
     }
 };
 
-TEST_F(PipsDetectorTest, testAHalfWithOnePip) {
+TEST_F(PipsDetectorTest, testAHalfWithNoPip) {
     verify(0);
 }
 
-TEST_F(PipsDetectorTest, testAHalfWith2Pips) {
+TEST_F(PipsDetectorTest, testAHalfWithOnePip) {
     verify(1);
 }
 
-TEST_F(PipsDetectorTest, testAHalfWith2Pips2) {
+TEST_F(PipsDetectorTest, testAHalfWith2Pips) {
     verify(2);
+}
+
+TEST_F(PipsDetectorTest, testAHalfWith2Pips2) {
+    verify(3);
+}
+
+TEST_F(PipsDetectorTest, testAHalfWith4Pips) {
+    verify(4);
 }
 
