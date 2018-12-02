@@ -101,6 +101,7 @@ cv::RotatedRect getRotatedRectOflargestContour(std::vector<std::vector<cv::Point
         //find largest rotated rect
         if(diceContourArea > area){
             largestRotatedRect  = minAreaRotatedRect;
+            area = diceContourArea;
         }
     }
     return largestRotatedRect;
