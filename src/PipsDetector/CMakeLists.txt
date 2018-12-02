@@ -7,3 +7,4 @@ set(SOURCE_FILES
 )
 
 add_library(PipsDetector SHARED STATIC ${SOURCE_FILES})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")

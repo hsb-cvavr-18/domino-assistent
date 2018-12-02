@@ -5,6 +5,9 @@
 #ifndef CMAKE_DOMINOLIB_H
 #define CMAKE_DOMINOLIB_H
 
+#include "../ImgDebugPrinter/ImgDebugPrinter.h"
+#include "../PipsDetector/PipsDetector.h"
+
 // OpenCV
 #include <opencv2/core.hpp>
 #include "opencv2/objdetect.hpp"
@@ -37,5 +40,9 @@ cv::RotatedRect getRotatedRectOflargestContour(std::vector<std::vector<cv::Point
 cv::Mat getROIOfHalf(cv::Mat diffframe, cv::Point2f cornerA, cv::Point2f cornerB, cv::Point2f cornerC, cv::Point2f cornerD, bool correctAngle);
 cv::Mat colorizeHalf(dominoHalf half, cv::Mat  img);
 cv::Mat drawPipCount(dominoHalf half1, cv::Mat  img);
+void getDominoHalf(cv::Mat diffframe, dominoHalf *half,PipsDetector *pipsdetector, cv::Point2f cornerA, cv::Point2f cornerB, cv::Point2f cornerC, cv::Point2f cornerD, bool correctAngle);
+
+void threadTest(cv::Mat diffframe, dominoHalf *half, PipsDetector *pipsdetector);
+
 
 #endif //CMAKE_DOMINOLIB_H

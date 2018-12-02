@@ -1,41 +1,71 @@
 // std lib
+#include <stdio.h>
 #include <iostream>
 #include <sstream>
+#include <thread>
 
+#include "DominoLib/DominoLib.h"
 #include "ImgDebugPrinter/ImgDebugPrinter.h"
 #include "PipsDetector/PipsDetector.h"
-#include "DominoLib/DominoLib.h"
-
 // OpenCV
 #include <opencv2/core.hpp>
 #include "opencv2/objdetect.hpp"
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/features2d.hpp>
+#include <opencv2/opencv.hpp>
 
 
 // color for drawing into img
 cv::Scalar brightColor = cv::Scalar(255, 0, 242);
+cv::VideoCapture vcap;
+cv::Mat image;
 
 int main(int argc, char **argv) {
 
     cout << "Running main" << std::endl;
+/*
+    const std::string videoStreamAddress = "http://192.168.178.79:8080/video";
 
-    PipsDetector *pipsdetector = PipsDetectorFactory().createDefaultPipsDetector();
+    //open the video stream and make sure it's opened
+    if(!vcap.open(videoStreamAddress)) {
+        std::cout << "Error opening video stream or file" << std::endl;
+        return -1;
+    }
+
+    std::cout << "Load next Image" << std::endl;
+    std::cin.get();
+    if(!vcap.read(image)) {
+        std::cout << "No frame" << std::endl;
+        cv::waitKey();
+    }
+
+    cv::imshow("Output Window", image);
+
+    while (true) {
+        FILE* file = popen("wget -q http://192.168.178.79:8080/photoaf.jpg -O latest_img.jpg","r");
+        fclose(file);
+
+        cv::Mat image = cv::imread("latest_img.jpg");
+        cv::namedWindow( "Image output" );
+        cv::imshow("Image output", image); cv::waitKey(5); // here's your car ;)
+    }*/
     AbstractImgDebugPrinter *printer = IImgDebugPrinterFactory().getPrinter();
+    PipsDetector *pipsdetector = PipsDetectorFactory().createDefaultPipsDetector();
+
 
     /***************************************************************************
      * load the Picture with new Domino and the predecessor picture
      */
     //new Domino
-    cv::Mat img = cv::imread("../../img/tisch_5_v2.jpg");
+    cv::Mat img = cv::imread("../../img/tisch_5_rot.jpg");
     if (!img.data) {
         cout << "Could not open or find the new image" << std::endl;
         return -1;
     }
 
     //predeccessors
-    cv::Mat imgPrevious = cv::imread("../../img/tisch_4_v2.jpg");
+    cv::Mat imgPrevious = cv::imread("../../img/tisch_4_rot.jpg");
     if (!imgPrevious.data) {
         cout << "Could not open or find the previous image" << std::endl;
         return -1;
@@ -120,16 +150,10 @@ int main(int argc, char **argv) {
 
     //find corners of both halfs
     //declare Corners of Half 2
-    cv::Point2f half1CornerA;
-    cv::Point2f half1CornerB;
-    cv::Point2f half1CornerC;
-    cv::Point2f half1CornerD;
+    cv::Point2f half1CornerA, half1CornerB,half1CornerC,half1CornerD ;
 
     //declare Corners of Half 2
-    cv::Point2f half2CornerA;
-    cv::Point2f half2CornerB;
-    cv::Point2f half2CornerC;
-    cv::Point2f half2CornerD;
+    cv::Point2f half2CornerA, half2CornerB, half2CornerC, half2CornerD;
 
     //set random corner as corner A
     half1CornerA = cornerPoints[0];
@@ -175,7 +199,19 @@ int main(int argc, char **argv) {
     cv::circle(unprocessedFrame, half2CornerD, 2, brightColor);
     cv::imwrite("domino_cornerPoints.jpg", unprocessedFrame);
 
+    //Launch a thread
 
+    std::thread t1(getDominoHalf,diffframe.clone(), &half1, pipsdetector, half1CornerA, half1CornerB, half1CornerC, half1CornerD, correctAngle);
+    std::thread t2(getDominoHalf,diffframe.clone(), &half2, pipsdetector, half2CornerA, half2CornerB, half2CornerC, half2CornerD, correctAngle);
+    t1.join();
+    t2.join();
+
+    std::cout <<  half1.pips  << std::endl;
+    std::cout <<  half2.pips  << std::endl;
+
+    //getDominoHalf(diffframe.clone(), half1, pipsdetector, half1CornerA, half1CornerB, half1CornerC, half1CornerD, correctAngle);
+    //getDominoHalf(diffframe.clone(), half2, pipsdetector, half2CornerA, half2CornerB, half2CornerC, half2CornerD, correctAngle);
+    /*
     //get rectangles framing each of the two halfs
     half1.rect = cv::RotatedRect(half1CornerA, half1CornerB, half1CornerC); //anticlockwise
     half2.rect = cv::RotatedRect(half2CornerA, half2CornerB, half2CornerC); //anticlockwise
@@ -186,16 +222,17 @@ int main(int argc, char **argv) {
 
     cv::imwrite("domino_half2ROI.jpg", half2ROI);
     cv::imwrite("domino_half1ROI.jpg", half1ROI);
-
+    */
     /***************************************************************************
     *  Get Pips of each half of the domino block
     */
+    /*
     half1.pips = pipsdetector->detect(half1ROI);
     half2.pips = pipsdetector->detect(half2ROI);
 
     std::cout << "numberOfPips1 " << half1.pips << std::endl;
     std::cout << "numberOfPips2 " << half2.pips << std::endl;
-
+    */
 
 
     unprocessedFrame = drawPipCount(half1, unprocessedFrame);

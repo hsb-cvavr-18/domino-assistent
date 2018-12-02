@@ -6,6 +6,8 @@
 #include <iostream>
 #include <sstream>
 
+//includes
+
 #include "DominoLib.h"
 
 cv::Scalar overlayColors[8] = {cv::Scalar(244, 66, 66),  //color 0
@@ -185,4 +187,28 @@ cv::Mat drawPipCount(dominoHalf half1, cv::Mat  img){
                 cv::FONT_HERSHEY_COMPLEX, 0.8, drawingColor, 1, 8
     );
     return img;
+}
+
+
+void getDominoHalf(cv::Mat diffframe,  dominoHalf *half,PipsDetector *pipsdetector, cv::Point2f cornerA, cv::Point2f cornerB, cv::Point2f cornerC, cv::Point2f cornerD, bool correctAngle){
+
+
+    //dominoHalf half;
+    //get rectangles framing each of the two halfs
+    half->rect = cv::RotatedRect(cornerA, cornerB, cornerC); //anticlockwise
+    //get region Of Interest of Half
+    cv::Mat halfROI = getROIOfHalf(diffframe, cornerA, cornerB, cornerC, cornerD, correctAngle);
+    //Get Pips of  half of the domino block
+    half->pips = pipsdetector->detect(halfROI);
+
+    std::cout << "numberOfPips " << half->pips << std::endl;
+}
+
+void threadTest(cv::Mat diffframe, dominoHalf *half, PipsDetector *pipsdetector){
+    std::cout <<  half->pips  << std::endl;
+    half->pips++;
+    for(int i = 0; i < 100; i++){
+        std::cout << "boom "  << std::endl;
+    }
+
 }
