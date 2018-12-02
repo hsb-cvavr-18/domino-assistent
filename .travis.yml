@@ -1,0 +1,127 @@
+sudo: required
+
+compiler:
+- gcc
+
+language: cpp
+
+matrix:
+  include:
+    # works on Precise and Trusty
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
+          packages:
+            - clang-3.7
+      env:
+        - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
+    # works on Precise and Trusty
+#    - os: linux
+#      addons:
+#        apt:
+#          sources:
+#            - ubuntu-toolchain-r-test
+#            - llvm-toolchain-precise-3.8
+#          packages:
+#            - clang-3.8
+#      env:
+#        - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
+#        - CXXFLAGS="-stdlib=libc++"
+#
+#    # works on Trusty
+#    - os: linux
+#      addons:
+#        apt:
+#          sources:
+#            - ubuntu-toolchain-r-test
+#            - llvm-toolchain-trusty-3.9
+#          packages:
+#            - clang-3.9
+#      env:
+#        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
+#        - CXXFLAGS="-stdlib=libc++"
+#
+    # works on Trusty
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-4.0
+          packages:
+            - clang-4.0
+      env:
+        - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
+
+    # works on Trusty
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-5.0
+          packages:
+            - clang-5.0
+      env:
+        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+
+cache:
+  apt: true
+  ccache: true
+  directories:
+  - opencv-3.4
+  - opencv_contrib-3.4
+
+install:
+  # OpenCV install code (modified from orignal source: https://github.com/jayrambhia/Install-OpenCV)
+
+  # OpenCV dependencies - Details available at: http://docs.opencv.org/trunk/doc/tutorials/introduction/linux_install/linux_install.html
+  - sudo apt-get install -y build-essential
+  - sudo apt-get install -y cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+  - sudo apt-get install -y python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
+
+  # Download .zip file and extract.
+  - wget --quiet -nc https://github.com/Itseez/opencv/archive/3.4.zip -O opencv.zip
+  - unzip -n opencv.zip > log1
+
+  # Download EXTRA MODULES and extract.
+  # Currently not required for builds: -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-3.4/modules
+  #- curl -sL https://github.com/Itseez/opencv_contrib/archive/3.4.zip > opencv_contrib.zip
+  #- wget --quiet -nc https://github.com/Itseez/opencv_contrib/archive/3.4.zip -O opencv_contrib.zip
+  #- unzip -n opencv_contrib.zip > log2
+
+  # Create a new 'build' folder.
+  - cd opencv-3.4
+  - mkdir -p build
+  - cd build
+
+  # if Makefile is cached, then skip cmake opencv
+  # Set build instructions for Ubuntu distro.
+  - cat Makefile > l1 || cmake -D BUILD_opencv_apps=OFF -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_CSTRIPES=ON -D WITH_TBB=ON -D BUILD_opencv_java=OFF -D BUILD_opencv_python=OFF -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=OFF -D INSTALL_PYTHON_EXAMPLES=OFF -D BUILD_EXAMPLES=OFF -D WITH_QT=ON -D WITH_OPENCL=ON -D WITH_OPENGL=OFF ..
+
+  # if Makefile is cached, then skip make opencv
+  # Run 'make' with multiple threads.
+  - cat Makefile > l2 ||make -j2 > make_log
+
+  # Install to OS.
+  - sudo make install
+
+  # Add configuration to OpenCV to tell it where the library files are located on the file system (/usr/local/lib)
+  - sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
+
+  - sudo ldconfig
+  - echo "OpenCV installed."
+
+  # We need to return to the repo "root" folder, so we can then 'cd' into the C++ project folder.
+  - cd ../../
+  - ls -al
+
+script:
+  - cmake -H. -Bbuild
+  - cd build
+  - cmake --build .
+  - cd test
+  - ./unit_tests
