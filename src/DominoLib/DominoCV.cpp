@@ -1,7 +1,7 @@
 //
 // Created by osboxes on 12/3/18.
 //
-
+#include <iostream>
 #include "DominoCV.h"
 
 // color for drawing into img
@@ -97,9 +97,6 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
     t1.join();
     t2.join();
 
-    cout << "pipcount half 1: " << half1.pips << endl;
-    cout << "pipcount half 2: " << half2.pips << endl;
-
     cv::Point2f half1CornerPoints[4];
     cv::Point2f half2CornerPoints[4];
     half1.rect.points(half1CornerPoints);
@@ -118,7 +115,6 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
 
     unprocessedFrame = colorizeHalf(half1, unprocessedFrame);
     unprocessedFrame = colorizeHalf(half2, unprocessedFrame);
-
 
     printer->printImage("frame", unprocessedFrame);
     imwrite("domino_result.jpg", unprocessedFrame);

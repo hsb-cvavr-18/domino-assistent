@@ -68,6 +68,9 @@ int main(int argc, char **argv) {/*
     }
 
     const dominoPiece &dominoPiece = detectPiece(previousImg, currentImg);
+
+    cout << "pipcount half 1: " << dominoPiece.a.pips << endl;
+    cout << "pipcount half 2: " << dominoPiece.b.pips << endl;
     
     return EXIT_SUCCESS;
 }
