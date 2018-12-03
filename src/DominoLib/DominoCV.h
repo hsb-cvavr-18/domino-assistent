@@ -24,6 +24,6 @@
 #include <opencv2/opencv.hpp>
 
 
-dominoPiece detectPieces(cv::Mat previousImg, cv::Mat currentImg);
+dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg);
 
 #endif //PROJECT_DOMINOCV_H

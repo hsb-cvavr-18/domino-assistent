@@ -7,12 +7,9 @@
 // color for drawing into img
 cv::Scalar brightColor = cv::Scalar(255, 0, 242);
 
-dominoPiece detectPieces(cv::Mat previousImg, cv::Mat currentImg) {
+dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
 
     AbstractImgDebugPrinter *printer = IImgDebugPrinterFactory().getPrinter();
-    // PipsDetector *pipsdetector = PipsDetectorFactory().createDefaultPipsDetector();
-
-
 
     // will hold the frame of the origin image for output with additional information
     cv::Mat unprocessedFrame = currentImg.clone();

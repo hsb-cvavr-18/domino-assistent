@@ -36,7 +36,7 @@ protected:
             FAIL() << "Could not open or find the image '" << currentImg << "'";
         }
 
-        const dominoPiece &dominoPiece = detectPieces(previousImgMat, currentImgMat);
+        const dominoPiece &dominoPiece = detectPiece(previousImgMat, currentImgMat);
 
         EXPECT_EQ(dominoPiece.a.pips, pipsAExpected);
         EXPECT_EQ(dominoPiece.b.pips, pipsBExpected);

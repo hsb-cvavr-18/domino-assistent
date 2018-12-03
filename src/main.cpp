@@ -67,7 +67,7 @@ int main(int argc, char **argv) {/*
         exit(EXIT_FAILURE);
     }
 
-    const dominoPiece &dominoPiece = detectPieces(previousImg, currentImg);
+    const dominoPiece &dominoPiece = detectPiece(previousImg, currentImg);
     
     return EXIT_SUCCESS;
 }
