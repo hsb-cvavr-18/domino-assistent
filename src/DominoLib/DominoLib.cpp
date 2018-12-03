@@ -5,6 +5,7 @@
 // std lib
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 //includes
 
@@ -21,8 +22,6 @@ cv::Scalar overlayColors[8] = {cv::Scalar(244, 66, 66),  //color 0
 
 // color for drawing into img
 cv::Scalar drawingColor = cv::Scalar(255, 0, 242);
-
-
 
 // https://stackoverflow.com/questions/43342199/draw-rotated-rectangle-in-opencv-c
 void drawRotatedRect(cv::Mat &image, cv::RotatedRect rotatedRect) {
@@ -87,24 +86,32 @@ float getCorrectedAngle(cv::RotatedRect rotRect){
     return corrected_angle_deg;
 }
 
-cv::RotatedRect getRotatedRectOflargestContour(std::vector<std::vector<cv::Point> > pieceContours){
-    float area = 0;
-    cv::RotatedRect largestRotatedRect;
-    for(unsigned int i=0; i < pieceContours.size(); i++) {
-        auto diceContour = pieceContours.at(i);
-        //get rotatedRect framing contour
-        cv::RotatedRect minAreaRotatedRect = cv::minAreaRect(diceContour);
-        // get rotatedRect framed contour area
-        float diceContourArea = minAreaRotatedRect.size.area();
+float getMinRectAreaOfContour(const std::vector<cv::Point> &pieceContour) {
+    cv::RotatedRect minAreaRotatedRect = cv::minAreaRect(pieceContour);
+    // get rotatedRect framed contour area
+    float area = minAreaRotatedRect.size.area();
+    return area;
+}
 
-        std::cout << "area: " << diceContourArea << std::endl;
-        //find largest rotated rect
-        if(diceContourArea > area){
-            largestRotatedRect  = minAreaRotatedRect;
-            area = diceContourArea;
-        }
-    }
+cv::RotatedRect getRotatedRectOflargestContour(std::vector<std::vector<cv::Point>> pieceContours) {
+    std::sort(pieceContours.begin(), pieceContours.end(),
+              [](std::vector<cv::Point> const &a, std::vector<cv::Point> const &b) {
+                  return getMinRectAreaOfContour(a) > getMinRectAreaOfContour(b);
+              });
+
+    cv::RotatedRect largestRotatedRect  = cv::minAreaRect(pieceContours.at(0));
+
+    printTopAreas(pieceContours);
+
     return largestRotatedRect;
+}
+
+void printTopAreas(const vector<vector<cv::Point>> &pieceContours) {
+    cout << "Top 3 areas in image: "  << endl;
+    for(int i = 0; i < pieceContours.size() && i < 3; i++) {
+        const auto &slice = pieceContours.at(i);
+        cout << getMinRectAreaOfContour(slice) << endl;
+    }
 }
 
 cv::Mat getROIOfHalf(cv::Mat diffframe, cv::Point2f cornerA, cv::Point2f cornerB, cv::Point2f cornerC, cv::Point2f cornerD, bool correctAngle){
@@ -160,8 +167,6 @@ cv::Mat getROIOfHalf(cv::Mat diffframe, cv::Point2f cornerA, cv::Point2f cornerB
 
     return halfCorrectedRot(halfRect);
 }
-
-
 
 cv::Mat colorizeHalf(dominoHalf half, cv::Mat  img){
     cv::Point2f vertices2f[4];
