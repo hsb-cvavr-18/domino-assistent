@@ -1,13 +1,15 @@
 //
 // Created by osboxes on 12/3/18.
 //
+#include <iostream>
 
 #include "DominoCV.h"
 
 // color for drawing into img
 cv::Scalar brightColor = cv::Scalar(255, 0, 242);
 
-dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
+
+dominoPiece detectPieceInternal(dominoPiece &piece, cv::Mat previousImg, cv::Mat currentImg) {
 
     AbstractImgDebugPrinter *printer = IImgDebugPrinterFactory().getPrinter();
 
@@ -123,8 +125,13 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
     printer->printImage("frame", unprocessedFrame);
     imwrite("domino_result.jpg", unprocessedFrame);
 
-    dominoPiece piece;
     piece.a = half2;
     piece.b = half1;
     return piece;
+}
+
+dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
+    dominoPiece dominoPiece;
+    std::cout << "Time:" << measure::execution(detectPieceInternal, dominoPiece, previousImg, currentImg).count() << std::endl;
+    return dominoPiece;
 }
