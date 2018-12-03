@@ -8,13 +8,16 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${DIVISION_HEADERS_DIR})
 include_directories(${IMGDEBUGPRINTER_HEADERS_DIR})
 include_directories(${PIPSDETECTOR_HEADERS_DIR})
+include_directories(${DOMINOLIB_HEADERS_DIR})
 
 file(GLOB IMGDEBUGPRINTER_SOURCES "${IMGDEBUGPRINTER_HEADERS_DIR}/*.cpp")
 file(GLOB PIPSDETECTOR_SOURCES "${PIPSDETECTOR_HEADERS_DIR}/*.cpp")
+file(GLOB DOMINOLIB_SOURCES "${DOMINOLIB_HEADERS_DIR}/*.cpp")
 
-set(SOURCE_FILES main.cpp src/divider_tests.cpp ../src/division/division.cpp src/PipDetector_tests.cpp
+set(SOURCE_FILES main.cpp src/divider_tests.cpp ../src/division/division.cpp src/PipDetector_tests.cpp src/DominoCV_tests.cpp
         "${IMGDEBUGPRINTER_SOURCES}"
         "${PIPSDETECTOR_SOURCES}"
+        "${DOMINOLIB_SOURCES}"
 )
 
 message("TEST SOURCE FILES: ${SOURCE_FILES}")

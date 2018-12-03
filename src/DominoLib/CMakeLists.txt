@@ -4,7 +4,8 @@ project(DominoLib C CXX)
 set(SOURCE_FILES
     DominoLib.h
     DominoLib.cpp
-)
+    DominoCV.h
+    DominoCV.cpp)
 
 add_library(DominoLib SHARED STATIC ${SOURCE_FILES})
 
