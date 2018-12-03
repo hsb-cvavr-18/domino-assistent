@@ -23,6 +23,14 @@ unsigned int PipsDetector::countPips(cv::Mat piece) {
     cv::resize(piece, piece, cv::Size(150, 150));
 
 
+    //Brighness and Contrast Correction
+    int avgBrightness = mean(piece,cv::Mat())[0];//sc_avg[0];
+    const int maxBrightness = 256;
+    double alpha = maxBrightness/avgBrightness;
+    int beta = 0;
+    cv::Mat new_image = cv::Mat::zeros( piece.size(), piece.type() );
+    piece.convertTo(piece, -1, alpha, beta);
+
 
     int r = (rand() % 100) + 1; //testing
     std::string s = std::to_string(r);
@@ -30,7 +38,7 @@ unsigned int PipsDetector::countPips(cv::Mat piece) {
     //cvtColor(piece, piece, CV_BGR2GRAY);
     cv::imwrite("domino_countPips_in"+s+".jpg", piece);
     // threshold
-    cv::threshold(piece, piece, 100, 255, cv::THRESH_BINARY );
+    cv::threshold(piece, piece, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
     cv::imwrite("domino_pips_bin"+s+".jpg", piece);
     // floodfill
     cv::floodFill(piece, cv::Point(0, 0), cv::Scalar(255));

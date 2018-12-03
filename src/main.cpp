@@ -54,14 +54,14 @@ int main(int argc, char **argv) {/*
     * load the Picture with new Domino and the predecessor picture
     */
     //new Domino
-    cv::Mat currentImg = cv::imread("../../img/gestell_1.jpg");
+    cv::Mat currentImg = cv::imread("../../img/gestell_8.jpg");
     if (!currentImg.data) {
         cout << "Could not open or find the new image" << endl;
         exit(EXIT_FAILURE);
     }
 
     //predeccessors
-    cv::Mat previousImg = cv::imread("../../img/gestell_0.jpg");
+    cv::Mat previousImg = cv::imread("../../img/gestell_7.jpg");
     if (!previousImg.data) {
         cout << "Could not open or find the previous image" << endl;
         exit(EXIT_FAILURE);

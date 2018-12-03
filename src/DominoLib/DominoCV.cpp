@@ -32,7 +32,8 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
     imwrite("domino_diff.jpg", frame);
 
     // threshold - converting to binary image
-    threshold(frame, frame,120, 255, cv::THRESH_BINARY );
+    int thresh = 42;
+    threshold(frame, frame,thresh, 255, cv::THRESH_BINARY );
     imwrite("domino_bin.jpg", frame);
 
     // applying blur filter - makes edges smoother an closes gaps for continuous edges
