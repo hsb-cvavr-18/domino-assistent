@@ -15,7 +15,7 @@ public:
     PlayGround(DominoTreeStructureElement rootElement) : rootElement(rootElement) {}
     void mountStone(Stone stone){
         if (rootElement.mountingWouldBeValid(&stone)){
-            DominoTreeStructureElement(stone);
+            auto dominoTreeStructureElement = DominoTreeStructureElement(stone);
             rootElement.mount(stone);
         }
     };

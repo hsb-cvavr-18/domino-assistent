@@ -6,8 +6,7 @@
 #define PROJECT_STONE_H
 
 #include <list>
-#include <opencv2/core/types.hpp>
-#include <opencv2/core/types_c.h>
+#include <opencv2/core.hpp>
 #include "HalfStone.h"
 
 struct Points{

@@ -17,18 +17,16 @@
 
 class DominoTreeStructureElement {
 private:
-    Stone element = Stone();
+    Stone element;
     std::list<DominoTreeStructureElement*> mountedElements = std::list<DominoTreeStructureElement*>();
 
 public:
-    DominoTreeStructureElement(Stone element) {
-        this->element=element;
-    }
+    DominoTreeStructureElement(Stone element) : element(element) {}
 
-    void mount(Stone *stone) {
+    void mount(Stone stone) {
         if (this->hasFreeMountPoints() && mountingWouldBeValid(stone))
             mountedElements.emplace_front(stone);
-        else throw std::exception;
+        else throw std::exception();
     }
 
     void showlist(std::list<DominoTreeStructureElement*> mountedElements)
@@ -41,7 +39,7 @@ public:
         std::cout << '\n';
     }
 
-    bool mountingWouldBeValid(Stone* stone){
+    bool mountingWouldBeValid(Stone stone) {
         // TODO: Lageprüfunq ( [2,4][4,5] , dann kann nicht an erster vier angelegt werden)
         return true;
     }
