@@ -18,16 +18,17 @@
 class DominoTreeStructureElement {
 private:
     Stone element;
-    std::list<DominoTreeStructureElement*> mountedElements = std::list<DominoTreeStructureElement*>();
+    std::list<DominoTreeStructureElement> mountedElements = std::list<DominoTreeStructureElement>();
 
 public:
     DominoTreeStructureElement(Stone element) : element(element) {}
 
-    void mount(Stone stone) {
-        if (this->hasFreeMountPoints() && mountingWouldBeValid(stone))
-            mountedElements.emplace_front(stone);
+    void mount(DominoTreeStructureElement dominoTreeStructureElement) {
+        if (this->hasFreeMountPoints())
+            mountedElements.emplace_front(dominoTreeStructureElement);
         else throw std::exception();
     }
+
 
     void showlist(std::list<DominoTreeStructureElement*> mountedElements)
     {
@@ -39,14 +40,13 @@ public:
         std::cout << '\n';
     }
 
-    bool mountingWouldBeValid(Stone stone) {
-        // TODO: Lageprüfunq ( [2,4][4,5] , dann kann nicht an erster vier angelegt werden)
-        return true;
-    }
-
     bool hasFreeMountPoints(){
         return ((element.isNormalStone()   && mountedElements.size()<NORMALMOUNTPOINTAMOUNT) ||
                 (element.isDoubletsStone() && mountedElements.size()<DOUBLETMOUNTPOINTAMOUNT));
+    }
+    
+    const Stone getElement() const {
+        return element;
     }
 };
 
