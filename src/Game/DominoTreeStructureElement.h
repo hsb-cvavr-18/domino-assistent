@@ -31,14 +31,8 @@ public:
     }
 
 
-    void showlist(std::list<DominoTreeStructureElement*> mountedElements)
-    {
-        std::list <DominoTreeStructureElement*> :: iterator it;
-        for(it = mountedElements.begin(); it != mountedElements.end(); ++it){
-
-            std::cout << '\t' << *it;
-        }
-        std::cout << '\n';
+    bool hasMountedElements(){
+        !mountedElements.empty();
     }
 
     bool hasFreeMountPoints(){
@@ -48,6 +42,18 @@ public:
 
     const DominoPiece getElement() const {
         return element;
+    }
+
+    void setElement(const DominoPiece &element) {
+        DominoTreeStructureElement::element = element;
+    }
+
+    const std::list<DominoTreeStructureElement> &getMountedElements() const {
+        return mountedElements;
+    }
+
+    void setMountedElements(const std::list<DominoTreeStructureElement> &mountedElements) {
+        DominoTreeStructureElement::mountedElements = mountedElements;
     }
 };
 

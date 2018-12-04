@@ -19,7 +19,30 @@ public:
         rootElement.mount(DominoTreeStructureElement(stone));
     };
 
-    void getAvalailableMountPoints(){};
+    std::list<DominoPiece> getAvalailableMountPoints(DominoTreeStructureElement element){
+        std::list<DominoPiece> availableMountPoints;
+
+        if (element.hasFreeMountPoints()){
+            availableMountPoints.emplace_front(element.getElement());
+        }
+
+        if (element.hasMountedElements()){
+            std::list<DominoTreeStructureElement> mountedElements= element.getMountedElements();
+
+            std::list <DominoTreeStructureElement> :: iterator it;
+            for(it = mountedElements.begin(); it != mountedElements.end(); ++it){
+
+                std::list<DominoPiece> additionalMountPoints = getAvalailableMountPoints(*it);
+
+                std::list <DominoPiece> :: iterator it;
+                for(it = additionalMountPoints.begin(); it != additionalMountPoints.end(); ++it){
+                    availableMountPoints.emplace_front(*it);
+                }
+            }
+        }
+
+        return availableMountPoints;
+    };
 };
 
 
