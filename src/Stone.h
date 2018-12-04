@@ -40,7 +40,7 @@ public:
         return points;
     }
 
-    cv::Point getCenter() {
+    cv::Point getCenter_Calculated() {
         int x = (halfStoneA.getA().x +
                  halfStoneA.getB().x +
                  halfStoneB.getA().x +
