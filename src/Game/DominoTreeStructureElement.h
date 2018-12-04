@@ -13,15 +13,16 @@
 
 #include <iterator>
 #include <iostream>
-#include "Stone.h"
+#include "DominoPiece.h"
 
 class DominoTreeStructureElement {
 private:
-    Stone element;
+    DominoPiece element;
     std::list<DominoTreeStructureElement> mountedElements = std::list<DominoTreeStructureElement>();
 
 public:
-    DominoTreeStructureElement(Stone element) : element(element) {}
+    DominoTreeStructureElement(DominoPiece element) : element(element) {
+    }
 
     void mount(DominoTreeStructureElement dominoTreeStructureElement) {
         if (this->hasFreeMountPoints())
@@ -44,8 +45,8 @@ public:
         return ((element.isNormalStone()   && mountedElements.size()<NORMALMOUNTPOINTAMOUNT) ||
                 (element.isDoubletsStone() && mountedElements.size()<DOUBLETMOUNTPOINTAMOUNT));
     }
-    
-    const Stone getElement() const {
+
+    const DominoPiece getElement() const {
         return element;
     }
 };
