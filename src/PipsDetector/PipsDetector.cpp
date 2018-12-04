@@ -17,25 +17,40 @@
 
 PipsDetector::PipsDetector(AbstractImgDebugPrinter* printer) : _printer(printer) {}
 
-unsigned long PipsDetector::countPips(cv::Mat piece) {
+unsigned int PipsDetector::countPips(cv::Mat piece) {
 
     // resize
     cv::resize(piece, piece, cv::Size(150, 150));
 
+
+    //Brighness and Contrast Correction
+    int avgBrightness = mean(piece,cv::Mat())[0];//sc_avg[0];
+    const int maxBrightness = 256;
+    double alpha = maxBrightness/avgBrightness;
+    int beta = 0;
+    cv::Mat new_image = cv::Mat::zeros( piece.size(), piece.type() );
+    piece.convertTo(piece, -1, alpha, beta);
+
+
+    int r = (rand() % 100) + 1; //testing
+    std::string s = std::to_string(r);
     // convert to grayscale
     //cvtColor(piece, piece, CV_BGR2GRAY);
-
+    cv::imwrite("domino_countPips_in"+s+".jpg", piece);
     // threshold
-    cv::threshold(piece, piece, 150, 255, cv::THRESH_BINARY | CV_THRESH_OTSU);
-    cv::imwrite("domino_pips_bin.jpg", piece);
+    cv::threshold(piece, piece, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
+    cv::imwrite("domino_pips_bin"+s+".jpg", piece);
     // floodfill
     cv::floodFill(piece, cv::Point(0, 0), cv::Scalar(255));
     cv::floodFill(piece, cv::Point(0, 149), cv::Scalar(255));
     cv::floodFill(piece, cv::Point(149, 0), cv::Scalar(255));
     cv::floodFill(piece, cv::Point(149, 149), cv::Scalar(255));
-    cv::imwrite("domino_pips_flood.jpg", piece);
+    cv::imwrite("domino_pips_flood"+s+".jpg", piece);
+    //white boarder around image
+    copyMakeBorder( piece, piece, 10, 10, 10, 10, cv::BORDER_CONSTANT, cv::Scalar(255, 255, 255));
+
     // show
-    cv::imwrite("processed.jpg", piece);
+    cv::imwrite("processed"+s+".jpg", piece);
 
     // search for blobs
     cv::SimpleBlobDetector::Params params;
@@ -52,7 +67,7 @@ unsigned long PipsDetector::countPips(cv::Mat piece) {
 
     params.filterByColor = true;
     params.blobColor = 0;
-    params.minArea = 200;
+    params.minArea = 400;
 
     // will hold our keyponts
     std::vector<cv::KeyPoint> keypoints;
@@ -67,6 +82,6 @@ unsigned long PipsDetector::countPips(cv::Mat piece) {
     return keypoints.size();
 }
 
-unsigned long PipsDetector::detect(cv::Mat piece) {
+unsigned int PipsDetector::detect(cv::Mat piece) {
     return countPips(piece);
 }

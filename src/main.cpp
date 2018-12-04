@@ -1,175 +1,77 @@
 // std lib
+#include <stdio.h>
 #include <iostream>
 #include <sstream>
+#include <thread>
+#include <chrono>
 
+#include "DominoLib/DominoLib.h"
 #include "ImgDebugPrinter/ImgDebugPrinter.h"
 #include "PipsDetector/PipsDetector.h"
-#include "DominoLib/DominoLib.h"
-
 // OpenCV
 #include <opencv2/core.hpp>
 #include "opencv2/objdetect.hpp"
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/features2d.hpp>
+#include <opencv2/opencv.hpp>
+#include "DominoLib/DominoCV.h"
 
-// color for drawing into img
-cv::Scalar brightColor = cv::Scalar(255, 0, 242);
+int main(int argc, char **argv) {/*
+    cv::VideoCapture vcap;
+    cv::Mat image;
 
-int main(int argc, char **argv) {
+    const std::string videoStreamAddress = "http://192.168.178.79:8080/video";
+
+    //open the video stream and make sure it's opened
+    if(!vcap.open(videoStreamAddress)) {
+        std::cout << "Error opening video stream or file" << std::endl;
+        return -1;
+    }
+
+    std::cout << "Load next Image" << std::endl;
+    std::cin.get();
+    if(!vcap.read(image)) {
+        std::cout << "No frame" << std::endl;
+        cv::waitKey();
+    }
+
+    cv::imshow("Output Window", image);
+
+    while (true) {
+        FILE* file = popen("wget -q http://192.168.178.79:8080/photoaf.jpg -O latest_img.jpg","r");
+        fclose(file);
+
+        cv::Mat image = cv::imread("latest_img.jpg");
+        cv::namedWindow( "Image output" );
+        cv::imshow("Image output", image); cv::waitKey(5); // here's your car ;)
+    }*/
+
 
     cout << "Running main" << std::endl;
 
-    PipsDetector *pipsdetector = PipsDetectorFactory().createDefaultPipsDetector();
-    AbstractImgDebugPrinter* printer = IImgDebugPrinterFactory().getPrinter();
-
-    cv::Mat img = cv::imread("../../img/tisch_5_rot.jpg");
-
-    if (!img.data) {
-        cout << "Could not open or find the new image" << std::endl;
-        return -1;
+    /***************************************************************************
+    * load the Picture with new Domino and the predecessor picture
+    */
+    //new Domino
+    cv::Mat currentImg = cv::imread("../../img/gestell_8.jpg");
+    if (!currentImg.data) {
+        cout << "Could not open or find the new image" << endl;
+        exit(EXIT_FAILURE);
     }
 
-    cv::Mat imgPrevious = cv::imread("../../img/tisch_4_rot.jpg");
-
-    if (!imgPrevious.data) {
-        cout << "Could not open or find the previous image" << std::endl;
-        return -1;
+    //predeccessors
+    cv::Mat previousImg = cv::imread("../../img/gestell_7.jpg");
+    if (!previousImg.data) {
+        cout << "Could not open or find the previous image" << endl;
+        exit(EXIT_FAILURE);
     }
 
-    cvtColor(imgPrevious, imgPrevious, CV_BGR2GRAY);
+    const dominoPiece &dominoPiece = detectPiece(previousImg, currentImg);
 
-    // will hold the frame of the origin image for output with additional information
-    cv::Mat unprocessedFrame = img.clone();
-    // will hold our frame to do image processing on
-    cv::Mat frame = img;
-    // will hold the difference of the current and the previous frame
-    cv::Mat diffframe;
-
-    // convert to grayscale
-    cvtColor(frame, frame, CV_BGR2GRAY);
-
-    // remove background
-    cv::absdiff(frame, imgPrevious, frame);
-    cv::imwrite("domino_diff.jpg", frame);
-    diffframe = frame.clone();
-
-    // threshold
-    cv::threshold(frame, frame, 150, 255, cv::THRESH_BINARY | CV_THRESH_OTSU);
-    cv::imwrite("domino_bin.jpg", frame);
-
-    // applying blur filter
-    cv::blur( frame.clone(), frame, cv::Size(3,3) );
-    cv::imwrite("domino_bin_blur.jpg", frame);
-
-    // applying canny edge filter
-    cv::Canny(frame, frame, 2, 2 * 2, 3, false);
-    cv::imwrite("domino_canny.jpg", frame);
-
-    cv::imwrite("frame.jpg", frame);
-
-    // detect domino piece shape
-    std::vector<std::vector<cv::Point> > pieceContours;
-    std::vector<cv::Vec4i> diceHierarchy;
-    cv::findContours(frame.clone(), pieceContours, diceHierarchy, CV_RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-
-    cv::Mat drawing = cv::Mat::zeros(img.size(), CV_8UC3);
-    for(unsigned int i=0; i < pieceContours.size(); i++) {
-        cv::Scalar color = cv::Scalar(150, 0, 32);
-        drawContours(drawing, pieceContours, i, brightColor, 2, 8);
-
-        cv::Mat singleContour = cv::Mat::zeros(img.size(), CV_8UC3);
-        drawContours(singleContour, pieceContours, i, brightColor, 2, 8);
-        std::ostringstream contourName;
-        contourName << "domino_contour" <<  i << ".jpg";
-        cv::imwrite( contourName.str(), singleContour);
-    }
-
-    cv::imwrite("domino_contours.jpg", drawing);
-
-    // iterate over dice contours
-    for(int i=0; i < pieceContours.size(); i++){
-        auto diceContour = pieceContours.at(i);
-
-        cv::RotatedRect minAreaRotatedRect = cv::minAreaRect(diceContour);
-        cv::Mat rotated = unprocessedFrame.clone();
-        drawRotatedRect(rotated, minAreaRotatedRect);
-
-        cv::imwrite("domino_rotated_rect.jpg", rotated);
-
-        cv::Rect diceBoundsRect = minAreaRotatedRect.boundingRect();
-
-        // get contour area
-        double diceContourArea = diceBoundsRect.area();
-
-        std::cout << "area: " << diceContourArea << std::endl;
-
-        // filter contours based on our dice size
-        if (diceContourArea > DOMINO_PIECE_AREA_MIN && diceContourArea < DOMINO_PIECE_AREA_MAX) {
-
-            // set dice roi
-            cv::Mat diceROI = diffframe(diceBoundsRect);
-
-            cv::imwrite("rect.jpg", diceROI);
-
-            // rotate img to zero degree
-            cv::Point2f center = cvPoint(diceBoundsRect.height / 2, diceBoundsRect.width / 2);
-
-            cv::Mat upright;
-
-            /*#### Correct rotation angle - Set Upright (+90deg) - Set Horizontal (90deg - angle)### */
-            float corrected_angle_deg = minAreaRotatedRect.angle;
-            if (minAreaRotatedRect.size.width > minAreaRotatedRect.size.height) {
-                corrected_angle_deg = 90 + corrected_angle_deg;
-            }
-            rotate2D(diceROI, upright, corrected_angle_deg);
-
-            //cv::line(upright, cv::Point(0, upright.rows/2), cv::Point(upright.cols, upright.rows/2), brightColor, 1);
-            cv::imwrite("domino_upright.jpg", upright);
-
-            cv::Rect aHalfRect = cv::Rect( cv::Point(0,0), cv::Point(upright.cols, upright.rows/2));
-            //cv::rectangle(aHalf, aHalfRect, brightColor, CV_FILLED, 8, 0);
-            cv::Mat aHalfImg = upright(aHalfRect);
-            cv::imwrite("aHalfImg.jpg", aHalfImg);
-
-            cv::Rect bHalfRect = cv::Rect( cv::Point(0,upright.rows/2), cv::Point(upright.cols, upright.rows));
-            //cv::rectangle(aHalf, aHalfRect, brightColor, CV_FILLED, 8, 0);
-            cv::Mat bHalfImg = upright(bHalfRect);
-            cv::imwrite("bHalfImg.jpg", bHalfImg);
-
-            std::ostringstream pipsResults;
-            pipsResults << "Number of pips a,b: ";
-            long numberOfPipsA = pipsdetector->detect(aHalfImg);
-            long numberOfPipsB = pipsdetector->detect(bHalfImg);
-            pipsResults << numberOfPipsA << "," << numberOfPipsB;
-            std::cout << pipsResults.str() << std::endl;
-
-            long numberOfAllPips = numberOfPipsA + numberOfPipsB;
-            if (numberOfAllPips > 0) {
-
-                // output debug info
-                std::ostringstream diceText;
-                diceText << "val: " << numberOfPipsA << " + " << numberOfPipsB << " = " <<numberOfAllPips;
-
-                std::cout << diceText.str() << std::endl;
-
-                // draw value
-                cv::putText(unprocessedFrame, diceText.str(),
-                            cv::Point(diceBoundsRect.x, diceBoundsRect.y + diceBoundsRect.height + 20),
-                            cv::FONT_HERSHEY_COMPLEX, 0.8, brightColor, 1, 8
-                );
-
-                // draw bounding rect
-                //cv::rectangle(unprocessedFrame, diceBoundsRect.tl(), diceBoundsRect.br(), brightColor, 2, 8, 0);
-                cv::drawContours(unprocessedFrame, pieceContours, 0, brightColor, 2, 8, diceHierarchy);
-
-                // show
-                printer->printImage("frame", unprocessedFrame);
-                cv::imwrite("domino_result.jpg", unprocessedFrame);
-            }
-            else {
-                std::cout << "No pips found!" << std::endl;
-            }
-        }
-    }
+    cout << "pipcount half 1: " << dominoPiece.a.pips << endl;
+    cout << "pipcount half 2: " << dominoPiece.b.pips << endl;
+    
+    return EXIT_SUCCESS;
 }
+
