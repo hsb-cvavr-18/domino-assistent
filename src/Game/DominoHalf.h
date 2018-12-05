@@ -25,7 +25,7 @@ public:
     }
 
     void setNumber(int number) {
-        number = number;
+        this->number = number;
     }
 
     const cv::RotatedRect &getRect() const {
