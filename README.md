@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/hsb-cvavr-18/domino-assitent.svg?branch=master)](https://travis-ci.org/hsb-cvavr-18/domino-assitent)
+[![Build Status](https://travis-ci.org/hsb-cvavr-18/domino-assistent.svg?branch=master)](https://travis-ci.org/hsb-cvavr-18/domino-assistent)
 
 # CMake C++ Project Template
 
