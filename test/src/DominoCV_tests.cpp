@@ -52,7 +52,7 @@ TEST_F(DominoCVTest, gestell6To7) {
 }
 
 TEST_F(DominoCVTest, gestell7To8) {
-    verify("../gestell_7.jpg", "../gestell_8.jpg", 1, 6);
+    verify("../gestell_7.jpg", "../gestell_8.jpg", 6, 1);
 }
 
 TEST_F(DominoCVTest, gestell8To9) {

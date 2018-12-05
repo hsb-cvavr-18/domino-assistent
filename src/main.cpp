@@ -8,6 +8,8 @@
 #include "DominoLib/DominoLib.h"
 #include "ImgDebugPrinter/ImgDebugPrinter.h"
 #include "PipsDetector/PipsDetector.h"
+#include "ImageHandler/I_ImageHandler.h"
+#include "ImageHandler/ImageHandlerFactory.h"
 // OpenCV
 #include <opencv2/core.hpp>
 #include "opencv2/objdetect.hpp"
@@ -54,18 +56,20 @@ int main(int argc, char **argv) {/*
     * load the Picture with new Domino and the predecessor picture
     */
     //new Domino
-    cv::Mat currentImg = cv::imread("../../img/gestell_8.jpg");
-    if (!currentImg.data) {
-        cout << "Could not open or find the new image" << endl;
-        exit(EXIT_FAILURE);
-    }
+   // auto imageHandler = ImageHandlerFactory::getImageHandler("../../srcImg", "gestell_", Source::FILESYSTEM);
+    auto imageHandler = ImageHandlerFactory::getImageHandler("192.168.178.79:8080", "photo", Source::IP_CAM);
+    cv::Mat currentImg = cv::Mat();
+    cv::Mat previousImg = cv::Mat();
 
-    //predeccessors
-    cv::Mat previousImg = cv::imread("../../img/gestell_7.jpg");
-    if (!previousImg.data) {
-        cout << "Could not open or find the previous image" << endl;
-        exit(EXIT_FAILURE);
-    }
+    //TODO: Verarbeitung der Bilder (Logik - wann wird ausgelöst, behandlung der ersten zwei Bilder etc.
+    do{
+        imageHandler->loadNextImage();
+
+        currentImg = imageHandler->getCurrentImage();
+        if(NULL == &currentImg) {return -999;}
+        previousImg =imageHandler->getPreviousImage();
+    } while(previousImg.empty());
+
 
     const dominoPiece &dominoPiece = detectPiece(previousImg, currentImg);
 
