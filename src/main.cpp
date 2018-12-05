@@ -78,16 +78,17 @@ int main(int argc, char **argv) {/*
     cout << "pipcount half 1: " << dominoPiece.getHalfA().getNumber() << endl;
     cout << "pipcount half 2: " << dominoPiece.getHalfB().getNumber() << endl;
 
-    std::list<DominoPiece> availableMountPoints = playGround.getAvailableMountPoints();
+    std::list<DominoTreeStructureElement> availableMountPoints = playGround.getAvailableMountPoints();
 
     cv::Mat mountpoints = currentImg.clone();
-    for (DominoPiece n : availableMountPoints) {
-        for (DominoPiece x : playGround.getAvailableMountPointsForPassedStone(n)) {
+    for (DominoTreeStructureElement n : availableMountPoints) {
+        for (DominoTreeStructureElement x : playGround.getAvailableMountPointsForPassedStone(n.getElement())) {
             // TODO: replace x by stones from playground.
             // currently we just pass the first free pieces to the filter itself which should always evaluate true and therefore show up in the img
-            std::cout << "mountPoint_A: " << x.getHalfA().getRect().center << " , " << x.getHalfB().getRect().center << std::endl;
-            cv::drawMarker(mountpoints, x.getCenter(), cv::Scalar(255, 0, 242));
-            cv::putText(mountpoints, "MP",  x.getCenter(), cv::FONT_HERSHEY_COMPLEX, 0.8, cv::Scalar(255, 0, 242));
+            DominoPiece piece = x.getElement();
+            std::cout << "mountPoint_A: " << piece.getHalfA().getRect().center << " , " << piece.getHalfB().getRect().center << std::endl;
+            cv::drawMarker(mountpoints, piece.getCenter(), cv::Scalar(255, 0, 242));
+            cv::putText(mountpoints, "MP", piece.getCenter(), cv::FONT_HERSHEY_COMPLEX, 0.8, cv::Scalar(255, 0, 242));
         }
 
     }
