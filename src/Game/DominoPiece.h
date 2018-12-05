@@ -9,32 +9,22 @@
 #include <opencv2/core.hpp>
 #include "DominoHalf.h"
 
-struct Points{
-    cv::Point pointA;
-    cv::Point pointB;
-    cv::Point pointC;
-    cv::Point pointD;
-};
-
 class DominoPiece {
 
 private:
-    DominoHalf dominoHalfA ,
-               dominoHalfB ;
-
+    DominoHalf halfA ,
+               halfB ;
 public:
+    DominoPiece(DominoHalf dominoHalfA, DominoHalf dominoHalfB) : halfA(dominoHalfA), halfB(dominoHalfB) {}
 
-    DominoPiece(DominoHalf dominoHalfA, DominoHalf dominoHalfB) : dominoHalfA(dominoHalfA), dominoHalfB(dominoHalfB) {}
+    const DominoHalf &getHalfA() const {return halfA;}
+    void setHalfA(const DominoHalf &halfA) {DominoPiece::halfA = halfA;}
 
+    const DominoHalf &getHalfB() const {return halfB;}
+    void setHalfB(const DominoHalf &halfB) {DominoPiece::halfB = halfB;}
 
-    bool isDoubletsStone() {
-        return dominoHalfA.getNumber()==dominoHalfB.getNumber();
-    }
-
-    bool isNormalStone() {
-        return !isDoubletsStone();
-    }
-
+    bool isDoubletsStone() {return halfA.getNumber()==halfB.getNumber();}
+    bool isNormalStone() {return !isDoubletsStone();}
 };
 
 

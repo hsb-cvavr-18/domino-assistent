@@ -18,12 +18,13 @@
 // OpenCV
 #include <opencv2/core.hpp>
 #include "opencv2/objdetect.hpp"
+#include "../Game/DominoPiece.h"
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/features2d.hpp>
 #include <opencv2/opencv.hpp>
 
 
-dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg);
+DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg);
 
 #endif //PROJECT_DOMINOCV_H

@@ -3,11 +3,12 @@
 //
 #include <iostream>
 #include "DominoCV.h"
+#include "../Game/DominoPiece.h"
 
 // color for drawing into img
 cv::Scalar brightColor = cv::Scalar(255, 0, 242);
 
-dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
+DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
 
     AbstractImgDebugPrinter *printer = IImgDebugPrinterFactory().getPrinter();
 
@@ -82,8 +83,8 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
     /***************************************************************************
      * Find and define halfs
      */
-    dominoHalf half1;
-    dominoHalf half2;
+    DominoHalf half1 = DominoHalf(cv::RotatedRect(),0);
+    DominoHalf half2 = DominoHalf(cv::RotatedRect(),0);
 
     //get corners of whole block
     cv::Point2f cornerPoints[4];
@@ -100,8 +101,8 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
 
     cv::Point2f half1CornerPoints[4];
     cv::Point2f half2CornerPoints[4];
-    half1.rect.points(half1CornerPoints);
-    half2.rect.points(half2CornerPoints);
+    half1.getRect().points(half1CornerPoints);
+    half2.getRect().points(half2CornerPoints);
     string numberCharactermapping[4] = {"A","B","C","D"};
     for(int i = 0; i < 4 ; i++){
         circle(unprocessedFrame, half1CornerPoints[i], 3, brightColor, 1, 8, 0);
@@ -120,8 +121,6 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
     printer->printImage("frame", unprocessedFrame);
     imwrite("domino_result.jpg", unprocessedFrame);
 
-    dominoPiece piece;
-    piece.a = half2;
-    piece.b = half1;
+    DominoPiece piece = DominoPiece(half1,half2);
     return piece;
 }

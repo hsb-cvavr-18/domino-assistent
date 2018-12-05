@@ -16,6 +16,7 @@
 #include <opencv2/features2d.hpp>
 #include <opencv2/opencv.hpp>
 #include "DominoLib/DominoCV.h"
+#include "Game/DominoPiece.h"
 
 int main(int argc, char **argv) {/*
     cv::VideoCapture vcap;
@@ -67,10 +68,10 @@ int main(int argc, char **argv) {/*
         exit(EXIT_FAILURE);
     }
 
-    const dominoPiece &dominoPiece = detectPiece(previousImg, currentImg);
+    const DominoPiece &dominoPiece = detectPiece(previousImg, currentImg);
 
-    cout << "pipcount half 1: " << dominoPiece.a.pips << endl;
-    cout << "pipcount half 2: " << dominoPiece.b.pips << endl;
+    cout << "pipcount half 1: " << dominoPiece.getHalfA().getNumber() << endl;
+    cout << "pipcount half 2: " << dominoPiece.getHalfB().getNumber() << endl;
     
     return EXIT_SUCCESS;
 }
