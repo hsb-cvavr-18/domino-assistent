@@ -15,21 +15,24 @@ public:
     PlayGround(DominoTreeStructureElement rootElement) : rootElement(rootElement) {}
 
     void mountStone(DominoPiece stone){
-        auto dominoTreeStructureElement = DominoTreeStructureElement(stone);
         rootElement.mount(DominoTreeStructureElement(stone));
     };
 
-    std::list<DominoPiece> getAvailableMountPoints() {
+    void mountStone(DominoTreeStructureElement at, DominoPiece stone) {
+        at.mount(DominoTreeStructureElement(stone));
+    }
+
+    std::list<DominoTreeStructureElement> getAvailableMountPoints() {
         return getAvailableMountPoints(rootElement);
     }
     
-    std::list<DominoPiece> getAvailableMountPointsForPassedStone(DominoPiece stone) {
-        const std::list<DominoPiece> availableMountPoints = getAvailableMountPoints();
-        std::list<DominoPiece> filteredMountPoints;
+    std::list<DominoTreeStructureElement> getAvailableMountPointsForPassedStone(DominoPiece stone) {
+        const std::list<DominoTreeStructureElement> availableMountPoints = getAvailableMountPoints();
+        std::list<DominoTreeStructureElement> filteredMountPoints;
 
         std::copy_if (availableMountPoints.begin(), availableMountPoints.end(), std::back_inserter(filteredMountPoints),
-                [stone](DominoPiece dominoPiece) {
-                    return dominoPiece.isApplicableTo(stone);
+                [stone](DominoTreeStructureElement dominoPiece) {
+                    return dominoPiece.getElement().isApplicableTo(stone);
                 }
         );
 
@@ -38,8 +41,8 @@ public:
     }
 
 private:
-    std::list<DominoPiece> getAvailableMountPoints(DominoTreeStructureElement element){
-        std::list<DominoPiece> availableMountPoints;
+    std::list<DominoTreeStructureElement> getAvailableMountPoints(DominoTreeStructureElement element){
+        std::list<DominoTreeStructureElement> availableMountPoints;
 
         if (element.hasFreeMountPoints()){
             availableMountPoints.emplace_front(element.getElement());
@@ -51,9 +54,9 @@ private:
             std::list <DominoTreeStructureElement> :: iterator it;
             for(it = mountedElements.begin(); it != mountedElements.end(); ++it){
 
-                std::list<DominoPiece> additionalMountPoints = getAvailableMountPoints(*it);
+                std::list<DominoTreeStructureElement> additionalMountPoints = getAvailableMountPoints(*it);
 
-                std::list <DominoPiece> :: iterator it;
+                std::list <DominoTreeStructureElement> :: iterator it;
                 for(it = additionalMountPoints.begin(); it != additionalMountPoints.end(); ++it){
                     availableMountPoints.emplace_front(*it);
                 }

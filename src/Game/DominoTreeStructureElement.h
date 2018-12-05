@@ -40,7 +40,7 @@ public:
                 (element.isDoubletsStone() && mountedElements.size()<DOUBLETMOUNTPOINTAMOUNT));
     }
 
-    const DominoPiece getElement() const {
+    DominoPiece getElement() const {
         return element;
     }
 
