@@ -32,7 +32,7 @@ public:
 
 
     bool hasMountedElements(){
-        !mountedElements.empty();
+        return !mountedElements.empty();
     }
 
     bool hasFreeMountPoints(){

@@ -20,25 +20,25 @@ public:
     };
 
     std::list<DominoPiece> getAvailableMountPoints() {
-        return getAvalailableMountPoints(rootElement);
+        return getAvailableMountPoints(rootElement);
     }
     
     std::list<DominoPiece> getAvailableMountPointsForPassedStone(DominoPiece stone) {
-        const std::list<DominoPiece> avalailableMountPoints = getAvalailableMountPoints(rootElement);
-        std::list<DominoPiece> filterdMountPoints;
+        const std::list<DominoPiece> availableMountPoints = getAvailableMountPoints();
+        std::list<DominoPiece> filteredMountPoints;
 
-        std::copy_if (avalailableMountPoints.begin(), avalailableMountPoints.end(), std::back_inserter(filterdMountPoints),
+        std::copy_if (availableMountPoints.begin(), availableMountPoints.end(), std::back_inserter(filteredMountPoints),
                 [stone](DominoPiece dominoPiece) {
                     return dominoPiece.isApplicableTo(stone);
                 }
         );
 
 
-        return filterdMountPoints;
+        return filteredMountPoints;
     }
 
 private:
-    std::list<DominoPiece> getAvalailableMountPoints(DominoTreeStructureElement element){
+    std::list<DominoPiece> getAvailableMountPoints(DominoTreeStructureElement element){
         std::list<DominoPiece> availableMountPoints;
 
         if (element.hasFreeMountPoints()){
@@ -51,7 +51,7 @@ private:
             std::list <DominoTreeStructureElement> :: iterator it;
             for(it = mountedElements.begin(); it != mountedElements.end(); ++it){
 
-                std::list<DominoPiece> additionalMountPoints = getAvalailableMountPoints(*it);
+                std::list<DominoPiece> additionalMountPoints = getAvailableMountPoints(*it);
 
                 std::list <DominoPiece> :: iterator it;
                 for(it = additionalMountPoints.begin(); it != additionalMountPoints.end(); ++it){
