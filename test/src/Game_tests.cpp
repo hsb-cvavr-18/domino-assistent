@@ -96,9 +96,11 @@ TEST_F(GameTest, twoStonesHave2MountPoints) {
     DominoPiece piece2 = getDominoPieceWith(6, 6);
 
     PlayGround playGround = PlayGround(piece);
-    const DominoTreeStructureElement &nextMountPoint = playGround.getAvailableMountPoints().front();
-    playGround.mountStone(nextMountPoint, piece2);
+    EXPECT_THAT(playGround.getAvailableMountPoints().size(), Eq(1));
 
+    DominoTreeStructureElement nextMountPoint = playGround.getAvailableMountPoints().front();
+    playGround.mountStone(nextMountPoint, piece2);
+    DominoTreeStructureElement rootElement = playGround.getRootElement();
     EXPECT_THAT(playGround.getAvailableMountPoints().size(), Eq(2));
 }
 

@@ -14,9 +14,9 @@ private:
 public:
     PlayGround(DominoTreeStructureElement rootElement) : rootElement(rootElement) {}
 
-    void mountStone(DominoPiece stone){
-        rootElement.mount(DominoTreeStructureElement(stone));
-    };
+    DominoTreeStructureElement getRootElement() {
+        return rootElement;
+    }
 
     void mountStone(DominoTreeStructureElement at, DominoPiece stone) {
         at.mount(DominoTreeStructureElement(stone));
