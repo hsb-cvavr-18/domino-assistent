@@ -19,8 +19,22 @@ public:
         rootElement.mount(DominoTreeStructureElement(stone));
     };
 
-    std::list<DominoPiece> getAvalailableMountPoints(){
+    std::list<DominoPiece> getAvailableMountPoints() {
         return getAvalailableMountPoints(rootElement);
+    }
+    
+    std::list<DominoPiece> getAvailableMountPointsForPassedStone(DominoPiece stone) {
+        const std::list<DominoPiece> avalailableMountPoints = getAvalailableMountPoints(rootElement);
+        std::list<DominoPiece> filterdMountPoints;
+
+        std::copy_if (avalailableMountPoints.begin(), avalailableMountPoints.end(), std::back_inserter(filterdMountPoints),
+                [stone](DominoPiece dominoPiece) {
+                    return dominoPiece.isApplicableTo(stone);
+                }
+        );
+
+
+        return filterdMountPoints;
     }
 
 private:

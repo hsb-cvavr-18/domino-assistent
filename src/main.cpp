@@ -78,11 +78,20 @@ int main(int argc, char **argv) {/*
     cout << "pipcount half 1: " << dominoPiece.getHalfA().getNumber() << endl;
     cout << "pipcount half 2: " << dominoPiece.getHalfB().getNumber() << endl;
 
-    std::list<DominoPiece> availableMountPoints = playGround.getAvalailableMountPoints();
+    std::list<DominoPiece> availableMountPoints = playGround.getAvailableMountPoints();
 
+    cv::Mat mountpoints = currentImg.clone();
     for (DominoPiece n : availableMountPoints) {
-        std::cout << "mountPoint_A: " << n.getHalfA().getRect().center << " , " << n.getHalfB().getRect().center  << '\n';
+
+        for (DominoPiece x : playGround.getAvailableMountPointsForPassedStone(n)) {
+            std::cout << "mountPoint_A: " << x.getHalfA().getRect().center << " , " << x.getHalfB().getRect().center << std::endl;
+            cv::drawMarker(mountpoints, x.getCenter(), cv::Scalar(255, 0, 242));
+            cv::putText(mountpoints, "MP",  x.getCenter(), cv::FONT_HERSHEY_COMPLEX, 0.8, cv::Scalar(255, 0, 242));
+            break;
+        }
+
     }
+    cv::imwrite("mountpoints.jpg", mountpoints);
 
     return EXIT_SUCCESS;
 }
