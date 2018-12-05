@@ -19,6 +19,11 @@ public:
         rootElement.mount(DominoTreeStructureElement(stone));
     };
 
+    std::list<DominoPiece> getAvalailableMountPoints(){
+        return getAvalailableMountPoints(rootElement);
+    }
+
+private:
     std::list<DominoPiece> getAvalailableMountPoints(DominoTreeStructureElement element){
         std::list<DominoPiece> availableMountPoints;
 

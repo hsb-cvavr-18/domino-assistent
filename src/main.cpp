@@ -17,6 +17,7 @@
 #include <opencv2/opencv.hpp>
 #include "DominoLib/DominoCV.h"
 #include "Game/DominoPiece.h"
+#include "Game/PlayGround.h"
 
 int main(int argc, char **argv) {/*
     cv::VideoCapture vcap;
@@ -49,6 +50,7 @@ int main(int argc, char **argv) {/*
     }*/
 
 
+
     cout << "Running main" << std::endl;
 
     /***************************************************************************
@@ -70,9 +72,18 @@ int main(int argc, char **argv) {/*
 
     const DominoPiece &dominoPiece = detectPiece(previousImg, currentImg);
 
+    PlayGround playGround = PlayGround(dominoPiece);
+
+
     cout << "pipcount half 1: " << dominoPiece.getHalfA().getNumber() << endl;
     cout << "pipcount half 2: " << dominoPiece.getHalfB().getNumber() << endl;
-    
+
+    std::list<DominoPiece> availableMountPoints = playGround.getAvalailableMountPoints();
+
+    for (DominoPiece n : availableMountPoints) {
+        std::cout << "mountPoint_A: " << n.getHalfA().getRect().center << " , " << n.getHalfB().getRect().center  << '\n';
+    }
+
     return EXIT_SUCCESS;
 }
 
