@@ -56,7 +56,7 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
     findContours(frame.clone(), pieceContours, diceHierarchy, CV_RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
     //Find the largest contour and create a rotated rect around it
-    cv::RotatedRect minAreaRotatedRect = getRotatedRectOflargestContour(pieceContours);
+    cv::RotatedRect minAreaRotatedRect = getRotatedRectOflargestContour(pieceContours, frame.size());
 
     //need the angle to be corrected ?
     const float EPS = 0.001;

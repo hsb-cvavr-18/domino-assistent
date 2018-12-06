@@ -93,7 +93,7 @@ float getMinRectAreaOfContour(const std::vector<cv::Point> &pieceContour) {
     return area;
 }
 
-cv::RotatedRect getRotatedRectOflargestContour(std::vector<std::vector<cv::Point>> pieceContours) {
+cv::RotatedRect getRotatedRectOflargestContour(vector<vector<cv::Point>> pieceContours, cv::Size imgSize) {
     std::sort(pieceContours.begin(), pieceContours.end(),
               [](std::vector<cv::Point> const &a, std::vector<cv::Point> const &b) {
                   return getMinRectAreaOfContour(a) > getMinRectAreaOfContour(b);
@@ -101,17 +101,21 @@ cv::RotatedRect getRotatedRectOflargestContour(std::vector<std::vector<cv::Point
 
     cv::RotatedRect largestRotatedRect  = cv::minAreaRect(pieceContours.at(0));
 
-    printTopAreas(pieceContours);
+    printTopAreasAndContours(pieceContours, imgSize);
 
     return largestRotatedRect;
 }
 
-void printTopAreas(const vector<vector<cv::Point>> &pieceContours) {
+void printTopAreasAndContours(const vector<vector<cv::Point>> &pieceContours, cv::Size &imgSize) {
     cout << "Top 3 areas in image: "  << endl;
+    cv::Mat pieceContour = cv::Mat::zeros(imgSize, CV_8UC3);
     for(int i = 0; i < pieceContours.size() && i < 3; i++) {
         const auto &slice = pieceContours.at(i);
         cout << getMinRectAreaOfContour(slice) << endl;
+        cv::Scalar color = cv::Scalar(150, 0, 32);
+        cv::drawContours(pieceContour, pieceContours, 0, color, 2, 8);
     }
+    cv::imwrite("largest3_contours.jpg", pieceContour);
 }
 
 cv::Mat getROIOfHalf(cv::Mat diffframe, cv::Point2f cornerA, cv::Point2f cornerB, cv::Point2f cornerC, cv::Point2f cornerD, bool correctAngle){
