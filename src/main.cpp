@@ -19,63 +19,41 @@
 #include <opencv2/opencv.hpp>
 #include "DominoLib/DominoCV.h"
 
-int main(int argc, char **argv) {/*
-    cv::VideoCapture vcap;
-    cv::Mat image;
-
-    const std::string videoStreamAddress = "http://192.168.178.79:8080/video";
-
-    //open the video stream and make sure it's opened
-    if(!vcap.open(videoStreamAddress)) {
-        std::cout << "Error opening video stream or file" << std::endl;
-        return -1;
-    }
-
-    std::cout << "Load next Image" << std::endl;
-    std::cin.get();
-    if(!vcap.read(image)) {
-        std::cout << "No frame" << std::endl;
-        cv::waitKey();
-    }
-
-    cv::imshow("Output Window", image);
-
-    while (true) {
-        FILE* file = popen("wget -q http://192.168.178.79:8080/photoaf.jpg -O latest_img.jpg","r");
-        fclose(file);
-
-        cv::Mat image = cv::imread("latest_img.jpg");
-        cv::namedWindow( "Image output" );
-        cv::imshow("Image output", image); cv::waitKey(5); // here's your car ;)
-    }*/
-
-
+int main(int argc, char **argv) {
     cout << "Running main" << std::endl;
 
-    /***************************************************************************
-    * load the Picture with new Domino and the predecessor picture
-    */
-    //new Domino
-   // auto imageHandler = ImageHandlerFactory::getImageHandler("../../srcImg", "gestell_", Source::FILESYSTEM);
-    auto imageHandler = ImageHandlerFactory::getImageHandler("192.168.178.79:8080", "photo", Source::IP_CAM);
-    cv::Mat currentImg = cv::Mat();
-    cv::Mat previousImg = cv::Mat();
-
-    //TODO: Verarbeitung der Bilder (Logik - wann wird ausgelöst, behandlung der ersten zwei Bilder etc.
-    do{
-        imageHandler->loadNextImage();
-
-        currentImg = imageHandler->getCurrentImage();
-        if(NULL == &currentImg) {return -999;}
-        previousImg =imageHandler->getPreviousImage();
-    } while(previousImg.empty());
 
 
-    const dominoPiece &dominoPiece = detectPiece(previousImg, currentImg);
 
-    cout << "pipcount half 1: " << dominoPiece.a.pips << endl;
-    cout << "pipcount half 2: " << dominoPiece.b.pips << endl;
-    
-    return EXIT_SUCCESS;
+        /***************************************************************************
+        * load the Picture with new Domino and the predecessor picture
+        */
+        //new Domino
+        auto imageHandler = ImageHandlerFactory::getImageHandler("../../srcImg", "gestell_", Source::FILESYSTEM);
+        //auto imageHandler = ImageHandlerFactory::getImageHandler("192.168.178.79:8080", "photo", Source::IP_CAM);
+        cv::Mat currentImg = cv::Mat();
+        cv::Mat previousImg = cv::Mat();
+
+    while(true) {
+        //TODO: Verarbeitung der Bilder (Logik - wann wird ausgelöst, behandlung der ersten zwei Bilder etc.
+        do {
+            imageHandler->loadNextImage();
+            currentImg = imageHandler->getCurrentImage();
+            if (NULL == &currentImg || currentImg.empty()) {
+                std::cout << "No more Image loaded" << std::endl;
+                return EXIT_SUCCESS;
+            }
+
+            previousImg = imageHandler->getPreviousImage();
+
+        } while (previousImg.empty());
+
+
+        const dominoPiece &dominoPiece = detectPiece(previousImg, currentImg);
+
+        cout << "pipcount half 1: " << dominoPiece.a.pips << endl;
+        cout << "pipcount half 2: " << dominoPiece.b.pips << endl;
+    }
+   // return EXIT_SUCCESS;
 }
 

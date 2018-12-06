@@ -7,7 +7,7 @@
 
 FileImageHandler::FileImageHandler(std::string path, std::string imagePrefix){
     this->sourcePath = this->pathPostfix + path + "/" + imagePrefix;
-    std::cout<< this->sourcePath <<std::endl;
+
 }
 
 cv::Mat FileImageHandler::getCurrentImage(){
@@ -28,17 +28,26 @@ void FileImageHandler::loadNextImage(){
 
     std::string imagePath = this->sourcePath  + std::to_string(this->numberOfRecievedImages)+ this->imagePostfix;
     std::cout<< imagePath  <<std::endl;
-    if(this->testFileExistence(imagePath)) {
-        this->previousImage = this->currentImage;
-        this->currentImage = cv::imread(imagePath);
-    } else { this->currentImage = NULL; return;}
+    try {
+        if (this->testFileExistence(imagePath)) {
+            this->previousImage = this->currentImage;
 
+            this->currentImage = cv::imread(imagePath);
+        } else {
+            this->currentImage = cv::Mat();
+            return;
+        }
+    } catch(const std::exception& e){
+        std::cout << "ERROR while loading image: " << e.what()  << std::endl;
+    }
 
+    if(!this->currentImage.empty()){
+        this->numberOfRecievedImages++;
+    }else{
+        std::cout << "Could not Load Next Image!" << std::endl;
+    }
 
-    cv::namedWindow( "Image output" );
-    cv::imshow("Image output", this->currentImage); cv::waitKey(5); // here's your car ;)
-
-    this->numberOfRecievedImages++;
+    //this->numberOfRecievedImages++;
 }
 
 bool FileImageHandler::testFileExistence(const std::string& name) {

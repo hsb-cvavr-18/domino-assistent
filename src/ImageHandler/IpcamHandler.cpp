@@ -27,19 +27,29 @@ void IpcamHandler::loadNextImage(){
 
     std::string popenInstruction = "wget -q " + this->sourcePath + " -O " + this->targetPath;
     const char *command = popenInstruction.c_str();
-    FILE *file = popen(command, "r");
-    fclose(file);
+    try{
+        std::cout << "Trying to load Image from IP Cam" <<std::endl;
+        FILE *file = popen(command, "r");
+        fclose(file);
+
+    } catch(const std::exception& e){
+        std::cout << "ERROR while loading image from IP Cam: " << e.what()  << std::endl;
+        return;
+    }
     
     if(!this->currentImage.empty()){
         this->previousImage = this->currentImage;
     }
     
     this->currentImage = cv::imread(this->targetPath);
+    if(!this->currentImage.empty()){
+        this->numberOfRecievedImages++;
+    }else{
+        std::cout << "Could not Load Next Image!" << std::endl;
+    }
 
-    cv::namedWindow( "Image output" );
-    cv::imshow("Image output", this->currentImage); cv::waitKey(5); // here's your car ;)
 
-    this->numberOfRecievedImages++;
+
 }
 
 
