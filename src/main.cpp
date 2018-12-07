@@ -17,23 +17,23 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/features2d.hpp>
 #include <opencv2/opencv.hpp>
+
 #include "DominoLib/DominoCV.h"
+
+#include "ImageClipping/ImageClipping.h"
 
 int main(int argc, char **argv) {
     cout << "Running main" << std::endl;
 
-
-
-
-        /***************************************************************************
-        * load the Picture with new Domino and the predecessor picture
-        */
-        //new Domino
-        auto imageHandler = ImageHandlerFactory::getImageHandler("../../srcImg", "gestell_", Source::FILESYSTEM);
-        //auto imageHandler = ImageHandlerFactory::getImageHandler("192.168.178.79:8080", "photo", Source::IP_CAM);
-        cv::Mat currentImg = cv::Mat();
-        cv::Mat previousImg = cv::Mat();
-
+    /***************************************************************************
+    * load the Picture with new Domino and the predecessor picture
+    */
+    //new Domino
+    auto imageHandler = ImageHandlerFactory::getImageHandler("../../srcImg", "gestell_", Source::FILESYSTEM);
+    //auto imageHandler = ImageHandlerFactory::getImageHandler("192.168.178.79:8080", "photo", Source::IP_CAM);
+    cv::Mat currentImg = cv::Mat();
+    cv::Mat previousImg = cv::Mat();
+    ImageClipping *imageClipper = new ImageClipping(PlayerPosition::POS_RIGHT, 15);
     while(true) {
         //TODO: Verarbeitung der Bilder (Logik - wann wird ausgelöst, behandlung der ersten zwei Bilder etc.
         do {
@@ -48,6 +48,15 @@ int main(int argc, char **argv) {
 
         } while (previousImg.empty());
 
+
+        imageClipper->setSourceImage(currentImg);
+        cv::Mat playerImg = imageClipper->getPlayersAreaImage();
+        cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
+
+        namedWindow( "PlayingAreas", cv::WINDOW_NORMAL );// Create a window for display.
+        cv::resizeWindow("PlayingAreas", playingFieldMarked.cols / 2.5, playingFieldMarked.rows / 2.5);
+        imshow( "PlayingAreas", playingFieldMarked );
+        cv::waitKey();
 
         const dominoPiece &dominoPiece = detectPiece(previousImg, currentImg);
 
