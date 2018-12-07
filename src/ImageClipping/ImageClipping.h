@@ -35,6 +35,7 @@ public:
     cv::Mat getOverlayedImage();
     cv::Mat getPlayersAreaImage();
     cv::Mat getPlayingFieldImage();
+    cv::Rect getPlayerDominiBlock(int blockNumber);
 
 
 private:
