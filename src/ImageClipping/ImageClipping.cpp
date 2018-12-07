@@ -162,7 +162,7 @@ void ImageClipping::calcAreas(){
 }
 
 
-cv::Rect ImageClipping:getPlayerDominiBlock(int blockNumber){
+cv::Rect ImageClipping::getPlayerDominiBlock(int blockNumber){
     assert(blockNumber >=0 && blockNumber <=NUMBER_OF_PLAYER_BLOCKS);
     return this->blockAreas[blockNumber];
 }
