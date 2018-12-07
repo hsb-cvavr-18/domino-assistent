@@ -46,7 +46,6 @@ cv::Mat ImageClipping::getOverlayedImage(){
 
     for(int i = 0; i < NUMBER_OF_PLAYER_BLOCKS; i ++){
         cv::rectangle(sourceCopy, this->blockAreas[i], BLOCK_COLOR, 8, 8, 0 );
-        std::cout << "Player Block Area: " << this->blockAreas[i].x << std::endl;
     }
 
     cv::rectangle(this->overlayedImage, this->fieldArea,FIELD_COLOR,  CV_FILLED, 8, 0 );
@@ -81,31 +80,32 @@ cv::Rect ImageClipping::calcPlayBlockArea(int blockNumber){
     switch ( this->playerPosition )
     {
         case PlayerPosition::POS_BOTTOM:
-            size = (this->sourceImage.rows - this->sourceImage.rows * this->padding) / (NUMBER_OF_PLAYER_BLOCKS -1);
-            topLeftStart = cv::Point2f(round(this->sourceImage.cols * this->padding + blockNumber * size), round(this->sourceImage.rows - this->sourceImage.rows * this->playersAreaSize));
+            size = (this->sourceImage.cols - this->sourceImage.cols * 2 * this->padding) / (NUMBER_OF_PLAYER_BLOCKS);
+            std::cout << "max: " << this->sourceImage.cols << std::endl;
+            std::cout << "size: " << size << std::endl;
+            topLeftStart = cv::Point2f(round(this->sourceImage.cols  * this->padding + blockNumber * size), round(this->sourceImage.rows - this->sourceImage.rows * this->playersAreaSize));
             this->blockAreas[blockNumber] = cv::Rect (topLeftStart.x, topLeftStart.y, size, this->sourceImage.rows * this->playersAreaSize);
             break;
         case PlayerPosition::POS_TOP:
-            size = (this->sourceImage.rows - this->sourceImage.rows * this->padding)/ (NUMBER_OF_PLAYER_BLOCKS - 1);
-            topLeftStart = cv::Point2f(round(this->sourceImage.cols * this->padding + blockNumber * size), 0);
+            size = (this->sourceImage.cols - this->sourceImage.cols * 2 * this->padding) / (NUMBER_OF_PLAYER_BLOCKS);
+            std::cout << "max: " << this->sourceImage.cols << std::endl;
+            std::cout << "size: " << size << std::endl;
+            topLeftStart = cv::Point2f(round(this->sourceImage.cols *  this->padding + blockNumber * size), 0);
             this->blockAreas[blockNumber] = cv::Rect (topLeftStart.x, topLeftStart.y, size, this->sourceImage.rows * this->playersAreaSize);
             break;
         case PlayerPosition::POS_RIGHT:
-            size = (this->sourceImage.cols - this->sourceImage.cols * this->padding)/ (NUMBER_OF_PLAYER_BLOCKS - 1);
-            topLeftStart = cv::Point2f(round(this->sourceImage.cols - this->sourceImage.cols * this->playersAreaSize), round(this->sourceImage.rows * this->padding + blockNumber * size));
+            size = (this->sourceImage.rows - this->sourceImage.rows * 2 * this->padding)/ (NUMBER_OF_PLAYER_BLOCKS);
+            topLeftStart = cv::Point2f(round(this->sourceImage.cols - this->sourceImage.cols * this->playersAreaSize), round(this->sourceImage.rows *  this->padding + blockNumber * size));
             this->blockAreas[blockNumber]  = cv::Rect (topLeftStart.x, topLeftStart.y, this->sourceImage.cols * this->playersAreaSize, size);
             break;
         case PlayerPosition::POS_LEFT:
-            size = (this->sourceImage.cols - this->sourceImage.cols * this->padding)/ (NUMBER_OF_PLAYER_BLOCKS - 1);
+            size = (this->sourceImage.rows - this->sourceImage.rows * 2 * this->padding)/ (NUMBER_OF_PLAYER_BLOCKS);
             topLeftStart = cv::Point2f(0, round(this->sourceImage.rows * this->padding + blockNumber * size));
             this->blockAreas[blockNumber]  = cv::Rect (topLeftStart.x, topLeftStart.y, this->sourceImage.cols * this->playersAreaSize, size);
             break;
         default:
             break;
     }
-    std::cout << "tls: " << topLeftStart.y<< std::endl;
-    std::cout << "size: " << size << std::endl;
-    std::cout << "bn: " << blockNumber << std::endl;
 
 }
 
