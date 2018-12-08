@@ -23,12 +23,8 @@ public:
 
         if (search != frameCount.end()) {
             // Found
-            cv::namedWindow(windowName, cv::WINDOW_NORMAL);
-            cv::resizeWindow(windowName, img.cols / 2, img.rows / 2);
             showImage(windowName, index, img);
         } else {
-            cv::namedWindow(windowName, cv::WINDOW_NORMAL);
-            cv::resizeWindow(windowName, img.cols / 2, img.rows / 2);
             preShowImage(windowName);
             showImage(windowName, index, img);
         }
