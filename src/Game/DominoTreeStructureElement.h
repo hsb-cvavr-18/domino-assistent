@@ -38,6 +38,11 @@ public:
     const std::list<DominoTreeStructureElement> &getMountedElements() const;
 
     void setMountedElements(const std::list<DominoTreeStructureElement> &mountedElements);
+
+    bool isApplicableTo(DominoTreeStructureElement newElement){
+        return element.isApplicableTo(newElement.getElement());
+    }
+
 };
 
 
