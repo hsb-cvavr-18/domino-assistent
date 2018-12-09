@@ -51,3 +51,30 @@ std::list<DominoPiece> PlayGround::getAvailableMountPoints(DominoTreeStructureEl
 
     return availableMountPoints;
 }
+std::list<DominoTreeStructureElement> PlayGround::getAvailableMountPointsAsElements(DominoTreeStructureElement element) {
+
+    std::list<DominoTreeStructureElement> availableMountPoints;
+
+    if (element.hasFreeMountPoints()){
+        availableMountPoints.emplace_front(element);
+    }
+
+    if (element.hasMountedElements()){
+        std::list<DominoTreeStructureElement> mountedElements= element.getMountedElements();
+
+        std::list <DominoTreeStructureElement> :: iterator it;
+        for(it = mountedElements.begin(); it != mountedElements.end(); ++it){
+
+            std::list<DominoTreeStructureElement> additionalMountPoints = getAvailableMountPointsAsElements(*it);
+
+            std::list <DominoTreeStructureElement> :: iterator it;
+            for(it = additionalMountPoints.begin(); it != additionalMountPoints.end(); ++it){
+                availableMountPoints.emplace_front(*it);
+            }
+        }
+    }
+
+    return availableMountPoints;
+}
+
+

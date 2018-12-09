@@ -21,7 +21,9 @@ public:
     std::list<DominoPiece> getAvailableMountPointsForPassedStone(DominoPiece stone);
 
 private:
-    std::list<DominoPiece> getAvailableMountPoints(DominoTreeStructureElement element);;
+    std::list<DominoPiece> getAvailableMountPoints(DominoTreeStructureElement element);
+
+    std::list<DominoTreeStructureElement> getAvailableMountPointsAsElements(DominoTreeStructureElement element);
 };
 
 
