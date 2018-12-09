@@ -15,26 +15,15 @@ private:
     int number;
 
 public:
-    DominoHalf(cv::RotatedRect rect, int number) {
-        this->rect=rect;
-        this->number=number;
-    }
+    DominoHalf(cv::RotatedRect rect, int number);
 
-    int getNumber() const {
-        return number;
-    }
+    int getNumber() const;
 
-    void setNumber(int number) {
-        this->number = number;
-    }
+    void setNumber(int number);
 
-    const cv::RotatedRect &getRect() const {
-        return rect;
-    }
+    const cv::RotatedRect &getRect() const;
 
-    void setRect(cv::RotatedRect rect) {
-        DominoHalf::rect = rect;
-    }
+    void setRect(cv::RotatedRect rect);
 };
 
 

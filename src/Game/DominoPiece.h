@@ -17,25 +17,17 @@ private:
 public:
     DominoPiece(DominoHalf dominoHalfA, DominoHalf dominoHalfB) : halfA(dominoHalfA), halfB(dominoHalfB) {}
 
-    const DominoHalf &getHalfA() const {return halfA;}
+    const DominoHalf &getHalfA() const;
     void setHalfA(const DominoHalf &halfA) {DominoPiece::halfA = halfA;}
 
-    const DominoHalf &getHalfB() const {return halfB;}
+    const DominoHalf &getHalfB() const;
     void setHalfB(const DominoHalf &halfB) {DominoPiece::halfB = halfB;}
 
-    bool isDoubletsStone() {return halfA.getNumber()==halfB.getNumber();}
-    bool isNormalStone() {return !isDoubletsStone();}
-    cv::Point2f getCenter() {
-        return (halfA.getRect().center + halfB.getRect().center) / 2.0;
-    };
+    bool isDoubletsStone();
+    bool isNormalStone();
+    cv::Point2f getCenter();;
 
-    bool isApplicableTo(DominoPiece piece) {
-        return(this->getHalfA().getNumber() == piece.getHalfA().getNumber() ||
-               this->getHalfB().getNumber() == piece.getHalfB().getNumber() ||
-               this->getHalfA().getNumber() == piece.getHalfB().getNumber() ||
-               this->getHalfB().getNumber() == piece.getHalfA().getNumber()
-        );
-    }
+    bool isApplicableTo(DominoPiece piece);
 };
 
 

@@ -24,37 +24,20 @@ public:
     DominoTreeStructureElement(DominoPiece element) : element(element) {
     }
 
-    void mount(DominoTreeStructureElement dominoTreeStructureElement) {
-        if (this->hasFreeMountPoints())
-            mountedElements.emplace_front(dominoTreeStructureElement);
-        else throw std::exception();
-    }
+    void mount(DominoTreeStructureElement dominoTreeStructureElement);
 
 
-    bool hasMountedElements(){
-        return !mountedElements.empty();
-    }
+    bool hasMountedElements();
 
-    bool hasFreeMountPoints(){
-        return ((element.isNormalStone()   && mountedElements.size()<NORMALMOUNTPOINTAMOUNT) ||
-                (element.isDoubletsStone() && mountedElements.size()<DOUBLETMOUNTPOINTAMOUNT));
-    }
+    bool hasFreeMountPoints();
 
-    const DominoPiece getElement() const {
-        return element;
-    }
+    const DominoPiece getElement() const;
 
-    void setElement(const DominoPiece &element) {
-        DominoTreeStructureElement::element = element;
-    }
+    void setElement(const DominoPiece &element);
 
-    const std::list<DominoTreeStructureElement> &getMountedElements() const {
-        return mountedElements;
-    }
+    const std::list<DominoTreeStructureElement> &getMountedElements() const;
 
-    void setMountedElements(const std::list<DominoTreeStructureElement> &mountedElements) {
-        DominoTreeStructureElement::mountedElements = mountedElements;
-    }
+    void setMountedElements(const std::list<DominoTreeStructureElement> &mountedElements);
 };
 
 
