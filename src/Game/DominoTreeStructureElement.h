@@ -31,13 +31,13 @@ public:
 
     bool hasFreeMountPoints();
 
-    const DominoPiece getElement() const;
+    DominoPiece getElement() ;
 
-    void setElement(const DominoPiece &element);
+    void setElement( DominoPiece &element);
 
-    const std::list<DominoTreeStructureElement> &getMountedElements() const;
+    std::list<DominoTreeStructureElement> &getMountedElements() ;
 
-    void setMountedElements(const std::list<DominoTreeStructureElement> &mountedElements);
+    void setMountedElements( std::list<DominoTreeStructureElement> &mountedElements);
 
     bool isApplicableTo(DominoTreeStructureElement newElement){
         return element.isApplicableTo(newElement.getElement());

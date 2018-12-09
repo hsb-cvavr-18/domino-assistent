@@ -19,18 +19,18 @@ bool DominoTreeStructureElement::hasFreeMountPoints() {
             (element.isDoubletsStone() && mountedElements.size()<DOUBLETMOUNTPOINTAMOUNT));
 }
 
-const DominoPiece DominoTreeStructureElement::getElement() const {
+DominoPiece DominoTreeStructureElement::getElement()  {
     return element;
 }
 
-void DominoTreeStructureElement::setElement(const DominoPiece &element) {
+void DominoTreeStructureElement::setElement( DominoPiece &element) {
     DominoTreeStructureElement::element = element;
 }
 
-const std::list<DominoTreeStructureElement> &DominoTreeStructureElement::getMountedElements() const {
+ std::list<DominoTreeStructureElement> &DominoTreeStructureElement::getMountedElements()  {
     return mountedElements;
 }
 
-void DominoTreeStructureElement::setMountedElements(const std::list<DominoTreeStructureElement> &mountedElements) {
+void DominoTreeStructureElement::setMountedElements( std::list<DominoTreeStructureElement> &mountedElements) {
     DominoTreeStructureElement::mountedElements = mountedElements;
 }
