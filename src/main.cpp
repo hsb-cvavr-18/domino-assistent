@@ -87,8 +87,6 @@ void task_gui() {
     const int width = 500;
 
     namedWindow( "PlayingAreas", cv::WINDOW_NORMAL );// Create a window for display.
-    cv::resizeWindow("PlayingAreas", 800, 600);
-    namedWindow( "PlayingAreas", cv::WINDOW_NORMAL );// Create a window for display.
     cv::resizeWindow("PlayingAreas", width / 2.5, width / 2.5);
 
 
