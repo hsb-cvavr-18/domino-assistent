@@ -1,45 +1,22 @@
+#include "main.h"
 
-// std lib
-#include <stdio.h>
-#include <iostream>
-#include <sstream>
-#include <thread>
-#include <chrono>
-
-#include "DominoLib/DominoLib.h"
-#include "ImgDebugPrinter/ImgDebugPrinter.h"
-#include "PipsDetector/PipsDetector.h"
-#include "ImageHandler/I_ImageHandler.h"
-#include "ImageHandler/ImageHandlerFactory.h"
-// OpenCV
-#include <opencv2/core.hpp>
-#include "opencv2/objdetect.hpp"
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/features2d.hpp>
-#include <opencv2/opencv.hpp>
-
-#include "DominoLib/DominoCV.h"
-
-#include "ImageClipping/ImageClipping.h"
 void task_main();
+void task_gui();
 void task_preview(std::string address);
 int main(int argc, char **argv) {
     cout << "Running main" << std::endl;
 
-
-
-    thread t2(task_main);
+    thread main_thread(task_main);
+    thread gui_thread(task_gui);
     task_preview("192.168.43.152");
-    t2.join();
-
+    main_thread.join();
 
 
     return EXIT_SUCCESS;
 }
 
 
-void task_main(){
+void task_main() {
     /***************************************************************************
    * load the Picture with new Domino and the predecessor picture
    */
@@ -70,20 +47,18 @@ void task_main(){
         cv::Mat playerImg = imageClipper->getPlayersAreaImage();
         cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
 
-        namedWindow( "PlayingAreas", cv::WINDOW_NORMAL );// Create a window for display.
-        cv::resizeWindow("PlayingAreas", playingFieldMarked.cols / 2.5, playingFieldMarked.rows / 2.5);
-        imshow( "PlayingAreas", playingFieldMarked );
-        cv::waitKey();
+        gameFrames.push(playingFieldMarked);
 
         const dominoPiece &dominoPiece = detectPiece(previousImg, currentImg);
 
         cout << "pipcount half 1: " << dominoPiece.a.pips << endl;
         cout << "pipcount half 2: " << dominoPiece.b.pips << endl;
+
+        std::cout << "Enter key to take next img" << std::endl;
+        getchar();
     }
 
 }
-
-
 
 void task_preview(std::string address)
 {
@@ -99,21 +74,37 @@ void task_preview(std::string address)
         return;
     }
 
+    for(;;) {
+        if(!vcap.read(image)) {
+            std::cout << "No frame" << std::endl;
+        } else {
+            previewFrames.push(image);
+        }
+    }
+}
 
-    std::cout << "bup" << endl;
+void task_gui() {
+    const int width = 500;
+
+    namedWindow( "PlayingAreas", cv::WINDOW_NORMAL );// Create a window for display.
+    cv::resizeWindow("PlayingAreas", 800, 600);
+    namedWindow( "PlayingAreas", cv::WINDOW_NORMAL );// Create a window for display.
+    cv::resizeWindow("PlayingAreas", width / 2.5, width / 2.5);
+
+
     namedWindow( "Preview", cv::WINDOW_NORMAL );// Create a window for display
+
     cv::resizeWindow("Preview", width, width);
     cv::moveWindow("Preview", 1920 - (width +50),20);
 
     for(;;) {
-        if(!vcap.read(image)) {
-            std::cout << "No frame" << std::endl;
-            cv::waitKey();
+        cv::Mat m;
+        if(previewFrames.next(m) ) {
+            cv::imshow("Preview", m);
         }
-
-
-        imshow( "Preview", image );
-        if(cv::waitKey(1) >= 0) break;
+        if(gameFrames.next(m) ) {
+            cv::imshow("PlayingAreas", m);
+        }
+        cv::waitKey(25);
     }
 }
-
