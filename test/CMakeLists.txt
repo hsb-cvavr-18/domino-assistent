@@ -31,6 +31,7 @@ target_link_libraries(
         unit_tests
         ${OpenCV_LIBS}
         gtest_main
+        gmock_main
 )
 
 add_test(
