@@ -33,7 +33,8 @@ void ImageClipping::setSourceImage(const cv::Mat  sourceImage){
     }
     this->sourceImage = sourceImage;
     //std::cout << "this source image: " << &this->sourceImage << ", source image:" << &sourceImage << std::endl;
-    this->calcAreas();
+    if(playersArea.empty() || fieldArea.empty())
+        this->calcAreas();
 }
 
 cv::Mat ImageClipping::getOverlayedImage(){
