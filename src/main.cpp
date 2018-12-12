@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
 
     thread main_thread(task_main);
     thread gui_thread(task_gui);
-    task_preview("192.168.43.115");
+    task_preview("192.168.43.253");
     main_thread.join();
 
 

@@ -29,9 +29,9 @@ class ImageClipping {
 
 public:
     ImageClipping(PlayerPosition playerPosition, float size = 15, float padding = 12.5);
-    ImageClipping(cv::Mat sourceImage, PlayerPosition playerPosition = PlayerPosition::POS_RIGHT, float size = 15, float padding = 12);
+    ImageClipping(const cv::Mat sourceImage, PlayerPosition playerPosition = PlayerPosition::POS_RIGHT, float size = 15, float padding = 12);
     ~ImageClipping();
-    void setSourceImage(cv::Mat sourceImage);
+    void setSourceImage(const cv::Mat sourceImage);
     cv::Mat getOverlayedImage();
     cv::Mat getPlayersAreaImage();
     cv::Mat getPlayingFieldImage();
@@ -48,7 +48,7 @@ private:
     cv::Rect fieldArea;
     cv::Rect blockAreas[NUMBER_OF_PLAYER_BLOCKS];
     float padding = 0.125;
-    float playersAreaSize = 0.15; //*100 = percent
+    float playersAreaSize = 0.15; //*100 => percent
     void calcAreas();
     cv::Rect calcPlayBlockArea(int blockNumber);
 

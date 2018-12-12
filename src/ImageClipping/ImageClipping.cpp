@@ -8,7 +8,7 @@ ImageClipping::ImageClipping(PlayerPosition playerPosition, float size, float pa
     this->playerPosition = playerPosition;
 }
 
-ImageClipping::ImageClipping(cv::Mat sourceImage, PlayerPosition playerPosition, float size, float padding){
+ImageClipping::ImageClipping(const cv::Mat  sourceImage, PlayerPosition playerPosition, float size, float padding){
     assert(size>= 0 && size <=100);
     assert(padding >=0 && padding <=100);
     this->playerPosition = playerPosition;
@@ -24,7 +24,7 @@ ImageClipping::ImageClipping(cv::Mat sourceImage, PlayerPosition playerPosition,
 ImageClipping::~ImageClipping(){
 }
 
-void ImageClipping::setSourceImage(cv::Mat sourceImage){
+void ImageClipping::setSourceImage(const cv::Mat  sourceImage){
     if(sourceImage.empty()) {
         std::cout
                 << "ERROR: Could not set Image. Illegal Argument in ImageClipping::setSourceImage(cv::Mat sourceImage)"
@@ -32,34 +32,28 @@ void ImageClipping::setSourceImage(cv::Mat sourceImage){
         return;
     }
     this->sourceImage = sourceImage;
-
+    //std::cout << "this source image: " << &this->sourceImage << ", source image:" << &sourceImage << std::endl;
     this->calcAreas();
 }
 
 cv::Mat ImageClipping::getOverlayedImage(){
     double alpha = 0.3;
-    this->overlayedImage = this->sourceImage.clone();
-    cv::Mat sourceCopy = this->sourceImage.clone();
+    this->overlayedImage = this->sourceImage.clone(); // cv::Mat::zeros(this->sourceImage.rows,this->sourceImage.cols,this->sourceImage.type()); 	//this->sourceImage.clone();
+    //cv::Mat sourceCopy = this->sourceImage.clone();
 
   //  cv::Rect test = cv::Rect(25,25,100,100);
     //cv::rectangle(sourceCopy, test,cv::Scalar(0,255,0), 1, 8, 0 );
 
-    for(int i = 0; i < NUMBER_OF_PLAYER_BLOCKS; i ++){
-        cv::rectangle(sourceCopy, this->blockAreas[i], BLOCK_COLOR, 8, 8, 0 );
-    }
-
     cv::rectangle(this->overlayedImage, this->fieldArea,FIELD_COLOR,  CV_FILLED, 8, 0 );
     cv::rectangle(this->overlayedImage, this->playersArea,PLAYER_COLOR,  CV_FILLED, 8, 0 );
+    cv::addWeighted(this->overlayedImage,alpha, this->sourceImage, 1- alpha, 0, overlayedImage);
+    for(int i = 0; i < NUMBER_OF_PLAYER_BLOCKS; i ++){
+        cv::rectangle(overlayedImage, this->blockAreas[i], BLOCK_COLOR, 8, 8, 0 );
+    }
 
-
-    cv::addWeighted(this->overlayedImage,alpha, sourceCopy, 1- alpha, 0, sourceCopy);
-
-    return sourceCopy;
-
-
-
-
+    return overlayedImage;
 }
+
 cv::Mat ImageClipping::getPlayersAreaImage(){
 
     this->playerImage = this->sourceImage(this->playersArea);
@@ -81,15 +75,15 @@ cv::Rect ImageClipping::calcPlayBlockArea(int blockNumber){
     {
         case PlayerPosition::POS_BOTTOM:
             size = (this->sourceImage.cols - this->sourceImage.cols * 2 * this->padding) / (NUMBER_OF_PLAYER_BLOCKS);
-            std::cout << "max: " << this->sourceImage.cols << std::endl;
-            std::cout << "size: " << size << std::endl;
+            //std::cout << "max: " << this->sourceImage.cols << std::endl;
+            //std::cout << "size: " << size << std::endl;
             topLeftStart = cv::Point2f(round(this->sourceImage.cols  * this->padding + blockNumber * size), round(this->sourceImage.rows - this->sourceImage.rows * this->playersAreaSize));
             this->blockAreas[blockNumber] = cv::Rect (topLeftStart.x, topLeftStart.y, size, this->sourceImage.rows * this->playersAreaSize);
             break;
         case PlayerPosition::POS_TOP:
             size = (this->sourceImage.cols - this->sourceImage.cols * 2 * this->padding) / (NUMBER_OF_PLAYER_BLOCKS);
-            std::cout << "max: " << this->sourceImage.cols << std::endl;
-            std::cout << "size: " << size << std::endl;
+            //std::cout << "max: " << this->sourceImage.cols << std::endl;
+            //std::cout << "size: " << size << std::endl;
             topLeftStart = cv::Point2f(round(this->sourceImage.cols *  this->padding + blockNumber * size), 0);
             this->blockAreas[blockNumber] = cv::Rect (topLeftStart.x, topLeftStart.y, size, this->sourceImage.rows * this->playersAreaSize);
             break;
