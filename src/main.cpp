@@ -72,17 +72,21 @@ void task_preview(std::string address)
         return;
     }
 
-
+    auto before = std::chrono::high_resolution_clock::now();
     for(;;) {
         if(!vcap.read(image)) {
             std::cout << "No frame" << std::endl;
         } else {
+            auto now = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::milli> elapsed = now-before;
+            if(elapsed.count() > 550) {
+                imageClipper->setSourceImage(image);
+                cv::Mat playerImg = imageClipper->getPlayersAreaImage();
+                cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
 
-            imageClipper->setSourceImage(image);
-            cv::Mat playerImg = imageClipper->getPlayersAreaImage();
-            cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
-
-            previewFrames.push(playingFieldMarked);
+                previewFrames.push(playingFieldMarked);
+                before = std::chrono::high_resolution_clock::now();
+            }
         }
     }
 }
