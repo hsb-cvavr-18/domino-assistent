@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
 
     thread main_thread(task_main);
     thread gui_thread(task_gui);
-    task_preview("192.168.43.152");
+    task_preview("192.168.43.115");
     main_thread.join();
 
 
@@ -25,8 +25,6 @@ void task_main() {
     //auto imageHandler = ImageHandlerFactory::getImageHandler("192.168.178.79:8080", "photo", Source::IP_CAM);
     cv::Mat currentImg = cv::Mat();
     cv::Mat previousImg = cv::Mat();
-    ImageClipping *imageClipper = new ImageClipping(PlayerPosition::POS_LEFT, 15,12.5);
-
     while(true) {
         //TODO: Verarbeitung der Bilder (Logik - wann wird ausgelöst, behandlung der ersten zwei Bilder etc.
         do {
@@ -43,13 +41,11 @@ void task_main() {
         } while (previousImg.empty());
 
 
-        imageClipper->setSourceImage(currentImg);
-        cv::Mat playerImg = imageClipper->getPlayersAreaImage();
-        cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
-
-        gameFrames.push(playingFieldMarked);
-
         const dominoPiece &dominoPiece = detectPiece(previousImg, currentImg);
+        cv::Mat result;
+        result = cv::imread("domino_result.jpg");
+
+        gameFrames.push(result);
 
         cout << "pipcount half 1: " << dominoPiece.a.pips << endl;
         cout << "pipcount half 2: " << dominoPiece.b.pips << endl;
@@ -67,6 +63,8 @@ void task_preview(std::string address)
     float aspectRatio;
     int width = 500;
     const std::string videoStreamAddress = "http://" + address + ":8080/video";
+    ImageClipping *imageClipper = new ImageClipping(PlayerPosition::POS_LEFT, 15,12.5);
+
 
     //open the video stream and make sure it's opened
     if(!vcap.open(videoStreamAddress)) {
@@ -74,11 +72,17 @@ void task_preview(std::string address)
         return;
     }
 
+
     for(;;) {
         if(!vcap.read(image)) {
             std::cout << "No frame" << std::endl;
         } else {
-            previewFrames.push(image);
+
+            imageClipper->setSourceImage(image);
+            cv::Mat playerImg = imageClipper->getPlayersAreaImage();
+            cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
+
+            previewFrames.push(playingFieldMarked);
         }
     }
 }
