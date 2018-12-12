@@ -8,9 +8,11 @@
 #include <iostream>
 #include <map>
 
+#include "../DominoLib/SafeQueue.h"
 #include <opencv2/core/mat.hpp>
 #include <opencv2/highgui.hpp>
-
+extern SafeQueue<cv::Mat> previewFrames;
+extern SafeQueue<cv::Mat> gameFrames;
 using namespace std;
 
 class AbstractImgDebugPrinter {
