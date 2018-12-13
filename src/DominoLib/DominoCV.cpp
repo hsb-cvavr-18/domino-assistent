@@ -118,7 +118,7 @@ DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
     unprocessedFrame = colorizeHalf(half1, unprocessedFrame);
     unprocessedFrame = colorizeHalf(half2, unprocessedFrame);
 
-    printer->printImage("frame", unprocessedFrame);
+    printer->printImage("Result", unprocessedFrame);
     imwrite("domino_result.jpg", unprocessedFrame);
 
     DominoPiece piece = DominoPiece(half1,half2);

@@ -5,9 +5,8 @@
 #include "ImgDebugPrinter.h"
 
 void DefaultImgDebugPrinter::preShowImage(std::string windowName) {
-    cv::namedWindow(windowName, true);
 }
 
 void DefaultImgDebugPrinter::showImage(std::string windowName, int index, cv::Mat mat) {
-    cv::imshow(windowName, mat); cv::waitKey();
+    gameFrames.push(mat);
 }

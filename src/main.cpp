@@ -1,98 +1,116 @@
-// std lib
-#include <stdio.h>
-#include <iostream>
-#include <sstream>
-#include <thread>
-#include <chrono>
+#include "main.h"
 
-#include "DominoLib/DominoLib.h"
-#include "ImgDebugPrinter/ImgDebugPrinter.h"
-#include "PipsDetector/PipsDetector.h"
-// OpenCV
-#include <opencv2/core.hpp>
-#include "opencv2/objdetect.hpp"
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/features2d.hpp>
-#include <opencv2/opencv.hpp>
-#include "DominoLib/DominoCV.h"
-#include "Game/DominoPiece.h"
-#include "Game/PlayGround.h"
-
-int main(int argc, char **argv) {/*
-    cv::VideoCapture vcap;
-    cv::Mat image;
-
-    const std::string videoStreamAddress = "http://192.168.178.79:8080/video";
-
-    //open the video stream and make sure it's opened
-    if(!vcap.open(videoStreamAddress)) {
-        std::cout << "Error opening video stream or file" << std::endl;
-        return -1;
-    }
-
-    std::cout << "Load next Image" << std::endl;
-    std::cin.get();
-    if(!vcap.read(image)) {
-        std::cout << "No frame" << std::endl;
-        cv::waitKey();
-    }
-
-    cv::imshow("Output Window", image);
-
-    while (true) {
-        FILE* file = popen("wget -q http://192.168.178.79:8080/photoaf.jpg -O latest_img.jpg","r");
-        fclose(file);
-
-        cv::Mat image = cv::imread("latest_img.jpg");
-        cv::namedWindow( "Image output" );
-        cv::imshow("Image output", image); cv::waitKey(5); // here's your car ;)
-    }*/
-
-
-
+void task_main();
+void task_gui();
+void task_preview(std::string address);
+int main(int argc, char **argv) {
     cout << "Running main" << std::endl;
 
-    /***************************************************************************
-    * load the Picture with new Domino and the predecessor picture
-    */
-    //new Domino
-    cv::Mat currentImg = cv::imread("../../img/gestell_8.jpg");
-    if (!currentImg.data) {
-        cout << "Could not open or find the new image" << endl;
-        exit(EXIT_FAILURE);
-    }
+    thread main_thread(task_main);
+    thread gui_thread(task_gui);
+    task_preview("192.168.43.253");
+    main_thread.join();
 
-    //predeccessors
-    cv::Mat previousImg = cv::imread("../../img/gestell_7.jpg");
-    if (!previousImg.data) {
-        cout << "Could not open or find the previous image" << endl;
-        exit(EXIT_FAILURE);
-    }
-
-    const DominoPiece &dominoPiece = detectPiece(previousImg, currentImg);
-
-    PlayGround playGround = PlayGround(dominoPiece);
-
-
-    cout << "pipcount half 1: " << dominoPiece.getHalfA().getNumber() << endl;
-    cout << "pipcount half 2: " << dominoPiece.getHalfB().getNumber() << endl;
-
-    std::list<DominoPiece> availableMountPoints = playGround.getAvailableMountPoints();
-
-    cv::Mat mountpoints = currentImg.clone();
-    for (DominoPiece n : availableMountPoints) {
-        for (DominoPiece x : playGround.getAvailableMountPointsForPassedStone(n)) {
-            // TODO: replace x by stones from playground.
-            // currently we just pass the first free pieces to the filter itself which should always evaluate true and therefore show up in the img
-            std::cout << "mountPoint_A: " << x.getHalfA().getRect().center << " , " << x.getHalfB().getRect().center << std::endl;
-            cv::drawMarker(mountpoints, x.getCenter(), cv::Scalar(255, 0, 242));
-            cv::putText(mountpoints, "MP",  x.getCenter(), cv::FONT_HERSHEY_COMPLEX, 0.8, cv::Scalar(255, 0, 242));
-        }
-
-    }
-    cv::imwrite("mountpoints.jpg", mountpoints);
 
     return EXIT_SUCCESS;
 }
 
+
+void task_main() {
+    /***************************************************************************
+   * load the Picture with new Domino and the predecessor picture
+   */
+    //new Domino
+    auto imageHandler = ImageHandlerFactory::getImageHandler("../../srcImg", "gestell_", Source::FILESYSTEM);
+    //auto imageHandler = ImageHandlerFactory::getImageHandler("192.168.178.79:8080", "photo", Source::IP_CAM);
+    cv::Mat currentImg = cv::Mat();
+    cv::Mat previousImg = cv::Mat();
+    while(true) {
+        //TODO: Verarbeitung der Bilder (Logik - wann wird ausgelöst, behandlung der ersten zwei Bilder etc.
+        do {
+            imageHandler->loadNextImage();
+            currentImg = imageHandler->getCurrentImage();
+            if (NULL == &currentImg || currentImg.empty()) {
+                std::cout << "No more Image loaded" << std::endl;
+
+                return;// EXIT_SUCCESS;
+            }
+
+            previousImg = imageHandler->getPreviousImage();
+
+        } while (previousImg.empty());
+
+
+        const dominoPiece &dominoPiece = detectPiece(previousImg, currentImg);
+        cv::Mat result;
+        result = cv::imread("domino_result.jpg");
+
+        gameFrames.push(result);
+
+        cout << "pipcount half 1: " << dominoPiece.a.pips << endl;
+        cout << "pipcount half 2: " << dominoPiece.b.pips << endl;
+
+        std::cout << "Enter key to take next img" << std::endl;
+        getchar();
+    }
+
+}
+
+void task_preview(std::string address)
+{
+    cv::VideoCapture vcap;
+    cv::Mat image;
+    float aspectRatio;
+    int width = 500;
+    const std::string videoStreamAddress = "http://" + address + ":8080/video";
+    ImageClipping *imageClipper = new ImageClipping(PlayerPosition::POS_LEFT, 15,12.5);
+
+
+    //open the video stream and make sure it's opened
+    if(!vcap.open(videoStreamAddress)) {
+        std::cout << "Error opening video stream or file" << std::endl;
+        return;
+    }
+
+    auto before = std::chrono::high_resolution_clock::now();
+    for(;;) {
+        if(!vcap.read(image)) {
+            std::cout << "No frame" << std::endl;
+        } else {
+            auto now = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::milli> elapsed = now-before;
+            if(elapsed.count() > 550) {
+                imageClipper->setSourceImage(image);
+                cv::Mat playerImg = imageClipper->getPlayersAreaImage();
+                cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
+
+                previewFrames.push(playingFieldMarked);
+                before = std::chrono::high_resolution_clock::now();
+            }
+        }
+    }
+}
+
+void task_gui() {
+    const int width = 500;
+
+    namedWindow( "PlayingAreas", cv::WINDOW_NORMAL );// Create a window for display.
+    cv::resizeWindow("PlayingAreas", width / 2.5, width / 2.5);
+
+
+    namedWindow( "Preview", cv::WINDOW_NORMAL );// Create a window for display
+
+    cv::resizeWindow("Preview", width, width);
+    cv::moveWindow("Preview", 1920 - (width +50),20);
+
+    for(;;) {
+        cv::Mat m;
+        if(previewFrames.next(m) ) {
+            cv::imshow("Preview", m);
+        }
+        if(gameFrames.next(m) ) {
+            cv::imshow("PlayingAreas", m);
+        }
+        cv::waitKey(25);
+    }
+}

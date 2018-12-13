@@ -39,7 +39,7 @@ protected:
 
         const DominoPiece &dominoPiece = detectPiece(previousImgMat, currentImgMat);
 
-        int actualPips[2] = {dominoPiece.getHalfA().getNumber(), dominoPiece.getHalfB().getNumber()};
+        const unsigned int actualPips[2] = {(dominoPiece.a.pips), (dominoPiece.b.pips)};
         ASSERT_THAT(actualPips, testing::UnorderedElementsAreArray(pipsExpected));
     }
 };
@@ -155,4 +155,36 @@ TEST_F(DominoCVTest, gestell2_17To18) {
 
 TEST_F(DominoCVTest, gestell2_18To19) {
     verify("../gestell2_18.jpg", "../gestell2_19.jpg", {2, 6});
+}
+
+/**
+ * GESTELL 3
+ */
+
+TEST_F(DominoCVTest, gestell3_0To1) {
+    verify("../gestell3_0.jpg", "../gestell3_1.jpg", {1, 6});
+}
+ 
+TEST_F(DominoCVTest, gestell3_1To2) {
+    verify("../gestell3_1.jpg", "../gestell3_2.jpg", {1, 5});
+}
+
+TEST_F(DominoCVTest, gestell3_2To3) {
+    verify("../gestell3_2.jpg", "../gestell3_3.jpg", {5, 0});
+}
+
+TEST_F(DominoCVTest, gestell3_3To4) {
+    verify("../gestell3_3.jpg", "../gestell3_4.jpg", {1, 0});
+}
+
+/**
+ * GESTELL 4
+ */
+
+TEST_F(DominoCVTest, gestell4_2To3) {
+    verify("../gestell4_2.jpg", "../gestell4_3.jpg", {5, 0});
+}
+
+TEST_F(DominoCVTest, gestell4_3To4) {
+    verify("../gestell4_3.jpg", "../gestell4_4.jpg", {1, 0});
 }

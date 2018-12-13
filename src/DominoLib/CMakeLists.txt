@@ -5,7 +5,8 @@ set(SOURCE_FILES
     DominoLib.h
     DominoLib.cpp
     DominoCV.h
-    DominoCV.cpp)
+    DominoCV.cpp
+    SafeQueue.h)
 
 add_library(DominoLib SHARED STATIC ${SOURCE_FILES})
 
