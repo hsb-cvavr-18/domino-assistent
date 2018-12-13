@@ -114,16 +114,18 @@ std::list<DominoPiece> PlayGround::getAvailableMountPoints(DominoTreeStructureEl
 
 RecommendedMove PlayGround::recommendMove(std::list<DominoPiece> userStones) {
     return stupidMove(userStones);
-    }
 }
 
 RecommendedMove PlayGround::stupidMove(std::list<DominoPiece> userStones) {
     RecommendedMove move;
     move.userStone = userStones.front();
     move.recommendedStone = rootElement.getElement();
-    return RecommendedMove();
+    return move;
 }
 
-
-
+RecommendedMove PlayGround::fistMove(std::list<DominoPiece> userStones) {
+    RecommendedMove move;
+    
+    return move;
+}
 
