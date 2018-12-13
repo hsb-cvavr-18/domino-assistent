@@ -23,3 +23,7 @@ bool DominoPiece::isApplicableTo(DominoPiece piece) {
            this->getHalfB().getNumber() == piece.getHalfA().getNumber()
     );
 }
+
+DominoPiece::DominoPiece() {
+
+}

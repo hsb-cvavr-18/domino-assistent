@@ -15,6 +15,8 @@ void PlayGround::mountStone(DominoPiece stone) {
     }
 }
 
+
+
 DominoTreeStructureElement PlayGround::getNearestElement(DominoTreeStructureElement element,std::list<DominoTreeStructureElement> mountPoints ){
     cv::Point2f centerOfElement = element.getElement().getCenter();
 
@@ -109,5 +111,19 @@ std::list<DominoPiece> PlayGround::getAvailableMountPoints(DominoTreeStructureEl
 
     return availableMountPoints;
 }
+
+RecommendedMove PlayGround::recommendMove(std::list<DominoPiece> userStones) {
+    return stupidMove(userStones);
+    }
+}
+
+RecommendedMove PlayGround::stupidMove(std::list<DominoPiece> userStones) {
+    RecommendedMove move;
+    move.userStone = userStones.front();
+    move.recommendedStone = rootElement.getElement();
+    return RecommendedMove();
+}
+
+
 
 

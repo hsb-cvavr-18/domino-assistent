@@ -16,6 +16,7 @@ private:
 
 public:
     DominoHalf(cv::RotatedRect rect, int number);
+    DominoHalf();
 
     int getNumber();
 

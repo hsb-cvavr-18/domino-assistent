@@ -16,7 +16,7 @@ private:
                halfB ;
 public:
     DominoPiece(DominoHalf dominoHalfA, DominoHalf dominoHalfB) : halfA(dominoHalfA), halfB(dominoHalfB) {}
-
+    DominoPiece();
     DominoHalf &getHalfA();
     void setHalfA( DominoHalf &halfA) {DominoPiece::halfA = halfA;}
 

@@ -24,3 +24,7 @@ cv::RotatedRect &DominoHalf::getRect() {
 void DominoHalf::setRect(cv::RotatedRect rect) {
     DominoHalf::rect = rect;
 }
+
+DominoHalf::DominoHalf() {
+
+}
