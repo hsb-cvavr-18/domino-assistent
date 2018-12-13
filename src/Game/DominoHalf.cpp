@@ -9,7 +9,7 @@ DominoHalf::DominoHalf(cv::RotatedRect rect, int number) {
     this->number=number;
 }
 
-int DominoHalf::getNumber() const {
+int DominoHalf::getNumber()  {
     return number;
 }
 
@@ -17,7 +17,7 @@ void DominoHalf::setNumber(int number) {
     this->number = number;
 }
 
-const cv::RotatedRect &DominoHalf::getRect() const {
+cv::RotatedRect &DominoHalf::getRect() {
     return rect;
 }
 

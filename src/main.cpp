@@ -41,14 +41,14 @@ void task_main() {
         } while (previousImg.empty());
 
 
-        const dominoPiece &dominoPiece = detectPiece(previousImg, currentImg);
+        DominoPiece dominoPiece = detectPiece(previousImg, currentImg);
         cv::Mat result;
         result = cv::imread("domino_result.jpg");
 
         gameFrames.push(result);
 
-        cout << "pipcount half 1: " << dominoPiece.a.pips << endl;
-        cout << "pipcount half 2: " << dominoPiece.b.pips << endl;
+        cout << "pipcount half 1: " << dominoPiece.getHalfA().getNumber() << endl;
+        cout << "pipcount half 2: " << dominoPiece.getHalfA().getNumber() << endl;
 
         std::cout << "Enter key to take next img" << std::endl;
         getchar();

@@ -4,9 +4,9 @@
 
 #include "DominoPiece.h"
 
-const DominoHalf &DominoPiece::getHalfA() const {return halfA;}
+DominoHalf &DominoPiece::getHalfA() {return halfA;}
 
-const DominoHalf &DominoPiece::getHalfB() const {return halfB;}
+DominoHalf &DominoPiece::getHalfB() {return halfB;}
 
 bool DominoPiece::isDoubletsStone() {return halfA.getNumber()==halfB.getNumber();}
 

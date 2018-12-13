@@ -17,11 +17,11 @@ private:
 public:
     DominoHalf(cv::RotatedRect rect, int number);
 
-    int getNumber() const;
+    int getNumber();
 
     void setNumber(int number);
 
-    const cv::RotatedRect &getRect() const;
+    cv::RotatedRect &getRect() ;
 
     void setRect(cv::RotatedRect rect);
 };
