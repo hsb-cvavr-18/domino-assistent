@@ -68,7 +68,7 @@ cv::Mat ImageClipping::getPlayingFieldImage(){
 
 
 cv::Rect ImageClipping::calcPlayBlockArea(int blockNumber){
-    assert(blockNumber >=0 && blockNumber <=6);
+    assert(blockNumber >=0 && blockNumber <=NUMBER_OF_PLAYER_BLOCKS-1);
     float size;
     cv::Point2f topLeftStart;
 
