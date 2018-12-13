@@ -43,6 +43,8 @@ public:
         return element.isApplicableTo(newElement.getElement());
     }
 
+    std::list<int> getApplicablePips();
+
 };
 
 
