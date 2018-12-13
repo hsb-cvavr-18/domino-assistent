@@ -14,7 +14,9 @@ private:
 public:
     PlayGround(DominoTreeStructureElement rootElement) : rootElement(rootElement) {}
 
-    void mountStone(DominoPiece stone);;
+    void mountStone(DominoPiece stone);
+
+    DominoTreeStructureElement getNearestElement(DominoTreeStructureElement element,std::list<DominoTreeStructureElement> mountPoints );
 
     std::list<DominoPiece> getAvailableMountPoints();
     
@@ -22,7 +24,7 @@ public:
 
 private:
     std::list<DominoPiece> getAvailableMountPoints(DominoTreeStructureElement element);
-
+    std::list<DominoTreeStructureElement> getAvailableMountPointsForPassedElement(DominoTreeStructureElement stone);
     std::list<DominoTreeStructureElement> getAvailableMountPointsAsElements(DominoTreeStructureElement element);
 };
 
