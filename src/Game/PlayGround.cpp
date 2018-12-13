@@ -8,9 +8,11 @@
 
 void PlayGround::mountStone(DominoPiece stone) {
     DominoTreeStructureElement element = DominoTreeStructureElement(std::move(stone));
-    std::list<DominoTreeStructureElement> availableMountPoints = getAvailableMountPointsAsElements(element);
-    DominoTreeStructureElement nearestElement =  getNearestElement(element,availableMountPoints);
-    nearestElement.mount(element);
+    std::list<DominoTreeStructureElement> availableMountPoints = getAvailableMountPointsForPassedElement(element);
+    if(!availableMountPoints.empty()){
+        DominoTreeStructureElement nearestElement =  getNearestElement(element,availableMountPoints);
+        nearestElement.mount(element);
+    }
 }
 
 DominoTreeStructureElement PlayGround::getNearestElement(DominoTreeStructureElement element,std::list<DominoTreeStructureElement> mountPoints ){
