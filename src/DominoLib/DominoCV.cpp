@@ -55,6 +55,10 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
     vector<cv::Vec4i> diceHierarchy;
     findContours(frame.clone(), pieceContours, diceHierarchy, CV_RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
+    if(pieceContours.size() <= 0) {
+        throw std::runtime_error("No contours found");
+    }
+
     //Find the largest contour and create a rotated rect around it
     cv::RotatedRect minAreaRotatedRect = getRotatedRectOflargestContour(pieceContours, frame.size());
 
@@ -125,3 +129,52 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
     piece.b = half1;
     return piece;
 }
+
+std::vector<dominoPiece> detectPlayerDominoPieces(cv::Mat firstImg, cv::Mat currentImg) {
+    vector<dominoPiece> pieces;
+    ImageClipping *imageClipper = new ImageClipping(PlayerPosition::POS_LEFT, 15,12.5);
+    imageClipper->setSourceImage(currentImg);
+    cv::Mat playerImg = imageClipper->getPlayersAreaImage();
+    cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
+
+    auto *threads = new std::thread[NUMBER_OF_PLAYER_BLOCKS];
+    for(int i = 0; i < NUMBER_OF_PLAYER_BLOCKS; i++) {
+        threads[i] = std::thread(getPlayerDominoPiece, imageClipper, firstImg, currentImg, i);
+    }
+
+    for(int i = 0; i < NUMBER_OF_PLAYER_BLOCKS; i++) {
+        std::future<dominoPiece> ret = std::async(&getPlayerDominoPiece, imageClipper, firstImg, currentImg, i);
+        try {
+            pieces.push_back(ret.get());
+        } catch (std::exception const& e){
+            std::cerr << e.what() << std::endl;
+        } catch( ... ) {
+            // ensure destructors of auto objects are called
+        }
+
+    }
+
+    return pieces;
+}
+
+dominoPiece getPlayerDominoPiece(ImageClipping *imageClipper, cv::Mat firstImg, cv::Mat currentImg, int blockNumber) {
+
+    cv::Rect fieldRect = imageClipper->getPlayerDominiBlock(blockNumber);
+    cv::imwrite("debug_firstImg.jpg", firstImg);
+    cv::imwrite("debug_currentImg.jpg", currentImg);
+    cv::Mat previousField = cutPlayerBlock(firstImg, fieldRect);
+    cv::Mat currentField = cutPlayerBlock(currentImg, fieldRect);
+
+    std::ostringstream name;
+    name << "player_domino_field_" << blockNumber << ".jpg" ;
+    std::cout << name.str();
+    cv::imwrite(name.str(), currentField);
+    return detectPiece(previousField, currentField);
+
+}
+
+cv::Mat cutPlayerBlock(cv::Mat image, cv::Rect rect) {
+    cv::Mat playerBlock = image(rect);
+    return playerBlock;
+}
+

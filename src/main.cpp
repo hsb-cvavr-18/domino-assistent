@@ -1,5 +1,7 @@
 #include "main.h"
 
+auto imageHandler = ImageHandlerFactory::getImageHandler("../../srcImg", "gestell_", Source::FILESYSTEM);
+
 void task_main();
 void task_gui();
 void task_preview(std::string address);
@@ -8,7 +10,7 @@ int main(int argc, char **argv) {
 
     thread main_thread(task_main);
     thread gui_thread(task_gui);
-    task_preview("192.168.43.253");
+    task_preview("192.168.43.28");
     main_thread.join();
 
 
@@ -21,7 +23,7 @@ void task_main() {
    * load the Picture with new Domino and the predecessor picture
    */
     //new Domino
-    auto imageHandler = ImageHandlerFactory::getImageHandler("../../srcImg", "gestell_", Source::FILESYSTEM);
+
     //auto imageHandler = ImageHandlerFactory::getImageHandler("192.168.178.79:8080", "photo", Source::IP_CAM);
     cv::Mat currentImg = cv::Mat();
     cv::Mat previousImg = cv::Mat();
@@ -63,7 +65,6 @@ void task_preview(std::string address)
     float aspectRatio;
     int width = 500;
     const std::string videoStreamAddress = "http://" + address + ":8080/video";
-    ImageClipping *imageClipper = new ImageClipping(PlayerPosition::POS_LEFT, 15,12.5);
 
 
     //open the video stream and make sure it's opened
@@ -80,11 +81,17 @@ void task_preview(std::string address)
             auto now = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double, std::milli> elapsed = now-before;
             if(elapsed.count() > 550) {
-                imageClipper->setSourceImage(image);
-                cv::Mat playerImg = imageClipper->getPlayersAreaImage();
-                cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
 
+                ImageClipping *imageClipper = new ImageClipping(PlayerPosition::POS_LEFT, 15,12.5);
+                imageClipper->setSourceImage(image);
+                cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
                 previewFrames.push(playingFieldMarked);
+
+                const vector<dominoPiece> &dominoPieces = detectPlayerDominoPieces(imageHandler->getFirstImage(), image);
+                for(auto dominoPiece : dominoPieces) {
+                    std::cout << "found piece " << dominoPiece.a.pips << "," << dominoPiece.b.pips << std::endl;
+                }
+
                 before = std::chrono::high_resolution_clock::now();
             }
         }
