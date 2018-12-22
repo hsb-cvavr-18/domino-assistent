@@ -138,41 +138,22 @@ std::vector<dominoPiece> detectPlayerDominoPieces(cv::Mat firstImg, cv::Mat curr
     cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
 
     std::vector<std::future<dominoPiece>> futures;
-    auto *threads = new std::thread[NUMBER_OF_PLAYER_BLOCKS];
     for(int i = 0; i < NUMBER_OF_PLAYER_BLOCKS; i++) {
-        //threads[i] = std::thread(getPlayerDominoPiece, imageClipper, firstImg, currentImg, i);
         futures.push_back(std::async(std::launch::async, &getPlayerDominoPiece, imageClipper, firstImg, currentImg, i));
     }
 
-    for (auto& f : futures)
-    {
-        try
-        {
-            dominoPiece res = f.get();
-            pieces.push_back(res);
-            std::cout << &res << std::endl;
-        }
-        catch(exception & e)
-        {
-            cout<<e.what()<<endl;
-        }
-    }
-
-    /*for(int i = 0; i < NUMBER_OF_PLAYER_BLOCKS; i++) {
+    for(int i = 0; i < NUMBER_OF_PLAYER_BLOCKS; i++) {
         std::future<dominoPiece> ret = std::async(&getPlayerDominoPiece, imageClipper, firstImg, currentImg, i);
         try {
             pieces.push_back(ret.get());
-        } catch (std::runtime_error const& e){
-            std::cerr << e.what() << std::endl;
-        } catch( const string& e ) {
-            std::cerr << e.c_str() << std::endl;
+            std::cout << "slot #" << i << ": has piece" << std::endl;
         } catch( const std::exception& e ) {
-            std::cerr << e.what() << std::endl;
+            std::cerr << "slot #" << i << ":" << e.what() << std::endl;
         } catch( ... ) {
             // ensure destructors of auto objects are called
         }
 
-    }*/
+    }
 
     return pieces;
 }
@@ -187,7 +168,6 @@ dominoPiece getPlayerDominoPiece(ImageClipping *imageClipper, cv::Mat firstImg, 
 
     std::ostringstream name;
     name << "player_domino_field_" << blockNumber << ".jpg" ;
-    std::cout << name.str();
     cv::imwrite(name.str(), currentField);
     return detectPiece(previousField, currentField);
 
