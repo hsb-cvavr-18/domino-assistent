@@ -47,11 +47,11 @@ protected:
             std::cout << "found piece " << dominoPiece.a.pips << "," << dominoPiece.b.pips << std::endl;
         }
 
-        EXPECT_EQ(pieces.size(), 7);
+        EXPECT_EQ(pieces.size(), 5);
     }
 };
 
-TEST_F(PlayerPiecesTest, testAHalfWithNoPip) {
+TEST_F(PlayerPiecesTest, testRecognitionOfPlayerDominoPieces) {
     verify(0);
 }
 
