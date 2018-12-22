@@ -43,14 +43,19 @@ void task_main() {
         } while (previousImg.empty());
 
 
-        const dominoPiece &dominoPiece = detectPiece(previousImg, currentImg);
+        const dominoPiece &currentDominoPiece = detectPiece(previousImg, currentImg);
         cv::Mat result;
         result = cv::imread("domino_result.jpg");
 
         gameFrames.push(result);
 
-        cout << "pipcount half 1: " << dominoPiece.a.pips << endl;
-        cout << "pipcount half 2: " << dominoPiece.b.pips << endl;
+        cout << "pipcount half 1: " << currentDominoPiece.a.pips << endl;
+        cout << "pipcount half 2: " << currentDominoPiece.b.pips << endl;
+
+        const vector<dominoPiece> &dominoPlayerPieces = detectPlayerDominoPieces(imageHandler->getFirstImage(), currentImg);
+        for(auto dominoPiece : dominoPlayerPieces) {
+            std::cout << "found piece " << dominoPiece.a.pips << "," << dominoPiece.b.pips << std::endl;
+        }
 
         std::cout << "Enter key to take next img" << std::endl;
         getchar();
@@ -86,11 +91,6 @@ void task_preview(std::string address)
                 imageClipper->setSourceImage(image);
                 cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
                 previewFrames.push(playingFieldMarked);
-
-                const vector<dominoPiece> &dominoPieces = detectPlayerDominoPieces(imageHandler->getFirstImage(), image);
-                for(auto dominoPiece : dominoPieces) {
-                    std::cout << "found piece " << dominoPiece.a.pips << "," << dominoPiece.b.pips << std::endl;
-                }
 
                 before = std::chrono::high_resolution_clock::now();
             }
