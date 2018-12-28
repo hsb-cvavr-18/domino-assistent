@@ -181,8 +181,6 @@ std::vector<dominoPiece> detectPlayerDominoPieces(cv::Mat firstImg, cv::Mat curr
 dominoPiece getPlayerDominoPiece(ImageClipping *imageClipper, cv::Mat firstImg, cv::Mat currentImg, int blockNumber) {
 
     cv::Rect fieldRect = imageClipper->getPlayerDominiBlock(blockNumber);
-    cv::imwrite("debug_firstImg.jpg", firstImg);
-    cv::imwrite("debug_currentImg.jpg", currentImg);
     cv::Mat previousField = cutPlayerBlock(firstImg, fieldRect);
     cv::Mat currentField = cutPlayerBlock(currentImg, fieldRect);
 
