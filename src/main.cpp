@@ -42,8 +42,14 @@ void task_main() {
 
         } while (previousImg.empty());
 
+        ImageClipping *imageClipper = new ImageClipping(PlayerPosition::POS_LEFT, 15,12.5);
+        imageClipper->setSourceImage(previousImg);
+        cv::Mat previousImgCropped = imageClipper->getPlayingFieldImage();
+        imageClipper->setSourceImage(currentImg);
+        cv::Mat currentImgCropped = imageClipper->getPlayingFieldImage();
 
-        const dominoPiece &currentDominoPiece = detectPiece(previousImg, currentImg);
+
+        const dominoPiece &currentDominoPiece = detectPiece(previousImgCropped, currentImgCropped);
         cv::Mat result;
         result = cv::imread("domino_result.jpg");
 
