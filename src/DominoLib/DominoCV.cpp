@@ -79,11 +79,24 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
     drawRotatedRect(rotated, minAreaRotatedRect);
     imwrite("domino_rotated_rect.jpg", rotated);
 
+    float ratioWH = (float) dominoBoundsRect.width / dominoBoundsRect.height; // should be 1.66
+    float ratioHW = (float) dominoBoundsRect.height / dominoBoundsRect.width; // should be 0.6
+
+    char buffer[100];
+    std::sprintf(buffer, "Ratio of size of found rect: ratioWH = '%f' ratioHW = '%f'", ratioWH, ratioHW);
+    std::cout << buffer << endl;
+    if( !(ratioWH >= 1.4f && ratioWH <= 1.8f
+          || ratioHW >= 0.4f && ratioHW <= 0.8f
+          || ratioHW >= 1.4f && ratioHW <= 1.8f
+             || ratioWH >= 0.4f && ratioWH <= 0.8f) ) {
+        ostringstream string;
+        string << "Abnormal: " << buffer;
+        throw std::runtime_error(string.str());
+    }
+
     //Cut out wanted domino - containeing only wanted Domino
     cv::Mat diceROI = diffframe(dominoBoundsRect);
     imwrite("rect.jpg", diceROI);
-
-
     /***************************************************************************
      * Get Pips of each half of the domino block
      */
