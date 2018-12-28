@@ -30,4 +30,10 @@
 #include "ImageClipping/ImageClipping.h"
 #include "DominoLib/SafeQueue.h"
 
+void waitForUserInput() {
+    string cinBuff;
+    std::cout << "Enter key to take next img" << std::endl;
+    std::getline(std::cin, cinBuff);
+}
+
 #endif //PROJECT_MAIN_H

@@ -63,8 +63,7 @@ void task_main() {
             std::cout << "found piece " << dominoPiece.a.pips << "," << dominoPiece.b.pips << std::endl;
         }
 
-        std::cout << "Enter key to take next img" << std::endl;
-        getchar();
+        waitForUserInput();
     }
 
 }
