@@ -15,9 +15,10 @@ public:
     IpcamHandler(std::string path, std::string imagePrefix);
 
     // Implement functions
-    cv::Mat getCurrentImage();
-    cv::Mat getPreviousImage();
-    void loadNextImage();
+    cv::Mat getFirstImage() override;
+    cv::Mat getCurrentImage() override;
+    cv::Mat getPreviousImage() override;
+    void loadNextImage() override;
     void setPath(std::string path, std::string imagePrefix);
 
     ~IpcamHandler();
