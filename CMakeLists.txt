@@ -34,3 +34,5 @@ add_subdirectory(test)
 # file copy idom: https://stackoverflow.com/questions/46995733/how-to-set-cmake-in-order-to-add-txt-files-into-working-directory-as-resource
 file(GLOB_RECURSE IMG_FILES "${CMAKE_SOURCE_DIR}/img/*.jpg")
 file(COPY ${IMG_FILES} DESTINATION ${CMAKE_BINARY_DIR})
+file(GLOB_RECURSE IMG_FILES "${CMAKE_SOURCE_DIR}/srcImg/*.jpg")
+file(COPY ${IMG_FILES} DESTINATION ${CMAKE_BINARY_DIR})

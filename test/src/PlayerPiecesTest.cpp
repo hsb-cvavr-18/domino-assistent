@@ -4,11 +4,13 @@
 
 
 #include <opencv2/core/mat.hpp>
-#include "gtest/gtest.h"
 #include <I_ImageHandler.h>
 #include <ImageHandlerFactory.h>
 #include <PipsDetector.h>
 #include <DominoCV.h>
+
+#include "gtest/gtest.h"
+#include "gmock/gmock.h"
 
 using namespace std;
 
@@ -50,6 +52,31 @@ protected:
         EXPECT_EQ(pieces.size(), 5);
     }
 };
+
+
+// The test should return 0 pieces without crashing
+TEST_F(PlayerPiecesTest, testImageWithNoPieces) {
+    cv::Mat firstImgMat = cv::imread("../gestell_0.jpg");
+    if (!firstImgMat.data) {
+        FAIL() << "Could not open or find the image 'gestell_1'";
+    }
+
+    cv::Mat previousImgMat = cv::imread("../gestell_2.jpg");
+    if (!previousImgMat.data) {
+        FAIL() << "Could not open or find the image 'gestell_1'";
+    }
+
+    cv::Mat currentImgMat = cv::imread("../gestell_3.jpg");
+    if (!currentImgMat.data) {
+        FAIL() << "Could not open or find the image 'gestell_2'";
+    }
+
+    //detectPiece(previousImgMat, currentImgMat);
+
+    const vector<dominoPiece> &pieces = detectPlayerDominoPieces(firstImgMat, currentImgMat);
+    ASSERT_THAT(pieces.size(), testing::Eq(0));
+
+}
 
 TEST_F(PlayerPiecesTest, testRecognitionOfPlayerDominoPieces) {
     verify(0);
