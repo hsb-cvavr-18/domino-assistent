@@ -89,10 +89,10 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
     char buffer[100];
     std::sprintf(buffer, "Ratio of size of found rect: ratioWH = '%f' ratioHW = '%f'", ratioWH, ratioHW);
     std::cout << buffer << endl;
-    if( !(ratioWH >= 1.3f && ratioWH <= 1.9f
-          || ratioHW >= 0.3f && ratioHW <= 0.9f
-          || ratioHW >= 1.3f && ratioHW <= 1.9f
-             || ratioWH >= 0.3f && ratioWH <= 0.9f) ) {
+    if( !(ratioWH >= 1.4f && ratioWH <= 1.8f
+          || ratioHW >= 0.4f && ratioHW <= 0.8f
+          || ratioHW >= 1.4f && ratioHW <= 1.8f
+             || ratioWH >= 0.4f && ratioWH <= 0.8f) ) {
         ostringstream string;
         string << "Abnormal: " << buffer;
         throw std::runtime_error(string.str());
