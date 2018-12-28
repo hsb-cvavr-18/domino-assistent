@@ -70,6 +70,10 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
     //get bounding box of rotated rect
     cv::Rect dominoBoundsRect = minAreaRotatedRect.boundingRect();
 
+    if(dominoBoundsRect.x < 0 || dominoBoundsRect.y < 0) {
+        throw std::runtime_error("Invalid rect found");
+    }
+
     //Just for the show (debugging)
     cv::Mat rotated = unprocessedFrame.clone();
     drawRotatedRect(rotated, minAreaRotatedRect);
