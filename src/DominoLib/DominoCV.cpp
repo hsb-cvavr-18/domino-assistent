@@ -142,14 +142,13 @@ std::vector<dominoPiece> detectPlayerDominoPieces(cv::Mat firstImg, cv::Mat curr
     cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
 
     std::vector<std::future<dominoPiece>> futures;
-    for(int i = 0; i < NUMBER_OF_PLAYER_BLOCKS; i++) {
+    for(unsigned int i = 0; i < NUMBER_OF_PLAYER_BLOCKS; i++) {
         futures.push_back(std::async(std::launch::async, &getPlayerDominoPiece, imageClipper, firstImg, currentImg, i));
     }
 
-    for(int i = 0; i < NUMBER_OF_PLAYER_BLOCKS; i++) {
-        std::future<dominoPiece> ret = std::async(&getPlayerDominoPiece, imageClipper, firstImg, currentImg, i);
+   for(unsigned int i = 0; i < NUMBER_OF_PLAYER_BLOCKS; i++) {
         try {
-            pieces.push_back(ret.get());
+            pieces.push_back(futures.at(i).get());
             std::cout << "slot #" << i << ": has piece" << std::endl;
         } catch( const std::exception& e ) {
             std::cerr << "slot #" << i << ":" << e.what() << std::endl;
