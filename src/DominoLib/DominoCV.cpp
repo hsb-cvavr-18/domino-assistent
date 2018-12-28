@@ -74,6 +74,10 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
         throw std::runtime_error("Invalid rect found");
     }
 
+    if(dominoBoundsRect.area() < 100) {
+        throw std::runtime_error("Invalid rect because area is too small.");
+    }
+
     //Just for the show (debugging)
     cv::Mat rotated = unprocessedFrame.clone();
     drawRotatedRect(rotated, minAreaRotatedRect);
