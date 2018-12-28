@@ -1,5 +1,7 @@
 #include <utility>
 
+#include <utility>
+
 //
 // Created by osboxes on 11/29/18.
 //
@@ -113,7 +115,7 @@ std::list<DominoPiece> PlayGround::getAvailableMountPoints(DominoTreeStructureEl
 }
 
 RecommendedMove PlayGround::recommendMove(std::list<DominoPiece> userStones) {
-    return stupidMove(userStones);
+    return stupidMove(std::move(userStones));
 }
 
 RecommendedMove PlayGround::stupidMove(std::list<DominoPiece> userStones) {
@@ -123,8 +125,17 @@ RecommendedMove PlayGround::stupidMove(std::list<DominoPiece> userStones) {
     return move;
 }
 
-RecommendedMove PlayGround::fistMove(std::list<DominoPiece> userStones) {
+RecommendedMove PlayGround::firstMove(std::list<DominoPiece> userStones) {
     RecommendedMove move;
+    std::list<DominoTreeStructureElement> availableMountPoints = getAvailableMountPointsAsElements(rootElement);
+
+    std::list <DominoPiece> :: iterator usrPieces;
+    std::list <DominoTreeStructureElement> :: iterator elements;
+    for(usrPieces = userStones.begin(); usrPieces != userStones.end(); ++usrPieces){
+        for(elements = availableMountPoints.begin(); elements != availableMountPoints.end(); ++usrPieces){
+
+        }
+    }
     
     return move;
 }

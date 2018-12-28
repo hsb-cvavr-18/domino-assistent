@@ -34,7 +34,7 @@ private:
     std::list<DominoTreeStructureElement> getAvailableMountPointsForPassedElement(DominoTreeStructureElement stone);
     std::list<DominoTreeStructureElement> getAvailableMountPointsAsElements(DominoTreeStructureElement element);
     RecommendedMove stupidMove(std::list<DominoPiece> userStones);
-    RecommendedMove fistMove(std::list<DominoPiece> userStones);
+    RecommendedMove firstMove(std::list<DominoPiece> userStones);
     };
 
 
