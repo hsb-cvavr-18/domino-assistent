@@ -74,6 +74,29 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
         throw std::runtime_error("Invalid rect found");
     }
 
+    //cv::Mat mask(frame.size(), CV_8UC1, cv::Scalar::all(0));
+    cv::Mat mask(diffframe.size().height,diffframe.size().width,CV_8UC1,cv::Scalar(0));
+    rectangle(mask,dominoBoundsRect,cv::Scalar(255),CV_FILLED,8,0);
+    bitwise_not(mask,mask);
+
+
+    cout << "frame size: " << frame.size() << endl;
+    cout << "mask size: " << mask.size() << endl;
+    cout << "rect size: " << dominoBoundsRect.size() << endl;
+    //mask(dominoBoundsRect).setTo(cv::Scalar::all(255));
+
+    cv::Mat colormaskrect = diffframe.clone();
+    cv::Mat colormaskrectFinal = colormaskrect(mask);
+    imwrite("colormaskrect.jpg", colormaskrectFinal);
+    const cv::Scalar &mean1 = cv::mean(diffframe, mask);
+    cout << "mean color: " << mean1.val[0,0] << endl;
+    if(! (mean1.val[0,0] > 10))
+    {
+        ostringstream str;
+        str << "Invalid mean color for piece: " << mean1.val[0,0];
+        throw std::runtime_error(str.str());
+    }
+
     //Just for the show (debugging)
     cv::Mat rotated = unprocessedFrame.clone();
     drawRotatedRect(rotated, minAreaRotatedRect);
