@@ -8,6 +8,11 @@ IpcamHandler::IpcamHandler(std::string path, std::string imagePrefix){
     this->sourcePath = this->pathPostfix + path + "/" + imagePrefix + this->imagePostfix;
 }
 
+cv::Mat IpcamHandler::getFirstImage() {
+
+
+};
+
 cv::Mat IpcamHandler::getCurrentImage(){
     return this->currentImage;
 
@@ -36,12 +41,14 @@ void IpcamHandler::loadNextImage(){
         std::cout << "ERROR while loading image from IP Cam: " << e.what()  << std::endl;
         return;
     }
-    
+
+
     if(!this->currentImage.empty()){
         this->previousImage = this->currentImage;
     }
-    
+
     this->currentImage = cv::imread(this->targetPath);
+    this->setFirstImage(this->currentImage);
     if(!this->currentImage.empty()){
         this->numberOfRecievedImages++;
     }else{
@@ -53,5 +60,6 @@ void IpcamHandler::loadNextImage(){
 }
 
 
-IpcamHandler::~IpcamHandler(){};
+IpcamHandler::~IpcamHandler(){}
+
 

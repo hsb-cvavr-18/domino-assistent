@@ -10,6 +10,10 @@ FileImageHandler::FileImageHandler(std::string path, std::string imagePrefix){
 
 }
 
+cv::Mat FileImageHandler::getFirstImage() {
+    return this->firstImage;
+};
+
 cv::Mat FileImageHandler::getCurrentImage(){
     return this->currentImage;
 
@@ -30,9 +34,10 @@ void FileImageHandler::loadNextImage(){
     std::cout<< imagePath  <<std::endl;
     try {
         if (this->testFileExistence(imagePath)) {
-            this->previousImage = this->currentImage;
 
+            this->previousImage = this->currentImage;
             this->currentImage = cv::imread(imagePath);
+            this->setFirstImage(this->currentImage);
         } else {
             this->currentImage = cv::Mat();
             return;
@@ -55,10 +60,11 @@ bool FileImageHandler::testFileExistence(const std::string& name) {
         fclose(file);
         return true;
     } else {
+        std::cout << "ERROR image doesnt exist: " <<  name << std::endl;
         return false;
     }
 }
 
+FileImageHandler::~FileImageHandler(){}
 
 
-FileImageHandler::~FileImageHandler(){};

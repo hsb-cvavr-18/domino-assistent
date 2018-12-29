@@ -22,6 +22,7 @@
 class I_ImageHandler {
 public:
     // pure virtual function
+    virtual cv::Mat getFirstImage() = 0;
     virtual cv::Mat getCurrentImage() = 0;
     virtual cv::Mat getPreviousImage() =  0;
     virtual void loadNextImage() = 0;
@@ -30,9 +31,17 @@ public:
 
 protected:
     I_ImageHandler(){};
+    cv::Mat firstImage = cv::Mat();
     cv::Mat currentImage;
     cv::Mat previousImage;
     std::string workingImagePath = "images/";
+
+    void setFirstImage(cv::Mat image) {
+        if(this->firstImage.empty()) {
+            this->firstImage = image;
+        }
+    }
+
 };
 
 

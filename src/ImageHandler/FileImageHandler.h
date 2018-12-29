@@ -14,10 +14,11 @@ class FileImageHandler : public I_ImageHandler {
 public:
     FileImageHandler(std::string path, std::string imagePrefix);
 
-    cv::Mat getCurrentImage();
-    cv::Mat getPreviousImage();
-    void loadNextImage();
-    void setPath(std::string path, std::string imagePrefix);
+    cv::Mat getFirstImage() override;
+    cv::Mat getCurrentImage() override;
+    cv::Mat getPreviousImage() override;
+    void loadNextImage() override;
+    void setPath(std::string path, std::string imagePrefix) override;
     ~FileImageHandler();
 
 private:
