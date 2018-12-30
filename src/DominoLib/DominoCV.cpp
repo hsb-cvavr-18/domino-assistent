@@ -153,7 +153,7 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
 
 std::vector<dominoPiece> detectPlayerDominoPieces(cv::Mat firstImg, cv::Mat currentImg) {
     vector<dominoPiece> pieces;
-    ImageClipping *imageClipper = new ImageClipping(PlayerPosition::POS_LEFT, 15,12.5);
+    ImageClipping *imageClipper = ImageClippingFactory::getImageClipping();
     imageClipper->setSourceImage(currentImg);
     cv::Mat playerImg = imageClipper->getPlayersAreaImage();
     cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();

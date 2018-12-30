@@ -42,7 +42,7 @@ void task_main() {
 
         } while (previousImg.empty());
 
-        ImageClipping *imageClipper = new ImageClipping(PlayerPosition::POS_LEFT, 15,12.5);
+        ImageClipping *imageClipper = ImageClippingFactory::getImageClipping();
         imageClipper->setSourceImage(previousImg);
         cv::Mat previousImgCropped = imageClipper->getPlayingFieldImage();
         imageClipper->setSourceImage(currentImg);
@@ -83,6 +83,7 @@ void task_preview(std::string address)
         return;
     }
 
+    ImageClipping *imageClipper = ImageClippingFactory::getImageClipping();
     auto before = std::chrono::high_resolution_clock::now();
     for(;;) {
         if(!vcap.read(image)) {
@@ -92,7 +93,6 @@ void task_preview(std::string address)
             std::chrono::duration<double, std::milli> elapsed = now-before;
             if(elapsed.count() > 550) {
 
-                ImageClipping *imageClipper = new ImageClipping(PlayerPosition::POS_LEFT, 15,12.5);
                 imageClipper->setSourceImage(image);
                 cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
                 previewFrames.push(playingFieldMarked);

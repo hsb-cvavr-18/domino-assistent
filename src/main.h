@@ -27,6 +27,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "DominoLib/DominoCV.h"
+#include "ImageClipping/ImageClippingFactory.h"
 #include "ImageClipping/ImageClipping.h"
 #include "DominoLib/SafeQueue.h"
 

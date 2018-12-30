@@ -16,6 +16,7 @@
 #include "../DominoLib/DominoLib.h"
 #include "../ImgDebugPrinter/ImgDebugPrinter.h"
 #include "../PipsDetector/PipsDetector.h"
+#include "../ImageClipping/ImageClippingFactory.h"
 #include "../ImageClipping/ImageClipping.h"
 // OpenCV
 #include <opencv2/core.hpp>

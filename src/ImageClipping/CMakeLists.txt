@@ -4,6 +4,8 @@ project(ImageClipping C CXX)
 set(SOURCE_FILES
         ImageClipping.h
         ImageClipping.cpp
+        ImageClippingFactory.cpp
+        ImageClippingFactory.h
         )
 
 add_library(ImageClipping SHARED STATIC ${SOURCE_FILES})
