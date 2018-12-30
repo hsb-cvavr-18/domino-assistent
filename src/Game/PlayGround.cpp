@@ -58,14 +58,7 @@ std::list<DominoTreeStructureElement*> PlayGround::getAvailableMountPointsAsElem
 // Zugvorhersage
 
 RecommendedMove PlayGround::recommendMove(std::list<DominoPiece> userStones) {
-    return stupidMove(std::move(userStones));
-}
-
-RecommendedMove PlayGround::stupidMove(std::list<DominoPiece> userStones) {
-    RecommendedMove move;
-    move.userStone = userStones.front();
-    move.recommendedStone = rootElement.getElement();
-    return move;
+    return firstMove(std::move(userStones));
 }
 
 RecommendedMove PlayGround::firstMove(std::list<DominoPiece> userStones) {
@@ -76,9 +69,8 @@ RecommendedMove PlayGround::firstMove(std::list<DominoPiece> userStones) {
         DominoTreeStructureElement usrPieceElement = DominoTreeStructureElement(*it);
         std::list<DominoTreeStructureElement*> availableMountPoints = getAvailableMountPointsAsElements(&rootElement,&usrPieceElement);
 
-        std::list <DominoTreeStructureElement*> :: iterator it;
-        for(it = availableMountPoints.begin(); it != availableMountPoints.end(); ++it){
-
+        if(!availableMountPoints.empty()){
+            move.recommendedStone = availableMountPoints.front()->getElement();
         }
     }
     return move;
