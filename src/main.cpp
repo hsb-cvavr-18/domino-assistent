@@ -1,4 +1,5 @@
 #include "main.h"
+#include "Game/PlayGround.h"
 
 void task_main();
 void task_gui();
@@ -25,6 +26,7 @@ void task_main() {
     //auto imageHandler = ImageHandlerFactory::getImageHandler("192.168.178.79:8080", "photo", Source::IP_CAM);
     cv::Mat currentImg = cv::Mat();
     cv::Mat previousImg = cv::Mat();
+    PlayGround playGround= nullptr;
     while(true) {
         //TODO: Verarbeitung der Bilder (Logik - wann wird ausgelöst, behandlung der ersten zwei Bilder etc.
         do {
@@ -42,6 +44,10 @@ void task_main() {
 
 
         DominoPiece dominoPiece = detectPiece(previousImg, currentImg);
+        if (playGround == nullptr)
+            playGround = PlayGround(dominoPiece);
+        else
+            playGround.mountStone(dominoPiece);
         cv::Mat result;
         result = cv::imread("domino_result.jpg");
 
