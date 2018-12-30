@@ -18,10 +18,12 @@
 PipsDetector::PipsDetector(AbstractImgDebugPrinter* printer) : _printer(printer) {}
 
 unsigned int PipsDetector::countPips(cv::Mat piece) {
+    int r = (rand() % 100) + 1; //testing
+    std::string s = std::to_string(r);
+    cv::imwrite("domino_pips_in"+s+".jpg", piece);
 
     // resize
     cv::resize(piece, piece, cv::Size(150, 150));
-
 
     //Brighness and Contrast Correction
     int avgBrightness = mean(piece,cv::Mat())[0];//sc_avg[0];
@@ -31,12 +33,9 @@ unsigned int PipsDetector::countPips(cv::Mat piece) {
     cv::Mat new_image = cv::Mat::zeros( piece.size(), piece.type() );
     piece.convertTo(piece, -1, alpha, beta);
 
-
-    int r = (rand() % 100) + 1; //testing
-    std::string s = std::to_string(r);
     // convert to grayscale
     //cvtColor(piece, piece, CV_BGR2GRAY);
-    cv::imwrite("domino_countPips_in"+s+".jpg", piece);
+    cv::imwrite("domino_pips_resized_and_optimized"+s+".jpg", piece);
     // threshold
     cv::threshold(piece, piece, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
     cv::imwrite("domino_pips_bin"+s+".jpg", piece);
@@ -49,8 +48,7 @@ unsigned int PipsDetector::countPips(cv::Mat piece) {
     //white boarder around image
     copyMakeBorder( piece, piece, 10, 10, 10, 10, cv::BORDER_CONSTANT, cv::Scalar(255, 255, 255));
 
-    // show
-    cv::imwrite("processed"+s+".jpg", piece);
+    cv::imwrite("domino_pips_border"+s+".jpg", piece);
 
     // search for blobs
     cv::SimpleBlobDetector::Params params;
@@ -59,7 +57,7 @@ unsigned int PipsDetector::countPips(cv::Mat piece) {
     piece.copyTo(halfTemp);
     cv::GaussianBlur(piece, halfTemp, cv::Size(9,9), 3.3);
     piece = halfTemp;
-    cv::imwrite("domino_pips_gauss.jpg", piece);
+    cv::imwrite("domino_pips_gauss"+s+".jpg", piece);
 
     // filter by interia defines how elongated a shape is.
     //params.filterByInertia = true;
