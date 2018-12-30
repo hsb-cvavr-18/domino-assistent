@@ -160,20 +160,19 @@ TEST_F(DominoCVTest, gestell2_18To19) {
 /**
  * GESTELL 3
  */
-
-TEST_F(DominoCVTest, gestell3_0To1) {
+TEST_F(DominoCVTest, DISABLED_gestell3_0To1) {
     verify("../gestell3_0.jpg", "../gestell3_1.jpg", {1, 6});
 }
  
-TEST_F(DominoCVTest, gestell3_1To2) {
+TEST_F(DominoCVTest, DISABLED_gestell3_1To2) {
     verify("../gestell3_1.jpg", "../gestell3_2.jpg", {1, 5});
 }
 
-TEST_F(DominoCVTest, gestell3_2To3) {
+TEST_F(DominoCVTest, DISABLED_gestell3_2To3) {
     verify("../gestell3_2.jpg", "../gestell3_3.jpg", {5, 0});
 }
 
-TEST_F(DominoCVTest, gestell3_3To4) {
+TEST_F(DominoCVTest, DISABLED_gestell3_3To4) {
     verify("../gestell3_3.jpg", "../gestell3_4.jpg", {1, 0});
 }
 
@@ -181,10 +180,10 @@ TEST_F(DominoCVTest, gestell3_3To4) {
  * GESTELL 4
  */
 
-TEST_F(DominoCVTest, gestell4_2To3) {
+TEST_F(DominoCVTest, DISABLED_gestell4_2To3) {
     verify("../gestell4_2.jpg", "../gestell4_3.jpg", {5, 0});
 }
 
-TEST_F(DominoCVTest, gestell4_3To4) {
+TEST_F(DominoCVTest, DISABLED_gestell4_3To4) {
     verify("../gestell4_3.jpg", "../gestell4_4.jpg", {1, 0});
 }
