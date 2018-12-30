@@ -11,10 +11,12 @@
 #include <sstream>
 #include <thread>
 #include <chrono>
+#include <future>
 
 #include "../DominoLib/DominoLib.h"
 #include "../ImgDebugPrinter/ImgDebugPrinter.h"
 #include "../PipsDetector/PipsDetector.h"
+#include "../ImageClipping/ImageClipping.h"
 // OpenCV
 #include <opencv2/core.hpp>
 #include "opencv2/objdetect.hpp"
@@ -25,5 +27,8 @@
 
 
 dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg);
+std::vector<dominoPiece> detectPlayerDominoPieces(cv::Mat firstImg, cv::Mat currentImg);
+dominoPiece getPlayerDominoPiece(ImageClipping *imageClipper, cv::Mat firstImg, cv::Mat currentImg, int blockNumber);
+cv::Mat cutPlayerBlock(cv::Mat image, cv::Rect rect);
 
 #endif //PROJECT_DOMINOCV_H

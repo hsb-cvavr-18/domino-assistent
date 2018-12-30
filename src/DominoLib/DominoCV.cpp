@@ -55,6 +55,10 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
     vector<cv::Vec4i> diceHierarchy;
     findContours(frame.clone(), pieceContours, diceHierarchy, CV_RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
+    if(pieceContours.size() <= 0) {
+        throw std::runtime_error("No contours found");
+    }
+
     //Find the largest contour and create a rotated rect around it
     cv::RotatedRect minAreaRotatedRect = getRotatedRectOflargestContour(pieceContours, frame.size());
 
@@ -66,16 +70,37 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
     //get bounding box of rotated rect
     cv::Rect dominoBoundsRect = minAreaRotatedRect.boundingRect();
 
+    if(dominoBoundsRect.x < 0 || dominoBoundsRect.y < 0) {
+        throw std::runtime_error("Invalid rect found");
+    }
+
+    if(dominoBoundsRect.area() < 200) {
+        throw std::runtime_error("Invalid rect because area is too small.");
+    }
+
     //Just for the show (debugging)
     cv::Mat rotated = unprocessedFrame.clone();
     drawRotatedRect(rotated, minAreaRotatedRect);
     imwrite("domino_rotated_rect.jpg", rotated);
 
+    float ratioWH = (float) dominoBoundsRect.width / dominoBoundsRect.height; // should be 1.66
+    float ratioHW = (float) dominoBoundsRect.height / dominoBoundsRect.width; // should be 0.6
+
+    char buffer[100];
+    std::sprintf(buffer, "Ratio of size of found rect: ratioWH = '%f' ratioHW = '%f'", ratioWH, ratioHW);
+    std::cout << buffer << endl;
+    if( !(ratioWH >= 1.4f && ratioWH <= 1.8f
+          || ratioHW >= 0.4f && ratioHW <= 0.8f
+          || ratioHW >= 1.4f && ratioHW <= 1.8f
+             || ratioWH >= 0.4f && ratioWH <= 0.8f) ) {
+        ostringstream string;
+        string << "Abnormal: " << buffer;
+        throw std::runtime_error(string.str());
+    }
+
     //Cut out wanted domino - containeing only wanted Domino
     cv::Mat diceROI = diffframe(dominoBoundsRect);
     imwrite("rect.jpg", diceROI);
-
-
     /***************************************************************************
      * Get Pips of each half of the domino block
      */
@@ -125,3 +150,49 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
     piece.b = half1;
     return piece;
 }
+
+std::vector<dominoPiece> detectPlayerDominoPieces(cv::Mat firstImg, cv::Mat currentImg) {
+    vector<dominoPiece> pieces;
+    ImageClipping *imageClipper = new ImageClipping(PlayerPosition::POS_LEFT, 15,12.5);
+    imageClipper->setSourceImage(currentImg);
+    cv::Mat playerImg = imageClipper->getPlayersAreaImage();
+    cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
+
+    std::vector<std::future<dominoPiece>> futures;
+    for(unsigned int i = 0; i < NUMBER_OF_PLAYER_BLOCKS; i++) {
+        futures.push_back(std::async(std::launch::async, &getPlayerDominoPiece, imageClipper, firstImg, currentImg, i));
+    }
+
+   for(unsigned int i = 0; i < NUMBER_OF_PLAYER_BLOCKS; i++) {
+        try {
+            pieces.push_back(futures.at(i).get());
+            std::cout << "slot #" << i << ": has piece" << std::endl;
+        } catch( const std::exception& e ) {
+            std::cerr << "slot #" << i << ":" << e.what() << std::endl;
+        } catch( ... ) {
+            // ensure destructors of auto objects are called
+        }
+
+    }
+
+    return pieces;
+}
+
+dominoPiece getPlayerDominoPiece(ImageClipping *imageClipper, cv::Mat firstImg, cv::Mat currentImg, int blockNumber) {
+
+    cv::Rect fieldRect = imageClipper->getPlayerDominiBlock(blockNumber);
+    cv::Mat previousField = cutPlayerBlock(firstImg, fieldRect);
+    cv::Mat currentField = cutPlayerBlock(currentImg, fieldRect);
+
+    std::ostringstream name;
+    name << "player_domino_field_" << blockNumber << ".jpg" ;
+    cv::imwrite(name.str(), currentField);
+    return detectPiece(previousField, currentField);
+
+}
+
+cv::Mat cutPlayerBlock(cv::Mat image, cv::Rect rect) {
+    cv::Mat playerBlock = image(rect);
+    return playerBlock;
+}
+
