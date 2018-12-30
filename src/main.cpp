@@ -1,6 +1,6 @@
 #include "main.h"
 
-auto imageHandler = ImageHandlerFactory::getImageHandler("../../srcImg", "gestell_src_", Source::FILESYSTEM);
+auto imageHandler = ImageHandlerFactory::getImageHandler("../../srcImgApplyPlayerStones", "apply_", Source::FILESYSTEM);
 
 void task_main();
 void task_gui();
