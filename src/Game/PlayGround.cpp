@@ -10,56 +10,42 @@
 
 void PlayGround::mountStone(DominoPiece stone) {
     DominoTreeStructureElement element = DominoTreeStructureElement(std::move(stone));
-    std::list<DominoTreeStructureElement> availableMountPoints = getAvailableMountPointsForPassedElement(element);
+    std::list<DominoTreeStructureElement*> availableMountPoints = getAvailableMountPointsAsElements(&rootElement,&element);
     if(!availableMountPoints.empty()){
-        DominoTreeStructureElement nearestElement =  getNearestElement(element,availableMountPoints);
-        nearestElement.mount(element);
+        DominoTreeStructureElement* nearestElement =  getNearestElement(availableMountPoints,&element);
+        nearestElement->mount(element);
     }
 }
 
-DominoTreeStructureElement PlayGround::getNearestElement(DominoTreeStructureElement element,std::list<DominoTreeStructureElement> mountPoints ){
-    cv::Point2f centerOfElement = element.getElement().getCenter();
+DominoTreeStructureElement* PlayGround::getNearestElement(std::list<DominoTreeStructureElement*> mountPoints,DominoTreeStructureElement* element ){
+    cv::Point2f centerOfElement = element->getElement().getCenter();
 
-    std::list <DominoTreeStructureElement> :: iterator it;
-    DominoTreeStructureElement nearestElement = *mountPoints.begin();
+    std::list <DominoTreeStructureElement*> :: iterator it;
+    DominoTreeStructureElement* nearestElement = *mountPoints.begin();
     for(it = mountPoints.begin(); it != mountPoints.end(); ++it){
-        if(cv::norm(cv::Mat(centerOfElement),cv::Mat(it.operator*().getElement().getCenter())) < cv::norm(cv::Mat(centerOfElement),cv::Mat(nearestElement.getElement().getCenter())))
+        if(cv::norm(cv::Mat(centerOfElement),cv::Mat(it.operator*()->getElement().getCenter())) < cv::norm(cv::Mat(centerOfElement),cv::Mat(nearestElement->getElement().getCenter())))
             nearestElement = *it;
     }
     return nearestElement;
 }
 
-std::list<DominoTreeStructureElement> PlayGround::getAvailableMountPointsForPassedElement(DominoTreeStructureElement stone){
+std::list<DominoTreeStructureElement*> PlayGround::getAvailableMountPointsAsElements(DominoTreeStructureElement* existingElement, DominoTreeStructureElement* newStone) {
 
-    std::list<DominoTreeStructureElement> availableMountPoints = getAvailableMountPointsAsElements(stone);
-    std::list<DominoTreeStructureElement> filteredMountPoints;
+    std::list<DominoTreeStructureElement*> availableMountPoints;
 
-    std::copy_if (availableMountPoints.begin(), availableMountPoints.end(), std::back_inserter(filteredMountPoints),
-                  [stone](DominoTreeStructureElement dominoTreeStructureElement) {
-                      return dominoTreeStructureElement.isApplicableTo(stone);
-                  }
-    );
-
-    return filteredMountPoints;
-}
-
-std::list<DominoTreeStructureElement> PlayGround::getAvailableMountPointsAsElements(DominoTreeStructureElement element) {
-
-    std::list<DominoTreeStructureElement> availableMountPoints;
-
-    if (element.hasFreeMountPoints()){
-        availableMountPoints.emplace_front(element);
+    if (existingElement->hasFreeMountPoints() && newStone->isApplicableTo(*existingElement)){
+        availableMountPoints.emplace_front(existingElement);
     }
 
-    if (element.hasMountedElements()){
-        std::list<DominoTreeStructureElement> mountedElements= element.getMountedElements();
+    if (existingElement->hasMountedElements()){
+        std::list<DominoTreeStructureElement>* mountedElements= existingElement->getMountedElements();
 
         std::list <DominoTreeStructureElement> :: iterator it;
-        for(it = mountedElements.begin(); it != mountedElements.end(); ++it){
+        for(it = mountedElements->begin(); it != mountedElements->end(); ++it){
 
-            std::list<DominoTreeStructureElement> additionalMountPoints = getAvailableMountPointsAsElements(*it);
+            std::list<DominoTreeStructureElement*> additionalMountPoints = getAvailableMountPointsAsElements(&*it,newStone);
 
-            std::list <DominoTreeStructureElement> :: iterator it;
+            std::list <DominoTreeStructureElement*> :: iterator it;
             for(it = additionalMountPoints.begin(); it != additionalMountPoints.end(); ++it){
                 availableMountPoints.emplace_front(*it);
             }
@@ -84,12 +70,14 @@ RecommendedMove PlayGround::stupidMove(std::list<DominoPiece> userStones) {
 
 RecommendedMove PlayGround::firstMove(std::list<DominoPiece> userStones) {
     RecommendedMove move;
-    std::list<DominoTreeStructureElement> availableMountPoints = getAvailableMountPointsAsElements(rootElement);
 
-    std::list <DominoPiece> :: iterator usrPieces;
-    std::list <DominoTreeStructureElement> :: iterator elements;
-    for(usrPieces = userStones.begin(); usrPieces != userStones.end(); ++usrPieces){
-        for(elements = availableMountPoints.begin(); elements != availableMountPoints.end(); ++usrPieces){
+    std::list <DominoPiece> :: iterator it;
+    for(it = userStones.begin(); it != userStones.end(); ++it){
+        DominoTreeStructureElement usrPieceElement = DominoTreeStructureElement(*it);
+        std::list<DominoTreeStructureElement*> availableMountPoints = getAvailableMountPointsAsElements(&rootElement,&usrPieceElement);
+
+        std::list <DominoTreeStructureElement*> :: iterator it;
+        for(it = availableMountPoints.begin(); it != availableMountPoints.end(); ++it){
 
         }
     }

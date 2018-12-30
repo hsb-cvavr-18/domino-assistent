@@ -24,9 +24,8 @@ public:
     RecommendedMove recommendMove(std::list<DominoPiece> userStones);
 
 private:
-    DominoTreeStructureElement getNearestElement(DominoTreeStructureElement element,std::list<DominoTreeStructureElement> mountPoints );
-    std::list<DominoTreeStructureElement> getAvailableMountPointsForPassedElement(DominoTreeStructureElement stone);
-    std::list<DominoTreeStructureElement> getAvailableMountPointsAsElements(DominoTreeStructureElement element);
+    DominoTreeStructureElement* getNearestElement(std::list<DominoTreeStructureElement*> mountPoints, DominoTreeStructureElement* element );
+    std::list<DominoTreeStructureElement*> getAvailableMountPointsAsElements(DominoTreeStructureElement* existingElement, DominoTreeStructureElement* newStone);
     RecommendedMove stupidMove(std::list<DominoPiece> userStones);
     RecommendedMove firstMove(std::list<DominoPiece> userStones);
 };

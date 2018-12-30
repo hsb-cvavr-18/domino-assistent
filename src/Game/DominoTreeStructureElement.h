@@ -35,7 +35,7 @@ public:
 
     void setElement( DominoPiece &element);
 
-    std::list<DominoTreeStructureElement> &getMountedElements() ;
+    std::list<DominoTreeStructureElement>* getMountedElements() ;
 
     void setMountedElements( std::list<DominoTreeStructureElement> &mountedElements);
 

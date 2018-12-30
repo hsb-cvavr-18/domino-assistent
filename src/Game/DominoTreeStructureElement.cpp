@@ -27,8 +27,8 @@ void DominoTreeStructureElement::setElement( DominoPiece &element) {
     DominoTreeStructureElement::element = element;
 }
 
- std::list<DominoTreeStructureElement> &DominoTreeStructureElement::getMountedElements()  {
-    return mountedElements;
+ std::list<DominoTreeStructureElement>* DominoTreeStructureElement::getMountedElements()  {
+    return &mountedElements;
 }
 
 void DominoTreeStructureElement::setMountedElements( std::list<DominoTreeStructureElement> &mountedElements) {
