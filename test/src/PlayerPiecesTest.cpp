@@ -56,17 +56,17 @@ protected:
 
 // The test should return 0 pieces without crashing
 TEST_F(PlayerPiecesTest, testImageWithNoPieces) {
-    cv::Mat firstImgMat = cv::imread("../gestell_0.jpg");
+    cv::Mat firstImgMat = cv::imread("../gestell_src_0.jpg");
     if (!firstImgMat.data) {
         FAIL() << "Could not open or find the image";
     }
 
-    cv::Mat previousImgMat = cv::imread("../gestell_1.jpg");
+    cv::Mat previousImgMat = cv::imread("../gestell_src_1.jpg");
     if (!previousImgMat.data) {
         FAIL() << "Could not open or find the image";
     }
 
-    cv::Mat currentImgMat = cv::imread("../gestell_2.jpg");
+    cv::Mat currentImgMat = cv::imread("../gestell_src_2.jpg");
     if (!currentImgMat.data) {
         FAIL() << "Could not open or find the image";
     }
@@ -79,17 +79,17 @@ TEST_F(PlayerPiecesTest, testImageWithNoPieces) {
 
 // The test should return 0 pieces without crashing
 TEST_F(PlayerPiecesTest, testImageWithNoPieces2) {
-    cv::Mat firstImgMat = cv::imread("../gestell_0.jpg");
+    cv::Mat firstImgMat = cv::imread("../gestell_src_0.jpg");
     if (!firstImgMat.data) {
         FAIL() << "Could not open or find the image";
     }
 
-    cv::Mat previousImgMat = cv::imread("../gestell_2.jpg");
+    cv::Mat previousImgMat = cv::imread("../gestell_src_2.jpg");
     if (!previousImgMat.data) {
         FAIL() << "Could not open or find the image";
     }
 
-    cv::Mat currentImgMat = cv::imread("../gestell_3.jpg");
+    cv::Mat currentImgMat = cv::imread("../gestell_src_3.jpg");
     if (!currentImgMat.data) {
         FAIL() << "Could not open or find the image";
     }
