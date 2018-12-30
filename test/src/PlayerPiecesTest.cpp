@@ -58,24 +58,46 @@ protected:
 TEST_F(PlayerPiecesTest, testImageWithNoPieces) {
     cv::Mat firstImgMat = cv::imread("../gestell_0.jpg");
     if (!firstImgMat.data) {
-        FAIL() << "Could not open or find the image 'gestell_1'";
+        FAIL() << "Could not open or find the image";
     }
 
-    cv::Mat previousImgMat = cv::imread("../gestell_2.jpg");
+    cv::Mat previousImgMat = cv::imread("../gestell_1.jpg");
     if (!previousImgMat.data) {
-        FAIL() << "Could not open or find the image 'gestell_1'";
+        FAIL() << "Could not open or find the image";
     }
 
-    cv::Mat currentImgMat = cv::imread("../gestell_3.jpg");
+    cv::Mat currentImgMat = cv::imread("../gestell_2.jpg");
     if (!currentImgMat.data) {
-        FAIL() << "Could not open or find the image 'gestell_2'";
+        FAIL() << "Could not open or find the image";
     }
 
     //detectPiece(previousImgMat, currentImgMat);
 
     const vector<dominoPiece> &pieces = detectPlayerDominoPieces(firstImgMat, currentImgMat);
     ASSERT_THAT(pieces.size(), testing::Eq(0));
+}
 
+// The test should return 0 pieces without crashing
+TEST_F(PlayerPiecesTest, testImageWithNoPieces2) {
+    cv::Mat firstImgMat = cv::imread("../gestell_0.jpg");
+    if (!firstImgMat.data) {
+        FAIL() << "Could not open or find the image";
+    }
+
+    cv::Mat previousImgMat = cv::imread("../gestell_2.jpg");
+    if (!previousImgMat.data) {
+        FAIL() << "Could not open or find the image";
+    }
+
+    cv::Mat currentImgMat = cv::imread("../gestell_3.jpg");
+    if (!currentImgMat.data) {
+        FAIL() << "Could not open or find the image";
+    }
+
+    //detectPiece(previousImgMat, currentImgMat);
+
+    const vector<dominoPiece> &pieces = detectPlayerDominoPieces(firstImgMat, currentImgMat);
+    ASSERT_THAT(pieces.size(), testing::Eq(0));
 }
 
 TEST_F(PlayerPiecesTest, testRecognitionOfPlayerDominoPieces) {
