@@ -14,28 +14,20 @@ struct RecommendedMove {
 };
 
 class PlayGround {
+
 private:
     DominoTreeStructureElement rootElement;
+
 public:
     PlayGround(DominoTreeStructureElement rootElement) : rootElement(rootElement) {}
-
     void mountStone(DominoPiece stone);
-
-    DominoTreeStructureElement getNearestElement(DominoTreeStructureElement element,std::list<DominoTreeStructureElement> mountPoints );
-
     RecommendedMove recommendMove(std::list<DominoPiece> userStones);
 
-    std::list<DominoPiece> getAvailableMountPoints();
-    
-    std::list<DominoPiece> getAvailableMountPointsForPassedStone(DominoPiece stone);
-
 private:
-    std::list<DominoPiece> getAvailableMountPoints(DominoTreeStructureElement element);
+    DominoTreeStructureElement getNearestElement(DominoTreeStructureElement element,std::list<DominoTreeStructureElement> mountPoints );
     std::list<DominoTreeStructureElement> getAvailableMountPointsForPassedElement(DominoTreeStructureElement stone);
     std::list<DominoTreeStructureElement> getAvailableMountPointsAsElements(DominoTreeStructureElement element);
     RecommendedMove stupidMove(std::list<DominoPiece> userStones);
     RecommendedMove firstMove(std::list<DominoPiece> userStones);
-    };
-
-
+};
 #endif //PROJECT_PLAYGROUND_H

@@ -17,8 +17,6 @@ void PlayGround::mountStone(DominoPiece stone) {
     }
 }
 
-
-
 DominoTreeStructureElement PlayGround::getNearestElement(DominoTreeStructureElement element,std::list<DominoTreeStructureElement> mountPoints ){
     cv::Point2f centerOfElement = element.getElement().getCenter();
 
@@ -29,10 +27,6 @@ DominoTreeStructureElement PlayGround::getNearestElement(DominoTreeStructureElem
             nearestElement = *it;
     }
     return nearestElement;
-}
-
-std::list<DominoPiece> PlayGround::getAvailableMountPoints() {
-    return getAvailableMountPoints(rootElement);
 }
 
 std::list<DominoTreeStructureElement> PlayGround::getAvailableMountPointsForPassedElement(DominoTreeStructureElement stone){
@@ -75,44 +69,7 @@ std::list<DominoTreeStructureElement> PlayGround::getAvailableMountPointsAsEleme
     return availableMountPoints;
 }
 
-std::list<DominoPiece> PlayGround::getAvailableMountPointsForPassedStone(DominoPiece stone) {
-    const std::list<DominoPiece> availableMountPoints = getAvailableMountPoints();
-    std::list<DominoPiece> filteredMountPoints;
-
-    std::copy_if (availableMountPoints.begin(), availableMountPoints.end(), std::back_inserter(filteredMountPoints),
-                  [stone](DominoPiece dominoPiece) {
-                      return dominoPiece.isApplicableTo(stone);
-                  }
-    );
-
-
-    return filteredMountPoints;
-}
-
-std::list<DominoPiece> PlayGround::getAvailableMountPoints(DominoTreeStructureElement element) {
-    std::list<DominoPiece> availableMountPoints;
-
-    if (element.hasFreeMountPoints()){
-        availableMountPoints.emplace_front(element.getElement());
-    }
-
-    if (element.hasMountedElements()){
-        std::list<DominoTreeStructureElement> mountedElements= element.getMountedElements();
-
-        std::list <DominoTreeStructureElement> :: iterator it;
-        for(it = mountedElements.begin(); it != mountedElements.end(); ++it){
-
-            std::list<DominoPiece> additionalMountPoints = getAvailableMountPoints(*it);
-
-            std::list <DominoPiece> :: iterator it;
-            for(it = additionalMountPoints.begin(); it != additionalMountPoints.end(); ++it){
-                availableMountPoints.emplace_front(*it);
-            }
-        }
-    }
-
-    return availableMountPoints;
-}
+// Zugvorhersage
 
 RecommendedMove PlayGround::recommendMove(std::list<DominoPiece> userStones) {
     return stupidMove(std::move(userStones));
@@ -136,7 +93,6 @@ RecommendedMove PlayGround::firstMove(std::list<DominoPiece> userStones) {
 
         }
     }
-    
     return move;
 }
 
