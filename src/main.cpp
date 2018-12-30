@@ -54,7 +54,7 @@ void task_main() {
         gameFrames.push(result);
 
         cout << "pipcount half 1: " << dominoPiece.getHalfA().getNumber() << endl;
-        cout << "pipcount half 2: " << dominoPiece.getHalfA().getNumber() << endl;
+        cout << "pipcount half 2: " << dominoPiece.getHalfB().getNumber() << endl;
 
         std::cout << "Enter key to take next img" << std::endl;
         getchar();
