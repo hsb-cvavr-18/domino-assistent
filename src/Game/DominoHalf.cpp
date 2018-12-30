@@ -4,16 +4,16 @@
 
 #include "DominoHalf.h"
 
-DominoHalf::DominoHalf(cv::RotatedRect rect, int number) {
-    this->rect=rect;
-    this->number=number;
+DominoHalf::DominoHalf(cv::RotatedRect rect, unsigned int number) {
+    this->rect = rect;
+    this->number = number;
 }
 
-int DominoHalf::getNumber()  {
+int DominoHalf::getNumber() {
     return number;
 }
 
-void DominoHalf::setNumber(int number) {
+void DominoHalf::setNumber(unsigned int number) {
     this->number = number;
 }
 
