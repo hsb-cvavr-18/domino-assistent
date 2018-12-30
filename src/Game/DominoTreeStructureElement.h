@@ -21,11 +21,9 @@ private:
     std::list<DominoTreeStructureElement> mountedElements = std::list<DominoTreeStructureElement>();
 
 public:
-    DominoTreeStructureElement(DominoPiece element) : element(element) {
-    }
+    DominoTreeStructureElement(DominoPiece element) : element(element) {}
 
     void mount(DominoTreeStructureElement dominoTreeStructureElement);
-
 
     bool hasMountedElements();
 
@@ -33,17 +31,9 @@ public:
 
     DominoPiece getElement() ;
 
-    void setElement( DominoPiece &element);
-
     std::list<DominoTreeStructureElement>* getMountedElements() ;
 
-    void setMountedElements( std::list<DominoTreeStructureElement> &mountedElements);
-
-    bool isApplicableTo(DominoTreeStructureElement newElement){
-        return element.isApplicableTo(newElement.getElement());
-    }
-
-    std::list<int> getApplicablePips();
+    bool isApplicableTo(DominoTreeStructureElement newElement);
 
 };
 
