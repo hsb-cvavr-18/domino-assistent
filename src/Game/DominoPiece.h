@@ -17,6 +17,7 @@ private:
 public:
     DominoPiece(DominoHalf dominoHalfA, DominoHalf dominoHalfB) : halfA(dominoHalfA), halfB(dominoHalfB) {}
     DominoPiece();
+    bool operator==(DominoPiece rhs);
     DominoHalf &getHalfA();
     void setHalfA( DominoHalf &halfA) {DominoPiece::halfA = halfA;}
 

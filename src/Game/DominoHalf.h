@@ -17,6 +17,7 @@ private:
 public:
     DominoHalf(cv::RotatedRect rect, int number);
     DominoHalf();
+    bool operator==(DominoHalf rhs);
 
     int getNumber();
 

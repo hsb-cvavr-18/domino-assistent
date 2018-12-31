@@ -28,3 +28,11 @@ void DominoHalf::setRect(cv::RotatedRect rect) {
 DominoHalf::DominoHalf() {
 
 }
+
+bool DominoHalf::operator==(DominoHalf rhs) {
+    return (
+            this->getNumber()==rhs.getNumber()  &&
+            this->getNumber()==rhs.getNumber()) ||
+           (this->getNumber()==rhs.getNumber()  &&
+            this->getNumber()==rhs.getNumber());
+}

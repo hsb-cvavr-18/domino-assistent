@@ -27,3 +27,11 @@ bool DominoPiece::isApplicableTo(DominoPiece piece) {
 DominoPiece::DominoPiece() {
 
 }
+
+bool DominoPiece::operator==(DominoPiece rhs) {
+    return (
+            this->getHalfA()==rhs.getHalfA()  &&
+            this->getHalfB()==rhs.getHalfB()) ||
+           (this->getHalfA()==rhs.getHalfB()  &&
+            this->getHalfB()==rhs.getHalfA());
+}
