@@ -12,18 +12,19 @@
 class DominoHalf {
 private:
     cv::RotatedRect rect;
-    int number;
+    unsigned int number;
 
 public:
-    DominoHalf(cv::RotatedRect rect, int number);
+    DominoHalf(cv::RotatedRect rect, unsigned int number);
+
     DominoHalf();
     bool operator==(DominoHalf rhs);
 
     int getNumber();
 
-    void setNumber(int number);
+    void setNumber(unsigned int number);
 
-    cv::RotatedRect &getRect() ;
+    cv::RotatedRect &getRect();
 
     void setRect(cv::RotatedRect rect);
 };
