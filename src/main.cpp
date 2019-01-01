@@ -1,4 +1,5 @@
 #include "main.h"
+#include "Game/PlayGround.h"
 
 auto imageHandler = ImageHandlerFactory::getImageHandler("../../srcImgApplyPlayerStones", "apply_", Source::FILESYSTEM);
 
@@ -27,6 +28,7 @@ void task_main() {
     //auto imageHandler = ImageHandlerFactory::getImageHandler("192.168.178.79:8080", "photo", Source::IP_CAM);
     cv::Mat currentImg = cv::Mat();
     cv::Mat previousImg = cv::Mat();
+    PlayGround *playGround= nullptr;
     while(true) {
         //TODO: Verarbeitung der Bilder (Logik - wann wird ausgelöst, behandlung der ersten zwei Bilder etc.
         do {
@@ -48,19 +50,22 @@ void task_main() {
         imageClipper->setSourceImage(currentImg);
         cv::Mat currentImgCropped = imageClipper->getPlayingFieldImage();
 
-
-        const dominoPiece &currentDominoPiece = detectPiece(previousImgCropped, currentImgCropped);
+        DominoPiece dominoPiece = detectPiece(previousImg, currentImg);
+        if (playGround == nullptr)
+            playGround = new PlayGround(dominoPiece);
+        else
+            playGround->mountStone(dominoPiece);
         cv::Mat result;
         result = cv::imread("domino_result.jpg");
 
         gameFrames.push(result);
 
-        cout << "pipcount half 1: " << currentDominoPiece.a.pips << endl;
-        cout << "pipcount half 2: " << currentDominoPiece.b.pips << endl;
+        cout << "pipcount half 1: " << dominoPiece.getHalfA().getNumber() << endl;
+        cout << "pipcount half 2: " << dominoPiece.getHalfB().getNumber() << endl;
 
-        const vector<dominoPiece> &dominoPlayerPieces = detectPlayerDominoPieces(imageHandler->getFirstImage(), currentImg);
+        const vector<DominoPiece> &dominoPlayerPieces = detectPlayerDominoPieces(imageHandler->getFirstImage(), currentImg);
         for(auto dominoPiece : dominoPlayerPieces) {
-            std::cout << "found piece " << dominoPiece.a.pips << "," << dominoPiece.b.pips << std::endl;
+            std::cout << "found piece " << dominoPiece.getHalfA().getNumber() << "," << dominoPiece.getHalfB().getNumber() << std::endl;
         }
 
         waitForUserInput();

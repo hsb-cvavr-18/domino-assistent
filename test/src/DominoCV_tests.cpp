@@ -37,7 +37,7 @@ protected:
             FAIL() << "Could not open or find the image '" << currentImg << "'";
         }
 
-        const dominoPiece &dominoPiece = detectPiece(previousImgMat, currentImgMat);
+        const DominoPiece &dominoPiece = detectPiece(previousImgMat, currentImgMat);
 
         const unsigned int actualPips[2] = {(dominoPiece.a.pips), (dominoPiece.b.pips)};
         ASSERT_THAT(actualPips, testing::UnorderedElementsAreArray(pipsExpected));

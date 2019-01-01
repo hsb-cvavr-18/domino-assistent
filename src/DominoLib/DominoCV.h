@@ -21,6 +21,7 @@
 // OpenCV
 #include <opencv2/core.hpp>
 #include "opencv2/objdetect.hpp"
+#include "../Game/DominoPiece.h"
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/features2d.hpp>
@@ -31,5 +32,6 @@ dominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg);
 std::vector<dominoPiece> detectPlayerDominoPieces(cv::Mat firstImg, cv::Mat currentImg);
 dominoPiece getPlayerDominoPiece(ImageClipping *imageClipper, cv::Mat firstImg, cv::Mat currentImg, int blockNumber);
 cv::Mat cutPlayerBlock(cv::Mat image, cv::Rect rect);
+DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg);
 
 #endif //PROJECT_DOMINOCV_H

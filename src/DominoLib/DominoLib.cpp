@@ -172,11 +172,11 @@ cv::Mat getROIOfHalf(cv::Mat diffframe, cv::Point2f cornerA, cv::Point2f cornerB
     return halfCorrectedRot(halfRect);
 }
 
-cv::Mat colorizeHalf(dominoHalf half, cv::Mat  img){
+cv::Mat colorizeHalf(DominoHalf half, cv::Mat  img){
     cv::Point2f vertices2f[4];
-    half.rect.points(vertices2f);
+    half.getRect().points(vertices2f);
     cv::Scalar halfColor;
-    halfColor = (half.pips >= 0 && half.pips < 7) ? (overlayColors[half.pips]) : (overlayColors[sizeof(overlayColors)/sizeof(overlayColors[0])-1]);
+    halfColor = (half.getNumber() >= 0 && half.getNumber() < 7) ? (overlayColors[half.getNumber()]) : (overlayColors[sizeof(overlayColors)/sizeof(overlayColors[0])-1]);
 
     cv::Point vertices[4];
     for(int i = 0; i < 4; i++){
@@ -189,11 +189,11 @@ cv::Mat colorizeHalf(dominoHalf half, cv::Mat  img){
     return img;
 }
 
-cv::Mat drawPipCount(dominoHalf half1, cv::Mat  img){
+cv::Mat drawPipCount(DominoHalf half1, cv::Mat  img){
     std::ostringstream pipCountText;
-    pipCountText << half1.pips;
+    pipCountText << half1.getNumber();
     cv::putText(img, pipCountText.str(),
-                cv::Point(half1.rect.center.x, half1.rect.center.y),
+                cv::Point(half1.getRect().center.x, half1.getRect().center.y),
                 cv::FONT_HERSHEY_COMPLEX, 0.8, drawingColor, 1, 8
     );
     return img;
@@ -222,7 +222,7 @@ void getHalfCorners(cv::Point2f *cornersOfDominoBlock, cv::Point2f startCorner, 
 }
 
 
-void getDominoHalf(dominoHalf *half, cv::Mat diffframe, cv::Point2f *cornersOfDominoBlock, cv::Point2f startCorner,  bool correctAngle){
+void getDominoHalf(DominoHalf *half, cv::Mat diffframe, cv::Point2f *cornersOfDominoBlock, cv::Point2f startCorner,  bool correctAngle){
     cv::Point2f halfCorners[4];
     PipsDetector *pipsdetector = PipsDetectorFactory().createDefaultPipsDetector();
 
@@ -230,10 +230,10 @@ void getDominoHalf(dominoHalf *half, cv::Mat diffframe, cv::Point2f *cornersOfDo
     std::cout << halfCorners[0].x << " "<< halfCorners[1].x << " "<< halfCorners[2].x << " "<< halfCorners[3].x << std::endl;
     //dominoHalf half;
     //get rectangles framing each of the two halfs
-    half->rect = cv::RotatedRect(halfCorners[0], halfCorners[1], halfCorners[2]); //anticlockwise
+    half->setRect(cv::RotatedRect(halfCorners[0], halfCorners[1], halfCorners[2])); //anticlockwise
     //get region Of Interest of Half
     cv::Mat halfROI = getROIOfHalf(diffframe, halfCorners[0], halfCorners[1], halfCorners[2], halfCorners[3], correctAngle);
     //Get Pips of  half of the domino block
-    half->pips = pipsdetector->detect(halfROI);
+    half->setNumber(pipsdetector->detect(halfROI));
 }
 
