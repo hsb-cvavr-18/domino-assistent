@@ -37,9 +37,9 @@ protected:
             FAIL() << "Could not open or find the image '" << currentImg << "'";
         }
 
-        const DominoPiece &dominoPiece = detectPiece(previousImgMat, currentImgMat);
+        DominoPiece dominoPiece = detectPiece(previousImgMat, currentImgMat);
 
-        const unsigned int actualPips[2] = {(dominoPiece.a.pips), (dominoPiece.b.pips)};
+        const unsigned int actualPips[2] = {(dominoPiece.getHalfA().getNumber()), (dominoPiece.getHalfB().getNumber())};
         ASSERT_THAT(actualPips, testing::UnorderedElementsAreArray(pipsExpected));
     }
 };
