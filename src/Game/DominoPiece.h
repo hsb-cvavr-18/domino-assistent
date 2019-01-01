@@ -29,6 +29,8 @@ public:
     cv::Point2f getCenter();;
 
     bool isApplicableTo(DominoPiece piece);
+
+    friend std::ostream& operator<<(std::ostream &os, DominoPiece &p);
 };
 
 

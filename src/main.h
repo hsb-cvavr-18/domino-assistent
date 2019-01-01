@@ -26,6 +26,7 @@
 #include <opencv2/features2d.hpp>
 #include <opencv2/opencv.hpp>
 
+#include "Game/PlayGround.h"
 #include "DominoLib/DominoCV.h"
 #include "ImageClipping/ImageClippingFactory.h"
 #include "ImageClipping/ImageClipping.h"

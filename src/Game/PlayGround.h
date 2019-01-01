@@ -8,7 +8,7 @@
 #define PROJECT_PLAYGROUND_H
 
 #include "DominoTreeStructureElement.h"
-
+#include "DominoPiece.h"
 
 struct RecommendedMove {
     DominoPiece userStone;

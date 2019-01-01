@@ -1,5 +1,4 @@
 #include "main.h"
-#include "Game/PlayGround.h"
 
 auto imageHandler = ImageHandlerFactory::getImageHandler("../../srcImgApplyPlayerStones", "apply_", Source::FILESYSTEM);
 
@@ -60,13 +59,18 @@ void task_main() {
 
         gameFrames.push(result);
 
-        cout << "pipcount half 1: " << dominoPiece.getHalfA().getNumber() << endl;
-        cout << "pipcount half 2: " << dominoPiece.getHalfB().getNumber() << endl;
+        cout << "found piece: " << dominoPiece << endl;
 
         const vector<DominoPiece> &dominoPlayerPieces = detectPlayerDominoPieces(imageHandler->getFirstImage(), currentImg);
-        for(auto dominoPiece : dominoPlayerPieces) {
-            std::cout << "found piece " << dominoPiece.getHalfA().getNumber() << "," << dominoPiece.getHalfB().getNumber() << std::endl;
+        for(auto playerPiece : dominoPlayerPieces) {
+            std::cout << "found player piece " << playerPiece << std::endl;
         }
+        list<DominoPiece> dominoPlayerPiecesList(dominoPlayerPieces.begin(), dominoPlayerPieces.end());
+        playGround->setUserStones(dominoPlayerPiecesList);
+
+        cout << "User, please put " << endl;
+        auto rm = playGround->recommendMove().begin();
+        std::cout << rm->userStone << " onto " << rm->recommendedStone << endl;
 
         waitForUserInput();
     }

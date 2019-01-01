@@ -150,14 +150,14 @@ DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
     return piece;
 }
 
-std::vector<dominoPiece> detectPlayerDominoPieces(cv::Mat firstImg, cv::Mat currentImg) {
-    vector<dominoPiece> pieces;
+std::vector<DominoPiece> detectPlayerDominoPieces(cv::Mat firstImg, cv::Mat currentImg) {
+    vector<DominoPiece> pieces;
     ImageClipping *imageClipper = ImageClippingFactory::getImageClipping();
     imageClipper->setSourceImage(currentImg);
     cv::Mat playerImg = imageClipper->getPlayersAreaImage();
     cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
 
-    std::vector<std::future<dominoPiece>> futures;
+    std::vector<std::future<DominoPiece>> futures;
     for(unsigned int i = 0; i < NUMBER_OF_PLAYER_BLOCKS; i++) {
         futures.push_back(std::async(std::launch::async, &getPlayerDominoPiece, imageClipper, firstImg, currentImg, i));
     }
@@ -177,7 +177,7 @@ std::vector<dominoPiece> detectPlayerDominoPieces(cv::Mat firstImg, cv::Mat curr
     return pieces;
 }
 
-dominoPiece getPlayerDominoPiece(ImageClipping *imageClipper, cv::Mat firstImg, cv::Mat currentImg, int blockNumber) {
+DominoPiece getPlayerDominoPiece(ImageClipping *imageClipper, cv::Mat firstImg, cv::Mat currentImg, int blockNumber) {
 
     cv::Rect fieldRect = imageClipper->getPlayerDominiBlock(blockNumber);
     cv::Mat previousField = cutPlayerBlock(firstImg, fieldRect);

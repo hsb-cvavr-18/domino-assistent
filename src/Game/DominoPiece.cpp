@@ -35,3 +35,10 @@ bool DominoPiece::operator==(DominoPiece rhs) {
            (this->getHalfA()==rhs.getHalfB()  &&
             this->getHalfB()==rhs.getHalfA());
 }
+
+std::ostream& operator<<(std::ostream &os, DominoPiece &p) {
+    return os << "[" << p.getHalfA().getNumber() << "," << p.getHalfB().getNumber() << "]";
+}
+
+
+
