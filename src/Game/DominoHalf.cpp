@@ -9,7 +9,7 @@ DominoHalf::DominoHalf(cv::RotatedRect rect, unsigned int number) {
     this->number = number;
 }
 
-int DominoHalf::getNumber() {
+unsigned int DominoHalf::getNumber() {
     return number;
 }
 
