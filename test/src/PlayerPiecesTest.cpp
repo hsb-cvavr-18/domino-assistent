@@ -44,9 +44,9 @@ protected:
 
         } while (previousImg.empty());
 
-        const vector<dominoPiece> &pieces = detectPlayerDominoPieces(imageHandler->getFirstImage(), currentImg);
+        const vector<DominoPiece> &pieces = detectPlayerDominoPieces(imageHandler->getFirstImage(), currentImg);
         for(auto dominoPiece : pieces) {
-            std::cout << "found piece " << dominoPiece.a.pips << "," << dominoPiece.b.pips << std::endl;
+            std::cout << "found piece " << dominoPiece.getHalfA().getNumber() << "," << dominoPiece.getHalfB().getNumber() << std::endl;
         }
 
         EXPECT_EQ(pieces.size(), 5);
@@ -73,7 +73,7 @@ TEST_F(PlayerPiecesTest, testImageWithNoPieces) {
 
     //detectPiece(previousImgMat, currentImgMat);
 
-    const vector<dominoPiece> &pieces = detectPlayerDominoPieces(firstImgMat, currentImgMat);
+    const vector<DominoPiece> &pieces = detectPlayerDominoPieces(firstImgMat, currentImgMat);
     ASSERT_THAT(pieces.size(), testing::Eq(0));
 }
 
@@ -96,7 +96,7 @@ TEST_F(PlayerPiecesTest, testImageWithNoPieces2) {
 
     //detectPiece(previousImgMat, currentImgMat);
 
-    const vector<dominoPiece> &pieces = detectPlayerDominoPieces(firstImgMat, currentImgMat);
+    const vector<DominoPiece> &pieces = detectPlayerDominoPieces(firstImgMat, currentImgMat);
     ASSERT_THAT(pieces.size(), testing::Eq(0));
 }
 
