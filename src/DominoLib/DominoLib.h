@@ -11,10 +11,12 @@
 // OpenCV
 #include <opencv2/core.hpp>
 #include "opencv2/objdetect.hpp"
-#include "../Game/DominoHalf.h"
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/features2d.hpp>
+
+#include "../Game/DominoHalf.h"
+#include "../Game/DominoPiece.h"
 #define PI 3.14159265358979323846
 using namespace std;
 
@@ -27,6 +29,7 @@ float getCorrectedAngle(cv::RotatedRect rotRect);
 cv::RotatedRect getRotatedRectOflargestContour(vector<vector<cv::Point>> pieceContours, cv::Size size_);
 cv::Mat getROIOfHalf(cv::Mat diffframe, cv::Point2f cornerA, cv::Point2f cornerB, cv::Point2f cornerC, cv::Point2f cornerD, bool correctAngle);
 cv::Mat colorizeHalf(DominoHalf half, cv::Mat  img);
+cv::Mat drawSuggestedMove(DominoPiece userStone, DominoPiece recommendedStone,cv::Mat img);
 cv::Mat drawPipCount(DominoHalf half1, cv::Mat  img);
 void printTopAreasAndContours(const vector<vector<cv::Point>> &pieceContours, cv::Size &size_);
 

@@ -189,6 +189,11 @@ cv::Mat colorizeHalf(DominoHalf half, cv::Mat  img){
     return img;
 }
 
+cv::Mat drawSuggestedMove(DominoPiece userStone, DominoPiece recommendedStone,cv::Mat img){
+    cv::arrowedLine(img,userStone.getCenter(),recommendedStone.getCenter(), cv::Scalar(33, 244, 33),3);
+    return img;
+}
+
 cv::Mat drawPipCount(DominoHalf half1, cv::Mat  img){
     std::ostringstream pipCountText;
     pipCountText << half1.getNumber();

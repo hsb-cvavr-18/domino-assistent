@@ -57,7 +57,6 @@ void task_main() {
         cv::Mat result;
         result = cv::imread("domino_result.jpg");
 
-        gameFrames.push(result);
 
         cout << "found piece: " << dominoPiece << endl;
 
@@ -72,6 +71,9 @@ void task_main() {
         auto rm = playGround->recommendMove().begin();
         std::cout << rm->userStone << " onto " << rm->recommendedStone << endl;
 
+        drawSuggestedMove(rm->userStone, rm->recommendedStone,result);
+
+        gameFrames.push(result);
         waitForUserInput();
     }
 
