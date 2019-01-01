@@ -20,7 +20,7 @@ public:
     DominoHalf();
     bool operator==(DominoHalf rhs);
 
-    int getNumber();
+    unsigned int getNumber();
 
     void setNumber(unsigned int number);
 
