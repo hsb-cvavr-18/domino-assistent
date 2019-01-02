@@ -33,7 +33,7 @@ void ImageClipping::setSourceImage(const cv::Mat  sourceImage){
     }
     this->sourceImage = sourceImage;
     //std::cout << "this source image: " << &this->sourceImage << ", source image:" << &sourceImage << std::endl;
-    if(playersArea.empty() || fieldArea.empty())
+    if(playersArea.area.empty() || fieldArea.area.empty())
         this->calcAreas();
 }
 
@@ -45,29 +45,31 @@ cv::Mat ImageClipping::getOverlayedImage(){
   //  cv::Rect test = cv::Rect(25,25,100,100);
     //cv::rectangle(sourceCopy, test,cv::Scalar(0,255,0), 1, 8, 0 );
 
-    cv::rectangle(this->overlayedImage, this->fieldArea,FIELD_COLOR,  CV_FILLED, 8, 0 );
-    cv::rectangle(this->overlayedImage, this->playersArea,PLAYER_COLOR,  CV_FILLED, 8, 0 );
+    cv::rectangle(this->overlayedImage, this->fieldArea.area,FIELD_COLOR,  CV_FILLED, 8, 0 );
+    cv::rectangle(this->overlayedImage, this->playersArea.area,PLAYER_COLOR,  CV_FILLED, 8, 0 );
     cv::addWeighted(this->overlayedImage,alpha, this->sourceImage, 1- alpha, 0, overlayedImage);
     for(int i = 0; i < NUMBER_OF_PLAYER_BLOCKS; i ++){
-        cv::rectangle(overlayedImage, this->blockAreas[i], BLOCK_COLOR, 8, 8, 0 );
+        cv::rectangle(overlayedImage, this->blockAreas[i].area, BLOCK_COLOR, 8, 8, 0 );
     }
 
     return overlayedImage;
 }
 
-cv::Mat ImageClipping::getPlayersAreaImage(){
+MatOffset ImageClipping::getPlayersAreaImage(){
 
-    this->playerImage = this->sourceImage(this->playersArea);
+    this->playerImage.roi = this->sourceImage(this->playersArea.area);
+    this->playerImage.offset = this->playersArea.offset;
     return this->playerImage;
 }
 
-cv::Mat ImageClipping::getPlayingFieldImage(){
-    this->fieldImage = this->sourceImage(this->fieldArea);
+MatOffset ImageClipping::getPlayingFieldImage(){
+    this->fieldImage.roi = this->sourceImage(this->fieldArea.area);
+    this->fieldImage.offset = this->fieldArea.offset;
     return this->fieldImage;
 }
 
 
-cv::Rect ImageClipping::calcPlayBlockArea(int blockNumber){
+RectOffset ImageClipping::calcPlayBlockArea(int blockNumber){
     assert(blockNumber >=0 && blockNumber <=NUMBER_OF_PLAYER_BLOCKS-1);
     float size;
     cv::Point2f topLeftStart;
@@ -79,28 +81,29 @@ cv::Rect ImageClipping::calcPlayBlockArea(int blockNumber){
             //std::cout << "max: " << this->sourceImage.cols << std::endl;
             //std::cout << "size: " << size << std::endl;
             topLeftStart = cv::Point2f(round(this->sourceImage.cols  * this->padding + blockNumber * size), round(this->sourceImage.rows - this->sourceImage.rows * this->playersAreaSize));
-            this->blockAreas[blockNumber] = cv::Rect (topLeftStart.x, topLeftStart.y, size, this->sourceImage.rows * this->playersAreaSize);
+            this->blockAreas[blockNumber].area = cv::Rect (topLeftStart.x, topLeftStart.y, size, this->sourceImage.rows * this->playersAreaSize);
             break;
         case PlayerPosition::POS_TOP:
             size = (this->sourceImage.cols - this->sourceImage.cols * 2 * this->padding) / (NUMBER_OF_PLAYER_BLOCKS);
             //std::cout << "max: " << this->sourceImage.cols << std::endl;
             //std::cout << "size: " << size << std::endl;
             topLeftStart = cv::Point2f(round(this->sourceImage.cols *  this->padding + blockNumber * size), 0);
-            this->blockAreas[blockNumber] = cv::Rect (topLeftStart.x, topLeftStart.y, size, this->sourceImage.rows * this->playersAreaSize);
+            this->blockAreas[blockNumber].area = cv::Rect (topLeftStart.x, topLeftStart.y, size, this->sourceImage.rows * this->playersAreaSize);
             break;
         case PlayerPosition::POS_RIGHT:
             size = (this->sourceImage.rows - this->sourceImage.rows * 2 * this->padding)/ (NUMBER_OF_PLAYER_BLOCKS);
             topLeftStart = cv::Point2f(round(this->sourceImage.cols - this->sourceImage.cols * this->playersAreaSize), round(this->sourceImage.rows *  this->padding + blockNumber * size));
-            this->blockAreas[blockNumber]  = cv::Rect (topLeftStart.x, topLeftStart.y, this->sourceImage.cols * this->playersAreaSize, size);
+            this->blockAreas[blockNumber].area  = cv::Rect (topLeftStart.x, topLeftStart.y, this->sourceImage.cols * this->playersAreaSize, size);
             break;
         case PlayerPosition::POS_LEFT:
             size = (this->sourceImage.rows - this->sourceImage.rows * 2 * this->padding)/ (NUMBER_OF_PLAYER_BLOCKS);
             topLeftStart = cv::Point2f(0, round(this->sourceImage.rows * this->padding + blockNumber * size));
-            this->blockAreas[blockNumber]  = cv::Rect (topLeftStart.x, topLeftStart.y, this->sourceImage.cols * this->playersAreaSize, size);
+            this->blockAreas[blockNumber].area  = cv::Rect (topLeftStart.x, topLeftStart.y, this->sourceImage.cols * this->playersAreaSize, size);
             break;
         default:
             break;
     }
+    this->blockAreas[blockNumber].offset = topLeftStart;
 
 }
 
@@ -144,8 +147,10 @@ void ImageClipping::calcAreas(){
             break;
     }
 
-    this->playersArea = cv::Rect(playersTopLeftCorner,playersBottomRightCorner);
-    this->fieldArea = cv::Rect(fieldTopLeftCorner,fieldBottomRightCorner);
+    this->playersArea.area = cv::Rect(playersTopLeftCorner,playersBottomRightCorner);
+    this->playersArea.offset = playersTopLeftCorner;
+    this->fieldArea.area = cv::Rect(fieldTopLeftCorner,fieldBottomRightCorner);
+    this->fieldArea.offset = fieldTopLeftCorner;
 
     for(int i = 0; i < NUMBER_OF_PLAYER_BLOCKS; i++){
         this->calcPlayBlockArea(i);
@@ -157,7 +162,7 @@ void ImageClipping::calcAreas(){
 }
 
 
-cv::Rect ImageClipping::getPlayerDominiBlock(int blockNumber){
+RectOffset ImageClipping::getPlayerDominiBlock(int blockNumber){
     assert(blockNumber >=0 && blockNumber <=NUMBER_OF_PLAYER_BLOCKS);
     return this->blockAreas[blockNumber];
 }

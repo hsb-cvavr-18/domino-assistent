@@ -8,7 +8,7 @@
 // color for drawing into img
 cv::Scalar brightColor = cv::Scalar(255, 0, 242);
 
-DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
+DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg, cv::Point2f offset) {
 
     AbstractImgDebugPrinter *printer = IImgDebugPrinterFactory().getPrinter();
 
@@ -108,8 +108,8 @@ DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg) {
     /***************************************************************************
      * Find and define halfs
      */
-    DominoHalf half1 = DominoHalf(cv::RotatedRect(),0);
-    DominoHalf half2 = DominoHalf(cv::RotatedRect(),0);
+    DominoHalf half1 = DominoHalf(cv::RotatedRect(),0,offset);
+    DominoHalf half2 = DominoHalf(cv::RotatedRect(),0,offset);
 
     //get corners of whole block
     cv::Point2f cornerPoints[4];
@@ -154,7 +154,7 @@ std::vector<DominoPiece> detectPlayerDominoPieces(cv::Mat firstImg, cv::Mat curr
     vector<DominoPiece> pieces;
     ImageClipping *imageClipper = ImageClippingFactory::getImageClipping();
     imageClipper->setSourceImage(currentImg);
-    cv::Mat playerImg = imageClipper->getPlayersAreaImage();
+    cv::Mat playerImg = imageClipper->getPlayersAreaImage().roi;
     cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
 
     std::vector<std::future<DominoPiece>> futures;
@@ -179,14 +179,14 @@ std::vector<DominoPiece> detectPlayerDominoPieces(cv::Mat firstImg, cv::Mat curr
 
 DominoPiece getPlayerDominoPiece(ImageClipping *imageClipper, cv::Mat firstImg, cv::Mat currentImg, int blockNumber) {
 
-    cv::Rect fieldRect = imageClipper->getPlayerDominiBlock(blockNumber);
+    cv::Rect fieldRect = imageClipper->getPlayerDominiBlock(blockNumber).area;
     cv::Mat previousField = cutPlayerBlock(firstImg, fieldRect);
     cv::Mat currentField = cutPlayerBlock(currentImg, fieldRect);
 
     std::ostringstream name;
     name << "player_domino_field_" << blockNumber << ".jpg" ;
     cv::imwrite(name.str(), currentField);
-    return detectPiece(previousField, currentField);
+    return detectPiece(previousField, currentField,imageClipper->getPlayerDominiBlock(blockNumber).offset);
 
 }
 

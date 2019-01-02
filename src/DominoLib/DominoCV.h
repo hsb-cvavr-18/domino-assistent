@@ -28,7 +28,7 @@
 #include <opencv2/opencv.hpp>
 
 
-DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg);
+DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg, cv::Point2f offset);
 std::vector<DominoPiece> detectPlayerDominoPieces(cv::Mat firstImg, cv::Mat currentImg);
 DominoPiece getPlayerDominoPiece(ImageClipping *imageClipper, cv::Mat firstImg, cv::Mat currentImg, int blockNumber);
 cv::Mat cutPlayerBlock(cv::Mat image, cv::Rect rect);
