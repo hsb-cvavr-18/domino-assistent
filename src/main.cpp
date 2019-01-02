@@ -45,11 +45,11 @@ void task_main() {
 
         ImageClipping *imageClipper = ImageClippingFactory::getImageClipping();
         imageClipper->setSourceImage(previousImg);
-        cv::Mat previousImgCropped = imageClipper->getPlayingFieldImage();
+        cv::Mat previousImgCropped = imageClipper->getPlayingFieldImage().roi;
         imageClipper->setSourceImage(currentImg);
-        cv::Mat currentImgCropped = imageClipper->getPlayingFieldImage();
+        cv::Mat currentImgCropped = imageClipper->getPlayingFieldImage().roi;
 
-        DominoPiece dominoPiece = detectPiece(previousImg, currentImg);
+        DominoPiece dominoPiece = detectPiece(previousImg, currentImg, imageClipper->getPlayingFieldImage().offset);
         if (playGround == nullptr)
             playGround = new PlayGround(dominoPiece);
         else

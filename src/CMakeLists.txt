@@ -11,7 +11,7 @@ add_subdirectory(ImageHandler)
 add_subdirectory(ImageClipping)
 add_subdirectory(Game)
 
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES main.cpp )
 
 add_executable(dominoassistant ${SOURCE_FILES})
 target_link_libraries("${PROJECT_NAME}" division)
