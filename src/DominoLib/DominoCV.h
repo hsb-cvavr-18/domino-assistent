@@ -32,6 +32,5 @@ vector<DominoPiece> detectPlayerDominoPieces(cv::Mat firstImg, cv::Mat currentIm
 DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg, cv::Point2f offset);
 DominoPiece getPlayerDominoPiece(ImageClipping *imageClipper, cv::Mat firstImg, cv::Mat currentImg, int blockNumber);
 cv::Mat cutPlayerBlock(cv::Mat image, cv::Rect rect);
-DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg);
 
 #endif //PROJECT_DOMINOCV_H

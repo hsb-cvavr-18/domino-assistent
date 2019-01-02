@@ -37,7 +37,10 @@ protected:
             FAIL() << "Could not open or find the image '" << currentImg << "'";
         }
 
-        DominoPiece dominoPiece = detectPiece(previousImgMat, currentImgMat);
+        ImageClipping* clipper = ImageClippingFactory::getImageClipping();
+        clipper->setSourceImage(currentImgMat);
+
+        DominoPiece dominoPiece = detectPiece(previousImgMat, currentImgMat, clipper->getPlayingFieldImage().offset);
 
         const unsigned int actualPips[2] = {(dominoPiece.getHalfA().getNumber()), (dominoPiece.getHalfB().getNumber())};
         ASSERT_THAT(actualPips, testing::UnorderedElementsAreArray(pipsExpected));
