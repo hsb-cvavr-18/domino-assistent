@@ -44,7 +44,10 @@ protected:
 
         } while (previousImg.empty());
 
-        const vector<DominoPiece> &pieces = detectPlayerDominoPieces(imageHandler->getFirstImage(), currentImg);
+        ImageClipping* clipper = ImageClippingFactory::getImageClipping();
+        clipper->setSourceImage(currentImg);
+
+        const vector<DominoPiece> &pieces = detectPlayerDominoPieces(imageHandler->getFirstImage(), currentImg, clipper);
         for(auto dominoPiece : pieces) {
             std::cout << "found piece " << dominoPiece.getHalfA().getNumber() << "," << dominoPiece.getHalfB().getNumber() << std::endl;
         }
@@ -73,7 +76,10 @@ TEST_F(PlayerPiecesTest, testImageWithNoPieces) {
 
     //detectPiece(previousImgMat, currentImgMat);
 
-    const vector<DominoPiece> &pieces = detectPlayerDominoPieces(firstImgMat, currentImgMat);
+    ImageClipping* clipper = ImageClippingFactory::getImageClipping();
+    clipper->setSourceImage(currentImgMat);
+
+    const vector<DominoPiece> &pieces = detectPlayerDominoPieces(firstImgMat, currentImgMat, clipper);
     ASSERT_THAT(pieces.size(), testing::Eq(0));
 }
 
@@ -96,7 +102,10 @@ TEST_F(PlayerPiecesTest, testImageWithNoPieces2) {
 
     //detectPiece(previousImgMat, currentImgMat);
 
-    const vector<DominoPiece> &pieces = detectPlayerDominoPieces(firstImgMat, currentImgMat);
+    ImageClipping* clipper = ImageClippingFactory::getImageClipping();
+    clipper->setSourceImage(currentImgMat);
+
+    const vector<DominoPiece> &pieces = detectPlayerDominoPieces(firstImgMat, currentImgMat, clipper);
     ASSERT_THAT(pieces.size(), testing::Eq(0));
 }
 
