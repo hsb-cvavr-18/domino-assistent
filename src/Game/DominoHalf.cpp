@@ -4,9 +4,10 @@
 
 #include "DominoHalf.h"
 
-DominoHalf::DominoHalf(cv::RotatedRect rect, unsigned int number) {
+DominoHalf::DominoHalf(cv::RotatedRect rect, unsigned int number, cv::Point2f offset) {
     this->rect = rect;
     this->number = number;
+    this->offset = offset;
 }
 
 unsigned int DominoHalf::getNumber() {
@@ -23,6 +24,10 @@ cv::RotatedRect &DominoHalf::getRect() {
 
 void DominoHalf::setRect(cv::RotatedRect rect) {
     DominoHalf::rect = rect;
+}
+
+cv::Point2f DominoHalf::getOffset(){
+    return this->offset;
 }
 
 DominoHalf::DominoHalf() {

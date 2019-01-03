@@ -17,6 +17,19 @@
 #include <opencv2/features2d.hpp>
 #include <opencv2/opencv.hpp>
 
+
+struct RectOffset {
+    cv::Rect area;
+    cv::Point offset;
+} ;
+
+struct MatOffset {
+    cv::Mat roi;
+    cv::Point offset;
+} ;
+
+
+
 enum class PlayerPosition {POS_TOP, POS_RIGHT, POS_BOTTOM, POS_LEFT};
 const float PLAYERS_AREA_SIZE_PERCENT = 0.15; //*100 = percent
 const cv::Scalar PLAYER_COLOR = cv::Scalar(255, 0, 0);
@@ -32,25 +45,32 @@ public:
     ImageClipping(const cv::Mat sourceImage, PlayerPosition playerPosition = PlayerPosition::POS_RIGHT, float size = 15, float padding = 12);
     ~ImageClipping();
     void setSourceImage(const cv::Mat sourceImage);
+    //cv::Mat getOverlayedImage();
     cv::Mat getOverlayedImage();
-    cv::Mat getPlayersAreaImage();
-    cv::Mat getPlayingFieldImage();
-    cv::Rect getPlayerDominiBlock(int blockNumber);
+    //cv::Mat getPlayersAreaImage();
+    MatOffset getPlayersAreaImage();
+    //cv::Mat getPlayingFieldImage();
+    MatOffset getPlayingFieldImage();
+    RectOffset getPlayerDominiBlock(int blockNumber);
 
 
 private:
     cv::Mat sourceImage;    //full image
     cv::Mat overlayedImage;
-    cv::Mat fieldImage; //area where player mount matching domino blocks
-    cv::Mat playerImage; //area where player places thir own domino blocks
+    MatOffset fieldImage; //area where player mount matching domino blocks
+    MatOffset playerImage; //area where player places their own domino blocks
     PlayerPosition playerPosition; // Postion where the area for the players domino blocks will be
-    cv::Rect playersArea;
-    cv::Rect fieldArea;
-    cv::Rect blockAreas[NUMBER_OF_PLAYER_BLOCKS];
+    //cv::Rect playersArea;
+    RectOffset playersArea;
+    //cv::Rect fieldArea;
+    RectOffset fieldArea;
+    //cv::Rect blockAreas[NUMBER_OF_PLAYER_BLOCKS];
+    RectOffset blockAreas[NUMBER_OF_PLAYER_BLOCKS];
     float padding = 0.125;
     float playersAreaSize = 0.15; //*100 => percent
     void calcAreas();
-    cv::Rect calcPlayBlockArea(int blockNumber);
+    RectOffset calcPlayBlockArea(int blockNumber);
+    //cv::Rect calcPlayBlockArea(int blockNumber);
 
 };
 

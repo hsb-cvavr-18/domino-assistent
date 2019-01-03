@@ -16,6 +16,11 @@ cv::Point2f DominoPiece::getCenter() {
     return (halfA.getRect().center + halfB.getRect().center) / 2.0;
 }
 
+cv::Point2f DominoPiece::getOffset() {
+    //taking offset of halfA. Offset of Half A and be MUST be equal.
+    return this->halfA.getOffset();
+}
+
 bool DominoPiece::isApplicableTo(DominoPiece piece) {
     return(this->getHalfA().getNumber() == piece.getHalfA().getNumber() ||
            this->getHalfB().getNumber() == piece.getHalfB().getNumber() ||
@@ -39,6 +44,8 @@ bool DominoPiece::operator==(DominoPiece rhs) {
 std::ostream& operator<<(std::ostream &os, DominoPiece &p) {
     return os << "[" << p.getHalfA().getNumber() << "," << p.getHalfB().getNumber() << "]";
 }
+
+
 
 
 

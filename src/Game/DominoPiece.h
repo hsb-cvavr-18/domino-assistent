@@ -14,6 +14,7 @@ class DominoPiece {
 private:
     DominoHalf halfA ,
                halfB ;
+
 public:
     DominoPiece(DominoHalf dominoHalfA, DominoHalf dominoHalfB) : halfA(dominoHalfA), halfB(dominoHalfB) {}
     DominoPiece();
@@ -31,6 +32,7 @@ public:
     bool isApplicableTo(DominoPiece piece);
 
     friend std::ostream& operator<<(std::ostream &os, DominoPiece &p);
+    cv::Point2f getOffset();
 };
 
 

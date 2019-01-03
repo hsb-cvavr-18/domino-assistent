@@ -190,7 +190,8 @@ cv::Mat colorizeHalf(DominoHalf half, cv::Mat  img){
 }
 
 cv::Mat drawSuggestedMove(DominoPiece userStone, DominoPiece recommendedStone,cv::Mat img){
-    cv::arrowedLine(img,userStone.getCenter(),recommendedStone.getCenter(), cv::Scalar(33, 244, 33),3);
+    cv::arrowedLine(img,userStone.getCenter()+userStone.getOffset(),recommendedStone.getCenter()+recommendedStone.getOffset()
+            , cv::Scalar(33, 244, 33),3);
     return img;
 }
 
