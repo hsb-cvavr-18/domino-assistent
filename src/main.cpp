@@ -59,12 +59,10 @@ void task_main() {
 
         cout << "found piece: " << dominoPiece << endl;
 
-
         imageClipper->setSourceImage(currentImg);
         cv::Mat playerImg_cropped = imageClipper->getPlayersAreaImage().roi;
 
-
-        const vector<DominoPiece> &dominoPlayerPieces = detectPlayerDominoPieces(imageHandler->getFirstImage(), playerImg_cropped);
+        const vector<DominoPiece> &dominoPlayerPieces = detectPlayerDominoPieces(imageHandler->getFirstImage(), playerImg_cropped, imageClipper);
         for(auto playerPiece : dominoPlayerPieces) {
             std::cout << "found player piece " << playerPiece << std::endl;
         }
@@ -72,16 +70,18 @@ void task_main() {
         playGround->setUserStones(dominoPlayerPiecesList);
 
         cout << "User, please put " << endl;
-        auto rm = playGround->recommendMove().begin();
-        std::cout << rm->userStone << " onto " << rm->recommendedStone << endl;
+        RecommendedMove rm = playGround->recommendMove().front();
+        std::cout << rm.userStone << " onto " << rm.recommendedStone << endl;
 
         cv::Mat result_tmp;
         cv::hconcat(playerImg_cropped, result, result_tmp);
 
-        drawSuggestedMove(rm->userStone, rm->recommendedStone, result_tmp);
         cv::imwrite("result_tmp.jpg", result_tmp);
+        cv::Mat result_final = result_tmp.clone();
+        result_final = drawSuggestedMove(rm.userStone, rm.recommendedStone, result_tmp);
+        cv::imwrite("result_final.jpg", result_final);
 
-        gameFrames.push(result_tmp);
+        gameFrames.push(result_final);
         waitForUserInput();
     }
 

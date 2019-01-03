@@ -172,7 +172,7 @@ cv::Mat getROIOfHalf(cv::Mat diffframe, cv::Point2f cornerA, cv::Point2f cornerB
     return halfCorrectedRot(halfRect);
 }
 
-cv::Mat colorizeHalf(DominoHalf half, cv::Mat  img){
+cv::Mat colorizeHalf(DominoHalf half, cv::Mat img){
     cv::Point2f vertices2f[4];
     half.getRect().points(vertices2f);
     cv::Scalar halfColor;
@@ -195,7 +195,7 @@ cv::Mat drawSuggestedMove(DominoPiece userStone, DominoPiece recommendedStone,cv
     return img;
 }
 
-cv::Mat drawPipCount(DominoHalf half1, cv::Mat  img){
+cv::Mat drawPipCount(DominoHalf half1, cv::Mat img){
     std::ostringstream pipCountText;
     pipCountText << half1.getNumber();
     cv::putText(img, pipCountText.str(),
