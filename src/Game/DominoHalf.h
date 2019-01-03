@@ -14,12 +14,13 @@ class DominoHalf {
 private:
     cv::RotatedRect rect;
     unsigned int number;
+    bool bl;
     cv::Point2f offset;
 
 public:
+    DominoHalf();
     DominoHalf(cv::RotatedRect rect, unsigned int number,cv::Point2f offset);
 
-    DominoHalf();
     bool operator==(DominoHalf rhs);
 
     unsigned int getNumber();
@@ -27,8 +28,12 @@ public:
     void setNumber(unsigned int number);
 
     cv::RotatedRect &getRect();
-
     void setRect(cv::RotatedRect rect);
+
+    bool isBlocked();
+    void block();
+    void unblock();
+    bool isApplicableTo(DominoHalf otherHalf);
 
     cv::Point2f getOffset();
 };

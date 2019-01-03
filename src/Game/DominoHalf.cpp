@@ -4,12 +4,23 @@
 
 #include "DominoHalf.h"
 
+DominoHalf::DominoHalf() {
+    bl=false;
+}
+
 DominoHalf::DominoHalf(cv::RotatedRect rect, unsigned int number, cv::Point2f offset) {
     this->rect = rect;
     this->number = number;
+    bl=false;
     this->offset = offset;
 }
 
+bool DominoHalf::operator==(DominoHalf rhs) {
+    return (this->getNumber()==rhs.getNumber()  &&
+            this->getNumber()==rhs.getNumber()) ||
+           (this->getNumber()==rhs.getNumber()  &&
+            this->getNumber()==rhs.getNumber());
+}
 unsigned int DominoHalf::getNumber() {
     return number;
 }
@@ -26,18 +37,22 @@ void DominoHalf::setRect(cv::RotatedRect rect) {
     DominoHalf::rect = rect;
 }
 
+void DominoHalf::block() {
+    bl=true;
+}
 cv::Point2f DominoHalf::getOffset(){
     return this->offset;
 }
 
-DominoHalf::DominoHalf() {
-
+void DominoHalf::unblock() {
+    bl=false;
 }
 
-bool DominoHalf::operator==(DominoHalf rhs) {
-    return (
-            this->getNumber()==rhs.getNumber()  &&
-            this->getNumber()==rhs.getNumber()) ||
-           (this->getNumber()==rhs.getNumber()  &&
-            this->getNumber()==rhs.getNumber());
+bool DominoHalf::isBlocked() {
+    return bl;
 }
+
+bool DominoHalf::isApplicableTo(DominoHalf otherHalf) {
+    return !this->isBlocked() && !otherHalf.isBlocked() && number == otherHalf.getNumber();
+}
+

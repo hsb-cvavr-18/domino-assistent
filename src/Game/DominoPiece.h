@@ -16,20 +16,20 @@ private:
                halfB ;
 
 public:
-    DominoPiece(DominoHalf dominoHalfA, DominoHalf dominoHalfB) : halfA(dominoHalfA), halfB(dominoHalfB) {}
     DominoPiece();
-    bool operator==(DominoPiece rhs);
-    DominoHalf &getHalfA();
-    void setHalfA( DominoHalf &halfA) {DominoPiece::halfA = halfA;}
+    DominoPiece(DominoHalf dominoHalfA, DominoHalf dominoHalfB);
 
+    bool operator==(DominoPiece rhs);
+
+    DominoHalf &getHalfA();
     DominoHalf &getHalfB();
-    void setHalfB( DominoHalf &halfB) {DominoPiece::halfB = halfB;}
 
     bool isDoubletsStone();
     bool isNormalStone();
     cv::Point2f getCenter();;
 
     bool isApplicableTo(DominoPiece piece);
+    void block(int num);
 
     friend std::ostream& operator<<(std::ostream &os, DominoPiece &p);
     cv::Point2f getOffset();
