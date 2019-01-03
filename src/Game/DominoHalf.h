@@ -30,6 +30,7 @@ public:
     bool isBlocked();
     void block();
     void unblock();
+    bool isApplicableTo(DominoHalf otherHalf);
 };
 
 

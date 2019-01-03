@@ -48,3 +48,7 @@ bool DominoHalf::isBlocked() {
     return bl;
 }
 
+bool DominoHalf::isApplicableTo(DominoHalf otherHalf) {
+    return !this->isBlocked() && !otherHalf.isBlocked() && number == otherHalf.getNumber();
+}
+
