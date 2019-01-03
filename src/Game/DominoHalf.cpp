@@ -1,3 +1,5 @@
+#include <utility>
+
 //
 // Created by osboxes on 11/29/18.
 //
@@ -9,7 +11,7 @@ DominoHalf::DominoHalf() {
 }
 
 DominoHalf::DominoHalf(cv::RotatedRect rect, unsigned int number) {
-    this->rect = rect;
+    this->rect = std::move(rect);
     this->number = number;
     bl=false;
 }
@@ -33,7 +35,7 @@ cv::RotatedRect &DominoHalf::getRect() {
 }
 
 void DominoHalf::setRect(cv::RotatedRect rect) {
-    DominoHalf::rect = rect;
+    DominoHalf::rect = std::move(rect);
 }
 
 void DominoHalf::block() {
