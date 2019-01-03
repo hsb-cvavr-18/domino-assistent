@@ -64,7 +64,7 @@ std::list<RecommendedMove> PlayGround::recommendMove() {
 }
 
 std::list<RecommendedMove> PlayGround::firstMove(std::list<DominoPiece> userStones) {
-    std::list<RecommendedMove> recommentedMoves;
+    std::list<RecommendedMove> recommendedMoves;
     RecommendedMove move;
 
     std::list <DominoPiece> :: iterator it;
@@ -75,10 +75,10 @@ std::list<RecommendedMove> PlayGround::firstMove(std::list<DominoPiece> userSton
 
         if(!availableMountPoints.empty()){
             move.recommendedStone = availableMountPoints.front()->getElement();
-            recommentedMoves.push_back(move);
+            recommendedMoves.push_back(move);
         }
     }
-    return recommentedMoves;
+    return recommendedMoves;
 }
 
 std::list<DominoPiece> PlayGround::getUserStones() {return userStones;}
