@@ -150,7 +150,7 @@ DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg, cv::Point2f off
     return piece;
 }
 
-vector<DominoPiece> detectPlayerDominoPieces(cv::Mat firstImg, cv::Mat currentImg, ImageClipping *imageClipper) {
+vector<DominoPiece> detectPlayerDominoPieces(cv::Mat firstImg, cv::Mat currentImg) {
     vector<DominoPiece> pieces;
     ImageClipping *imageClipper = ImageClippingFactory::getImageClipping();
     imageClipper->setSourceImage(currentImg);

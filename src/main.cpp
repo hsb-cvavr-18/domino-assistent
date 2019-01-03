@@ -49,8 +49,7 @@ void task_main() {
         imageClipper->setSourceImage(currentImg);
         cv::Mat currentImgCropped = imageClipper->getPlayingFieldImage().roi;
 
-        DominoPiece dominoPiece = detectPiece(previousImg, currentImg, imageClipper->getPlayingFieldImage().offset);
-        DominoPiece dominoPiece = detectPiece(previousImgCropped, currentImgCropped);
+        DominoPiece dominoPiece = detectPiece(previousImgCropped, currentImgCropped, imageClipper->getPlayingFieldImage().offset);
         if (playGround == nullptr)
             playGround = new PlayGround(dominoPiece);
         else
@@ -62,10 +61,10 @@ void task_main() {
 
 
         imageClipper->setSourceImage(currentImg);
-        cv::Mat playerImg_cropped = imageClipper->getPlayersAreaImage();
+        cv::Mat playerImg_cropped = imageClipper->getPlayersAreaImage().roi;
 
 
-        const vector<DominoPiece> &dominoPlayerPieces = detectPlayerDominoPieces(imageHandler->getFirstImage(), playerImg_cropped, imageClipper);
+        const vector<DominoPiece> &dominoPlayerPieces = detectPlayerDominoPieces(imageHandler->getFirstImage(), playerImg_cropped);
         for(auto playerPiece : dominoPlayerPieces) {
             std::cout << "found player piece " << playerPiece << std::endl;
         }
