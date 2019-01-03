@@ -42,9 +42,9 @@ bool DominoPiece::isApplicableTo(DominoPiece piece) {
 }
 
 void DominoPiece::block(int num) {
-    if(halfA.getNumber()==num)
+    if(halfA.getNumber()==num && !halfA.isBlocked())
         halfA.block();
-    else if (halfB.getNumber()==num)
+    else if (halfB.getNumber()==num && !halfB.isBlocked())
         halfB.block();
 
 }

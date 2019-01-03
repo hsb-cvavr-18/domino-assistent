@@ -5,19 +5,18 @@
 #include "DominoHalf.h"
 
 DominoHalf::DominoHalf() {
-    isBlocked=false;
+    bl=false;
 }
 
 DominoHalf::DominoHalf(cv::RotatedRect rect, unsigned int number) {
     this->rect = rect;
     this->number = number;
-    isBlocked=false;
+    bl=false;
 }
 
 bool DominoHalf::operator==(DominoHalf rhs) {
-    return (
-                   this->getNumber()==rhs.getNumber()  &&
-                   this->getNumber()==rhs.getNumber()) ||
+    return (this->getNumber()==rhs.getNumber()  &&
+            this->getNumber()==rhs.getNumber()) ||
            (this->getNumber()==rhs.getNumber()  &&
             this->getNumber()==rhs.getNumber());
 }
@@ -38,10 +37,14 @@ void DominoHalf::setRect(cv::RotatedRect rect) {
 }
 
 void DominoHalf::block() {
-    isBlocked=true;
+    bl=true;
 }
 
 void DominoHalf::unblock() {
-    isBlocked=false;
+    bl=false;
+}
+
+bool DominoHalf::isBlocked() {
+    return bl;
 }
 
