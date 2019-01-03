@@ -4,11 +4,23 @@
 
 #include "DominoHalf.h"
 
+DominoHalf::DominoHalf() {
+    isBlocked=false;
+}
+
 DominoHalf::DominoHalf(cv::RotatedRect rect, unsigned int number) {
     this->rect = rect;
     this->number = number;
+    isBlocked=false;
 }
 
+bool DominoHalf::operator==(DominoHalf rhs) {
+    return (
+                   this->getNumber()==rhs.getNumber()  &&
+                   this->getNumber()==rhs.getNumber()) ||
+           (this->getNumber()==rhs.getNumber()  &&
+            this->getNumber()==rhs.getNumber());
+}
 unsigned int DominoHalf::getNumber() {
     return number;
 }
@@ -25,14 +37,11 @@ void DominoHalf::setRect(cv::RotatedRect rect) {
     DominoHalf::rect = rect;
 }
 
-DominoHalf::DominoHalf() {
-
+void DominoHalf::block() {
+    isBlocked=true;
 }
 
-bool DominoHalf::operator==(DominoHalf rhs) {
-    return (
-            this->getNumber()==rhs.getNumber()  &&
-            this->getNumber()==rhs.getNumber()) ||
-           (this->getNumber()==rhs.getNumber()  &&
-            this->getNumber()==rhs.getNumber());
+void DominoHalf::unblock() {
+    isBlocked=false;
 }
+

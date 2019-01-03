@@ -13,20 +13,22 @@ class DominoHalf {
 private:
     cv::RotatedRect rect;
     unsigned int number;
+    bool isBlocked;
 
 public:
+    DominoHalf();
     DominoHalf(cv::RotatedRect rect, unsigned int number);
 
-    DominoHalf();
     bool operator==(DominoHalf rhs);
 
     unsigned int getNumber();
-
     void setNumber(unsigned int number);
 
     cv::RotatedRect &getRect();
-
     void setRect(cv::RotatedRect rect);
+
+    void block();
+    void unblock();
 };
 
 
