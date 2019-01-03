@@ -8,10 +8,8 @@
 void DominoTreeStructureElement::mount(DominoTreeStructureElement dominoTreeStructureElement) {
     if (this->hasFreeMountPoints()) {
         /* blocking mounted dominoHalfs by distance*/
-        if(pow(dominoTreeStructureElement.element.getHalfA().getRect().center.y-this->element.getCenter().y,2)+
-           pow(dominoTreeStructureElement.element.getHalfA().getRect().center.x-this->element.getCenter().x,2)<
-           pow(dominoTreeStructureElement.element.getHalfB().getRect().center.y-this->element.getCenter().y,2)+
-           pow(dominoTreeStructureElement.element.getHalfB().getRect().center.x-this->element.getCenter().x,2)){
+        if(cv::norm(cv::Mat(element.getCenter()),cv::Mat(dominoTreeStructureElement.getElement().getHalfA().getRect().center)) <
+           cv::norm(cv::Mat(element.getCenter()),cv::Mat(dominoTreeStructureElement.getElement().getHalfB().getRect().center))){
             this->element.block(dominoTreeStructureElement.element.getHalfA().getNumber());
             dominoTreeStructureElement.element.block(dominoTreeStructureElement.element.getHalfA().getNumber());
         } else{
