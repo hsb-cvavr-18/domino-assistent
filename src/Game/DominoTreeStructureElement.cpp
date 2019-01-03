@@ -14,7 +14,7 @@ void DominoTreeStructureElement::mount(DominoTreeStructureElement dominoTreeStru
             dominoTreeStructureElement.element.block(dominoTreeStructureElement.element.getHalfA().getNumber());
         } else{
             this->element.block(dominoTreeStructureElement.element.getHalfB().getNumber());
-            dominoTreeStructureElement.element.block(dominoTreeStructureElement.element.getHalfA().getNumber());
+            dominoTreeStructureElement.element.block(dominoTreeStructureElement.element.getHalfB().getNumber());
         }
 
         mountedElements.emplace_front(dominoTreeStructureElement);
