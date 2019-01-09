@@ -16,7 +16,7 @@ void DominoTreeStructureElement::mount(DominoTreeStructureElement dominoTreeStru
             this->element.block(dominoTreeStructureElement.element.getHalfB().getNumber());
             dominoTreeStructureElement.element.block(dominoTreeStructureElement.element.getHalfB().getNumber());
         }
-        dominoTreeStructureElement.mountExistingStone(*this);
+        //dominoTreeStructureElement.mountExistingStone(*this);
         mountedElements.emplace_front(dominoTreeStructureElement);
     }
 
