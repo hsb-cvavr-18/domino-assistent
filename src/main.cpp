@@ -117,7 +117,7 @@ void task_preview(std::string address)
         } else {
             auto now = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double, std::milli> elapsed = now-before;
-            if(elapsed.count() > 550) {
+            if(elapsed.count() > 250) {
 
                 imageClipper->setSourceImage(image);
                 cv::Mat playingFieldMarked = imageClipper->getOverlayedImage();
