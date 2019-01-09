@@ -35,6 +35,7 @@ DominoPiece DominoTreeStructureElement::getElement()  {return element;}
 std::list<DominoTreeStructureElement>* DominoTreeStructureElement::getMountedElements()  {return &mountedElements;}
 
 bool DominoTreeStructureElement::isApplicableTo(DominoTreeStructureElement newElement) {
-    return this->hasFreeMountPoints() && element.isApplicableTo(newElement.getElement());
+    return this->hasFreeMountPoints() &&
+           element.isApplicableTo(newElement.getElement());
 }
 
