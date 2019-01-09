@@ -84,8 +84,8 @@ DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg, cv::Point2f off
     drawRotatedRect(rotated, minAreaRotatedRect);
     imwrite("domino_rotated_rect.jpg", rotated);
 
-    float ratioWH = (float) dominoBoundsRect.width / dominoBoundsRect.height; // should be 1.66
-    float ratioHW = (float) dominoBoundsRect.height / dominoBoundsRect.width; // should be 0.6
+    float ratioWH = (float) minAreaRotatedRect.size.width / minAreaRotatedRect.size.height; // should be 1.66
+    float ratioHW = (float) minAreaRotatedRect.size.height / minAreaRotatedRect.size.width; // should be 0.6
 
     char buffer[100];
     std::sprintf(buffer, "Ratio of size of found rect: ratioWH = '%f' ratioHW = '%f'", ratioWH, ratioHW);
