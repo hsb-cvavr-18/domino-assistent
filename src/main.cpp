@@ -32,6 +32,8 @@ void task_main() {
     while(true) {
         //TODO: Verarbeitung der Bilder (Logik - wann wird ausgelöst, behandlung der ersten zwei Bilder etc.
         do {
+            waitForUserInput();
+
             imageHandler->loadNextImage();
             currentImg = imageHandler->getCurrentImage();
             if (NULL == &currentImg || currentImg.empty()) {
@@ -41,7 +43,6 @@ void task_main() {
             }
 
             previousImg = imageHandler->getPreviousImage();
-
         } while (previousImg.empty());
 
         ImageClipping *imageClipper = ImageClippingFactory::getImageClipping();
@@ -70,20 +71,25 @@ void task_main() {
         list<DominoPiece> dominoPlayerPiecesList(dominoPlayerPieces.begin(), dominoPlayerPieces.end());
         playGround->setUserStones(dominoPlayerPiecesList);
 
-        cout << "User, please put " << endl;
-        RecommendedMove rm = playGround->recommendMove().front();
-        std::cout << rm.userStone << " onto " << rm.recommendedStone << endl;
+        std::list<RecommendedMove> recommendedMoves = playGround->recommendMove();
+        if(recommendedMoves.empty()) {
+            std::cout << "No possible move!" << std::endl;
+            gameFrames.push(currentImg);
+        } else {
+            RecommendedMove rm = recommendedMoves.front();
+            cout << "User, please put " << endl;
+            std::cout << rm.userStone << " onto " << rm.recommendedStone << endl;
 
-        cv::Mat result_tmp;
-        cv::hconcat(playerImg_cropped, result, result_tmp);
+            cv::Mat result_tmp;
+            cv::hconcat(playerImg_cropped, result, result_tmp);
 
-        cv::imwrite("result_tmp.jpg", result_tmp);
-        cv::Mat result_final = result_tmp.clone();
-        result_final = drawSuggestedMove(rm.userStone, rm.recommendedStone, result_tmp);
-        cv::imwrite("result_final.jpg", result_final);
+            cv::imwrite("result_tmp.jpg", result_tmp);
+            cv::Mat result_final = result_tmp.clone();
+            result_final = drawSuggestedMove(rm.userStone, rm.recommendedStone, result_tmp);
+            cv::imwrite("result_final.jpg", result_final);
 
-        gameFrames.push(result_final);
-        waitForUserInput();
+            gameFrames.push(result_final);
+        }
     }
 
 }
