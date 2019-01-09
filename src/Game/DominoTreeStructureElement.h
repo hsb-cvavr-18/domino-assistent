@@ -24,7 +24,7 @@ public:
     DominoTreeStructureElement(DominoPiece element) : element(element) {}
 
     void mount(DominoTreeStructureElement dominoTreeStructureElement);
-
+    void mountExistingStone(DominoTreeStructureElement dominoTreeStructureElement);
     bool hasMountedElements();
 
     bool hasFreeMountPoints();
