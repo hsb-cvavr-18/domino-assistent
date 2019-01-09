@@ -34,10 +34,17 @@ cv::Point2f DominoPiece::getCenter() {
 }
 
 bool DominoPiece::isApplicableTo(DominoPiece piece) {
-    return this->getHalfA().isApplicableTo(piece.getHalfA()) ||
-           this->getHalfA().isApplicableTo(piece.getHalfB()) ||
-           this->getHalfB().isApplicableTo(piece.getHalfA()) ||
-           this->getHalfB().isApplicableTo(piece.getHalfB());
+    if(this->isNormalStone()) {
+        return this->getHalfA().isApplicableTo(piece.getHalfA()) ||
+               this->getHalfA().isApplicableTo(piece.getHalfB()) ||
+               this->getHalfB().isApplicableTo(piece.getHalfA()) ||
+               this->getHalfB().isApplicableTo(piece.getHalfB());
+    }else{
+        this->getHalfA().getNumber()==piece.getHalfA().getNumber() ||
+        this->getHalfA().getNumber()==piece.getHalfB().getNumber() ||
+        this->getHalfB().getNumber()==piece.getHalfA().getNumber() ||
+        this->getHalfB().getNumber()==piece.getHalfB().getNumber() ||
+    }
 }
 
 void DominoPiece::block(int num) {
