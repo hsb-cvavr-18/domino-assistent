@@ -45,10 +45,10 @@ bool DominoPiece::isApplicableTo(DominoPiece piece) {
                this->getHalfB().isApplicableTo(piece.getHalfA()) ||
                this->getHalfB().isApplicableTo(piece.getHalfB());
     }else{
-        return this->getHalfA().getNumber()==piece.getHalfA().getNumber() ||
-               this->getHalfA().getNumber()==piece.getHalfB().getNumber() ||
-               this->getHalfB().getNumber()==piece.getHalfA().getNumber() ||
-               this->getHalfB().getNumber()==piece.getHalfB().getNumber();
+        this->getHalfA().getNumber()==piece.getHalfA().getNumber() ||
+        this->getHalfA().getNumber()==piece.getHalfB().getNumber() ||
+        this->getHalfB().getNumber()==piece.getHalfA().getNumber() ||
+        this->getHalfB().getNumber()==piece.getHalfB().getNumber() ||
     }
 }
 
