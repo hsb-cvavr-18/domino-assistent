@@ -1,5 +1,6 @@
 #include "main.h"
 
+static const char *const address = "192.168.43.109:8080";
 auto imageHandler = ImageHandlerFactory::getImageHandler("../../srcImgApplyPlayerStones", "apply_", Source::FILESYSTEM);
 
 void task_main();
@@ -10,7 +11,7 @@ int main(int argc, char **argv) {
 
     thread main_thread(task_main);
     thread gui_thread(task_gui);
-    task_preview("192.168.43.28");
+    task_preview(address);
     main_thread.join();
 
 
@@ -24,7 +25,7 @@ void task_main() {
    */
     //new Domino
 
-    //auto imageHandler = ImageHandlerFactory::getImageHandler("192.168.178.79:8080", "photo", Source::IP_CAM);
+    auto imageHandler = ImageHandlerFactory::getImageHandler(address, "photo", Source::IP_CAM);
     cv::Mat currentImg = cv::Mat();
     cv::Mat previousImg = cv::Mat();
     PlayGround *playGround= nullptr;
