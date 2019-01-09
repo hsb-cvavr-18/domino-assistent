@@ -35,7 +35,7 @@ std::list<DominoTreeStructureElement*> PlayGround::getAvailableMountPointsAsElem
 
     std::list<DominoTreeStructureElement*> availableMountPoints;
 
-    if (existingElement->hasFreeMountPoints() && newStone->isApplicableTo(*existingElement)){
+    if (existingElement->isApplicableTo(*newStone)){
         availableMountPoints.emplace_front(existingElement);
     }
 
