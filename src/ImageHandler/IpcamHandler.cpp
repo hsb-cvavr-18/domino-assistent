@@ -9,8 +9,7 @@ IpcamHandler::IpcamHandler(std::string path, std::string imagePrefix){
 }
 
 cv::Mat IpcamHandler::getFirstImage() {
-
-
+    return this->firstImage;
 };
 
 cv::Mat IpcamHandler::getCurrentImage(){
