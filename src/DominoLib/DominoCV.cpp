@@ -8,7 +8,7 @@
 // color for drawing into img
 cv::Scalar brightColor = cv::Scalar(255, 0, 242);
 
-DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg, cv::Point2f offset) {
+DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg, cv::Point2f offset, string resultName) {
 
     AbstractImgDebugPrinter *printer = IImgDebugPrinterFactory().getPrinter();
 
@@ -144,7 +144,7 @@ DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg, cv::Point2f off
     unprocessedFrame = colorizeHalf(half2, unprocessedFrame);
 
     printer->printImage("Result", unprocessedFrame);
-    imwrite("domino_result.jpg", unprocessedFrame);
+    imwrite(resultName, unprocessedFrame);
 
     DominoPiece piece = DominoPiece(half1,half2);
     return piece;
@@ -178,10 +178,11 @@ DominoPiece getPlayerDominoPiece(ImageClipping *imageClipper, cv::Mat firstImg, 
     cv::Mat previousField = cutPlayerBlock(firstImg, fieldRect);
     cv::Mat currentField = cutPlayerBlock(currentImg, fieldRect);
 
-    std::ostringstream name;
+    std::ostringstream name,resultname;
     name << "player_domino_field_" << blockNumber << ".jpg" ;
+    resultname << "player_domino_result_" << blockNumber << ".jpg" ;
     cv::imwrite(name.str(), currentField);
-    return detectPiece(previousField, currentField,imageClipper->getPlayerDominiBlock(blockNumber).offset);
+    return detectPiece(previousField, currentField, imageClipper->getPlayerDominiBlock(blockNumber).offset, resultname.str());
 
 }
 

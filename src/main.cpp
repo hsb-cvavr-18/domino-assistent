@@ -51,15 +51,21 @@ void task_main() {
         imageClipper->setSourceImage(currentImg);
         cv::Mat currentImgCropped = imageClipper->getPlayingFieldImage().roi;
 
-        DominoPiece dominoPiece = detectPiece(previousImgCropped, currentImgCropped, imageClipper->getPlayingFieldImage().offset);
-        if (playGround == nullptr)
-            playGround = new PlayGround(dominoPiece);
-        else
-            playGround->mountStone(dominoPiece);
         cv::Mat result;
-        result = cv::imread("domino_result.jpg");
+        try {
+            DominoPiece dominoPiece = detectPiece(previousImgCropped, currentImgCropped,
+                                                  imageClipper->getPlayingFieldImage().offset, "domino_result.jpg");
+            if (playGround == nullptr)
+                playGround = new PlayGround(dominoPiece);
+            else
+                playGround->mountStone(dominoPiece);
 
-        cout << "found piece: " << dominoPiece << endl;
+            cout << "found piece: " << dominoPiece << endl;
+        } catch(const std::exception& e ) {
+            std::cerr << "No new piece in palyerArea detected. Reason: " << e.what() << std::endl;
+        }
+
+        result = cv::imread("domino_result.jpg");
 
         imageClipper->setSourceImage(currentImg);
         cv::Mat playerImg_cropped = imageClipper->getPlayersAreaImage().roi;
@@ -81,6 +87,9 @@ void task_main() {
             std::cout << rm.userStone << " onto " << rm.recommendedStone << endl;
 
             cv::Mat result_tmp;
+
+            cv::imwrite("debug_playerImg_cropped.jpg", playerImg_cropped);
+            cv::imwrite("result.jpg", result);
             cv::hconcat(playerImg_cropped, result, result_tmp);
 
             cv::imwrite("result_tmp.jpg", result_tmp);
@@ -91,7 +100,6 @@ void task_main() {
             gameFrames.push(result_final);
         }
     }
-
 }
 
 void task_preview(std::string address)

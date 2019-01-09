@@ -40,7 +40,7 @@ protected:
         ImageClipping* clipper = ImageClippingFactory::getImageClipping();
         clipper->setSourceImage(currentImgMat);
 
-        DominoPiece dominoPiece = detectPiece(previousImgMat, currentImgMat, clipper->getPlayingFieldImage().offset);
+        DominoPiece dominoPiece = detectPiece(previousImgMat, currentImgMat, clipper->getPlayingFieldImage().offset, "domino_result.jpg");
 
         const unsigned int actualPips[2] = {(dominoPiece.getHalfA().getNumber()), (dominoPiece.getHalfB().getNumber())};
         ASSERT_THAT(actualPips, testing::UnorderedElementsAreArray(pipsExpected));
