@@ -80,7 +80,12 @@ void task_main() {
         std::list<RecommendedMove> recommendedMoves = playGround->recommendMove();
         if(recommendedMoves.empty()) {
             std::cout << "No possible move!" << std::endl;
-            gameFrames.push(currentImg);
+            cv::Mat noMoveFrame;
+            cv::Mat overlay = cv::Mat(currentImg.rows, currentImg.cols, CV_8UC3, cv::Scalar(0, 0, 0));
+            cv::addWeighted(currentImg, 0.7, overlay, 0.1, 0, noMoveFrame);
+            putLabel(noMoveFrame, "No possible move!", cv::Point2f(noMoveFrame.cols /3, noMoveFrame.rows / 1.2));
+            cv::imwrite("result_final.jpg", noMoveFrame);
+            gameFrames.push(noMoveFrame);
         } else {
             RecommendedMove rm = recommendedMoves.front();
             cout << "User, please put " << endl;

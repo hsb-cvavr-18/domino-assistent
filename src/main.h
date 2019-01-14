@@ -38,4 +38,20 @@ void waitForUserInput() {
     std::getline(std::cin, cinBuff);
 }
 
+void putLabel(cv::Mat &im, const std::string label, const cv::Point &pos) {
+    int fontface = cv::FONT_HERSHEY_COMPLEX;
+    double scale = 2.0;
+    int thickness = 2;
+    int baseline = 0;
+
+    cv::Size text = cv::getTextSize(label, fontface, scale, thickness, &baseline);
+    cv::Mat rect;
+    cv::Mat roi = im(cv::Rect(pos + cv::Point(0, baseline), pos + cv::Point(text.width, -text.height)));
+    cv::Mat color(roi.size(), CV_8UC3, cv::Scalar(255,255,255));
+    double alpha = 0.3;
+    cv::addWeighted(color, alpha, roi, 1.0 - alpha , 0.0, roi);
+    cv::putText(im, label, pos, fontface, scale, CV_RGB(255,255,255), thickness, 8);
+}
+
+
 #endif //PROJECT_MAIN_H
