@@ -30,7 +30,6 @@ void task_main() {
     cv::Mat previousImg = cv::Mat();
     PlayGround *playGround= nullptr;
     while(true) {
-        //TODO: Verarbeitung der Bilder (Logik - wann wird ausgelöst, behandlung der ersten zwei Bilder etc.
         do {
             waitForUserInput();
 
