@@ -29,11 +29,13 @@ void task_main() {
     cv::Mat currentImg = cv::Mat();
     cv::Mat previousImg = cv::Mat();
     PlayGround *playGround= nullptr;
+    int imagesCount;
     while(true) {
         do {
             waitForUserInput();
 
             imageHandler->loadNextImage();
+            imagesCount++;
             currentImg = imageHandler->getCurrentImage();
             if (NULL == &currentImg || currentImg.empty()) {
                 std::cout << "No more Image loaded" << std::endl;
@@ -77,13 +79,15 @@ void task_main() {
         playGround->setUserStones(dominoPlayerPiecesList);
 
         std::list<RecommendedMove> recommendedMoves = playGround->recommendMove();
+        ostringstream result_final_name;
+        result_final_name << "result_final" << imagesCount << ".jpg";
         if(recommendedMoves.empty()) {
             std::cout << "No possible move!" << std::endl;
             cv::Mat noMoveFrame;
             cv::Mat overlay = cv::Mat(currentImg.rows, currentImg.cols, CV_8UC3, cv::Scalar(0, 0, 0));
             cv::addWeighted(currentImg, 0.7, overlay, 0.1, 0, noMoveFrame);
             putLabel(noMoveFrame, "No possible move!", cv::Point2f(noMoveFrame.cols /3, noMoveFrame.rows / 1.2));
-            cv::imwrite("result_final.jpg", noMoveFrame);
+            //cv::imwrite(result_final_name.str(), noMoveFrame);
             gameFrames.push(noMoveFrame);
         } else {
             RecommendedMove rm = recommendedMoves.front();
