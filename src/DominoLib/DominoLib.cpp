@@ -107,15 +107,15 @@ cv::RotatedRect getRotatedRectOflargestContour(vector<vector<cv::Point>> pieceCo
 }
 
 void printTopAreasAndContours(const vector<vector<cv::Point>> &pieceContours, cv::Size &imgSize) {
-    cout << "Top 3 areas in image: "  << endl;
+    // cout << "Top 3 areas in image: "  << endl;
     cv::Mat pieceContour = cv::Mat::zeros(imgSize, CV_8UC3);
     for(int i = 0; i < pieceContours.size() && i < 3; i++) {
         const auto &slice = pieceContours.at(i);
-        cout << getMinRectAreaOfContour(slice) << endl;
+        // cout << getMinRectAreaOfContour(slice) << endl;
         cv::Scalar color = cv::Scalar(150, 0, 32);
         cv::drawContours(pieceContour, pieceContours, 0, color, 2, 8);
     }
-    cv::imwrite("largest3_contours.jpg", pieceContour);
+    //cv::imwrite("largest3_contours.jpg", pieceContour);
 }
 
 cv::Mat getROIOfHalf(cv::Mat diffframe, cv::Point2f cornerA, cv::Point2f cornerB, cv::Point2f cornerC, cv::Point2f cornerD, bool correctAngle){
@@ -233,7 +233,7 @@ void getDominoHalf(DominoHalf *half, cv::Mat diffframe, cv::Point2f *cornersOfDo
     PipsDetector *pipsdetector = PipsDetectorFactory().createDefaultPipsDetector();
 
     getHalfCorners(cornersOfDominoBlock, startCorner, halfCorners);
-    std::cout << halfCorners[0].x << " "<< halfCorners[1].x << " "<< halfCorners[2].x << " "<< halfCorners[3].x << std::endl;
+    //std::cout << halfCorners[0].x << " "<< halfCorners[1].x << " "<< halfCorners[2].x << " "<< halfCorners[3].x << std::endl;
     //dominoHalf half;
     //get rectangles framing each of the two halfs
     half->setRect(cv::RotatedRect(halfCorners[0], halfCorners[1], halfCorners[2])); //anticlockwise

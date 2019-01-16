@@ -91,15 +91,13 @@ void task_main() {
             std::cout << rm.userStone << " onto " << rm.recommendedStone << endl;
 
             cv::Mat result_tmp;
-
-            cv::imwrite("debug_playerImg_cropped.jpg", playerImg_cropped);
-            cv::imwrite("result.jpg", result);
+            //cv::imwrite("result.jpg", result);
             cv::hconcat(playerImg_cropped, result, result_tmp);
 
-            cv::imwrite("result_tmp.jpg", result_tmp);
+            //cv::imwrite("result_tmp.jpg", result_tmp);
             cv::Mat result_final = result_tmp.clone();
             result_final = drawSuggestedMove(rm.userStone, rm.recommendedStone, result_tmp);
-            cv::imwrite("result_final.jpg", result_final);
+            //cv::imwrite(result_final_name.str(), result_final);
 
             gameFrames.push(result_final);
         }

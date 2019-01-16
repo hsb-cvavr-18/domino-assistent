@@ -30,22 +30,22 @@ DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg, cv::Point2f off
     // remove background (previous image -image)
     absdiff(frame, previousImg,frame);
     diffframe = frame.clone();
-    imwrite("domino_diff.jpg", frame);
+    // imwrite("domino_diff.jpg", frame);
 
     // threshold - converting to binary image
     int thresh = 42;
     threshold(frame, frame,thresh, 255, cv::THRESH_BINARY );
-    imwrite("domino_bin.jpg", frame);
+    //imwrite("domino_bin.jpg", frame);
 
     // applying blur filter - makes edges smoother an closes gaps for continuous edges
     blur(frame.clone(), frame, cv::Size(3, 3));
-    imwrite("domino_bin_blur.jpg", frame);
+    //imwrite("domino_bin_blur.jpg", frame);
 
     // applying canny edge filter
     Canny(frame, frame, 2, 2 * 2, 3, false);
-    imwrite("domino_canny.jpg", frame);
+    //imwrite("domino_canny.jpg", frame);
 
-    imwrite("frame.jpg", frame);
+    //imwrite("frame.jpg", frame);
 
 
     /***************************************************************************
@@ -66,7 +66,7 @@ DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg, cv::Point2f off
     //need the angle to be corrected ?
     const float EPS = 0.001;
     bool isCorrectionOfAngleNeeded = ((getCorrectedAngle(minAreaRotatedRect) -  minAreaRotatedRect.angle) > EPS) ? (true): (false);
-    cout << "isCorrectionOfAngleNeeded: " << isCorrectionOfAngleNeeded << endl;
+    //cout << "isCorrectionOfAngleNeeded: " << isCorrectionOfAngleNeeded << endl;
 
     //get bounding box of rotated rect
     cv::Rect dominoBoundsRect = minAreaRotatedRect.boundingRect();
@@ -82,14 +82,14 @@ DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg, cv::Point2f off
     //Just for the show (debugging)
     cv::Mat rotated = unprocessedFrame.clone();
     drawRotatedRect(rotated, minAreaRotatedRect);
-    imwrite("domino_rotated_rect.jpg", rotated);
+    //imwrite("domino_rotated_rect.jpg", rotated);
 
     float ratioWH = minAreaRotatedRect.size.width / minAreaRotatedRect.size.height; // should be 1.66
     float ratioHW = minAreaRotatedRect.size.height / minAreaRotatedRect.size.width; // should be 0.6
 
     char buffer[100];
-    std::sprintf(buffer, "Ratio of size of found rect: ratioWH = '%f' ratioHW = '%f'", ratioWH, ratioHW);
-    std::cout << buffer << endl;
+    //std::sprintf(buffer, "Ratio of size of found rect: ratioWH = '%f' ratioHW = '%f'", ratioWH, ratioHW);
+    //std::cout << buffer << endl;
     if( !(ratioWH >= 1.4f && ratioWH <= 1.8f
           || ratioHW >= 0.4f && ratioHW <= 0.8f
           || ratioHW >= 1.4f && ratioHW <= 1.8f
@@ -101,7 +101,7 @@ DominoPiece detectPiece(cv::Mat previousImg, cv::Mat currentImg, cv::Point2f off
 
     //Cut out wanted domino - containeing only wanted Domino
     cv::Mat diceROI = diffframe(dominoBoundsRect);
-    imwrite("rect.jpg", diceROI);
+    //imwrite("rect.jpg", diceROI);
     /***************************************************************************
      * Get Pips of each half of the domino block
      */
@@ -181,7 +181,7 @@ DominoPiece getPlayerDominoPiece(ImageClipping *imageClipper, cv::Mat firstImg, 
     std::ostringstream name,resultname;
     name << "player_domino_field_" << blockNumber << ".jpg" ;
     resultname << "player_domino_result_" << blockNumber << ".jpg" ;
-    cv::imwrite(name.str(), currentField);
+    // cv::imwrite(name.str(), currentField);
     return detectPiece(previousField, currentField, imageClipper->getPlayerDominiBlock(blockNumber).offset, resultname.str());
 
 }
