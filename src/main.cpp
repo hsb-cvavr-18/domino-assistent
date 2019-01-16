@@ -113,7 +113,7 @@ void task_preview(std::string address)
     cv::Mat image;
     float aspectRatio;
     int width = 500;
-    const std::string videoStreamAddress = "http://" + address + ":8080/video";
+    const std::string videoStreamAddress = "http://" + address + "/video";
 
 
     //open the video stream and make sure it's opened
