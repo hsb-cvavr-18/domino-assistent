@@ -62,8 +62,8 @@ void task_main() {
 
             cout << "found piece: " << dominoPiece << endl;
         } catch(const std::exception& e ) {
-            std::cerr << "No new piece in palyerArea detected. Reason: " << e.what() << std::endl;
-        }
+            std::cerr << "No new piece in playerArea detected. Reason: " << e.what() << std::endl;
+        } catch (...) {}
 
         result = cv::imread("domino_result.jpg");
 
